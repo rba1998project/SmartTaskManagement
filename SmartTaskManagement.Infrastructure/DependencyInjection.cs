@@ -14,9 +14,9 @@ public static class DependencyInjection
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        var connectionString = configuration.GetConnectionString("DefaultConnection")
+        var connectionString = configuration.GetConnectionString("SmartTaskConnection")
             ?? throw new InvalidOperationException(
-                "Connection string 'DefaultConnection' was not found.");
+                "Connection string 'SmartTaskConnection' was not found.");
 
         services.AddDbContext<ApplicationDbContext>(options =>
             options.UseSqlServer(connectionString));
