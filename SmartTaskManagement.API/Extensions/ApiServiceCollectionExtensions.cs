@@ -1,6 +1,8 @@
 using Serilog;
+using SmartTaskManagement.API.Authentication;
 using SmartTaskManagement.API.Middleware;
 using SmartTaskManagement.Application;
+using SmartTaskManagement.Application.Abstractions;
 
 namespace SmartTaskManagement.API.Extensions;
 
@@ -12,6 +14,10 @@ public static class ApiServiceCollectionExtensions
     public static IServiceCollection AddApiServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddControllers();
+
+        // Exposes the authenticated caller to the Application layer from the request's JWT claims.
+        services.AddHttpContextAccessor();
+        services.AddScoped<ICurrentUserService, CurrentUserService>();
 
         services.AddApplication();
         services.AddApiAuthentication(configuration);
