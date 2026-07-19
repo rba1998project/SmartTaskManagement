@@ -1,8 +1,9 @@
-namespace SmartTaskManagement.Application.Authentication;
+namespace SmartTaskManagement.Infrastructure.Authentication;
 
 /// <summary>
 /// Strongly-typed JWT settings bound from the <c>Jwt</c> configuration section.
 /// Holds non-secret values only; the signing key lives in User Secrets / environment variables.
+/// JWT issuance is an Infrastructure concern, so these settings live alongside the token generator.
 /// </summary>
 public sealed class JwtOptions
 {
