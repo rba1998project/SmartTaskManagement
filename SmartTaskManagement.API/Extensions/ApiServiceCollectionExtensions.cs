@@ -1,5 +1,6 @@
 using Serilog;
 using SmartTaskManagement.API.Authentication;
+using SmartTaskManagement.API.Filters;
 using SmartTaskManagement.API.Middleware;
 using SmartTaskManagement.Application;
 using SmartTaskManagement.Application.Abstractions;
@@ -13,7 +14,8 @@ public static class ApiServiceCollectionExtensions
     /// </summary>
     public static IServiceCollection AddApiServices(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddControllers();
+        // Runs FluentValidation validators for action arguments before each action executes.
+        services.AddControllers(options => options.Filters.Add<ValidationActionFilter>());
 
         // Exposes the authenticated caller to the Application layer from the request's JWT claims.
         services.AddHttpContextAccessor();
