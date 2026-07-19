@@ -38,6 +38,7 @@ public static class DependencyInjection
             ?? throw new InvalidOperationException(
                 "JWT signing key 'Jwt:SigningKey' was not found.");
 
+        services.AddScoped<IProjectRepository, ProjectRepository>();
         services.AddScoped<IIdentityService, IdentityService>();
         services.AddScoped<IJwtTokenGenerator>(sp =>
             new JwtTokenGenerator(sp.GetRequiredService<IOptions<JwtOptions>>(), signingKey));

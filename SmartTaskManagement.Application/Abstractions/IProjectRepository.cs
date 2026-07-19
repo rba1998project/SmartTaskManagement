@@ -3,16 +3,15 @@ using SmartTaskManagement.Domain.Entities;
 namespace SmartTaskManagement.Application.Abstractions;
 
 /// <summary>
-/// Persistence for <see cref="Project"/> aggregates. A specific repository (not a generic one)
-/// per the project's anti-over-engineering rule. Implemented in Infrastructure with EF Core.
-/// Mutating methods persist their change; server-side search/sort/pagination arrive in Phase 5.
+/// Persistence for <see cref="Project"/> aggregates. A specific repository (not a generic one).
+/// Implemented in Infrastructure with EF Core. Mutating methods persist their change.
 /// </summary>
 public interface IProjectRepository
 {
     /// <summary>Returns the project by id, or <c>null</c> if none exists.</summary>
     Task<Project?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
 
-    /// <summary>Returns all projects (read-only). Filtering/sorting/paging is deferred to Phase 5.</summary>
+    /// <summary>Returns all projects (read-only).</summary>
     Task<IReadOnlyList<Project>> ListAsync(CancellationToken cancellationToken = default);
 
     /// <summary>Adds and persists a new project.</summary>
