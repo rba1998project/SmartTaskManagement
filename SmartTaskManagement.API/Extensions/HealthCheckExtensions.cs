@@ -24,7 +24,7 @@ public static class HealthCheckExtensions
         endpoints.MapHealthChecks("/health", new HealthCheckOptions
         {
             ResponseWriter = WriteHealthResponse
-        });
+        }).AllowAnonymous();
 
         return endpoints;
     }

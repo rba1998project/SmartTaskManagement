@@ -17,9 +17,15 @@ public sealed class RegisterRequestValidator : AbstractValidator<RegisterRequest
             .MaximumLength(256);
 
         RuleFor(x => x.Password)
-            .NotEmpty().WithMessage("Password is required.")
-            .MinimumLength(8).WithMessage("Password must be at least 8 characters.")
-            .MaximumLength(128);
+            .NotEmpty()
+            .MinimumLength(8)
+            .MaximumLength(128)
+            .Matches("[A-Z]")
+            .WithMessage("Password must contain at least one uppercase letter.")
+            .Matches("[a-z]")
+            .WithMessage("Password must contain at least one lowercase letter.")
+            .Matches("[^a-zA-Z0-9]")
+            .WithMessage("Password must contain at least one non-alphanumeric character.");
 
         RuleFor(x => x.FullName)
             .MaximumLength(200)

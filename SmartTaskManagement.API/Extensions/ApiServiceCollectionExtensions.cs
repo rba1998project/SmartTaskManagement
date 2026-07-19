@@ -1,5 +1,6 @@
 using Serilog;
 using SmartTaskManagement.API.Middleware;
+using SmartTaskManagement.Application;
 
 namespace SmartTaskManagement.API.Extensions;
 
@@ -12,6 +13,8 @@ public static class ApiServiceCollectionExtensions
     {
         services.AddControllers();
 
+        services.AddApplication();
+        services.AddApiAuthentication(configuration);
         services.AddApiSwagger();
         services.AddApiCors(configuration);
         services.AddApiHealthChecks();
@@ -41,6 +44,9 @@ public static class ApiServiceCollectionExtensions
 
         // Enable CORS to allow cross-origin requests from the specified origins in the configuration. see /CorsExtensions.cs for more details.
         app.UseCors(CorsExtensions.CorsPolicyName);
+
+        app.UseAuthentication();
+        app.UseAuthorization();
 
         app.UseRateLimiter();
 
