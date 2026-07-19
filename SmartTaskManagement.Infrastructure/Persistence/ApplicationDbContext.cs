@@ -1,17 +1,23 @@
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using SmartTaskManagement.Domain.Entities;
+using SmartTaskManagement.Infrastructure.Identity;
 
 namespace SmartTaskManagement.Infrastructure.Persistence;
 
 /// <summary>
-/// Application database context. Entity configurations are added in later phases
-/// as domain entities are introduced.
+/// Application database context. Hosts the ASP.NET Core Identity schema (users, roles, etc.)
+/// alongside application entities. Additional entity configurations are picked up by the
+/// assembly scan below as domain entities are introduced in later phases.
 /// </summary>
-public class ApplicationDbContext : DbContext
+public class ApplicationDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, Guid>
 {
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options)
     {
     }
+
+    public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
