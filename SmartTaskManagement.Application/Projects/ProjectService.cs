@@ -92,13 +92,14 @@ public sealed class ProjectService
 
     // Admin may modify any project; anyone else only projects they own. The API role-gate
     // already excludes Team Members from these operations, so this covers Admin vs owner.
-    private bool CanModify(Project project) =>
-        _currentUser.IsInRole(RoleNames.Admin)
-    || (
-          (_currentUser.IsInRole(RoleNames.ProjectManager)
-            && project.CreatedByUserId == _currentUser.UserId
-          )
-        );
+    private bool CanModify(Project project)
+    {
+        if (_currentUser.IsInRole(RoleNames.Admin))
+            return true;
+
+        return _currentUser.IsInRole(RoleNames.ProjectManager)
+            && project.CreatedByUserId == _currentUser.UserId;
+    }
 
     // Admin and Project Managers retain unrestricted project visibility. Only a Team Member is
     // narrowed to projects containing tasks assigned to them (checked separately, database-side).

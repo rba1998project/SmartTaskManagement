@@ -17,9 +17,29 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
     {
     }
 
-    public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
+    public DbSet<RefreshToken> RefreshTokens
+    {
+        get
+        {
+            return Set<RefreshToken>();
+        }
+    }
 
-    public DbSet<Project> Projects => Set<Project>();
+    public DbSet<Project> Projects
+    {
+        get
+        {
+            return Set<Project>();
+        }
+    }
+
+    public DbSet<TaskItem> Tasks
+    {
+        get
+        {
+            return Set<TaskItem>();
+        }
+    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

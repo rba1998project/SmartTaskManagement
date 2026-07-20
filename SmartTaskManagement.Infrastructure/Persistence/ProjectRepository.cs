@@ -27,6 +27,18 @@ public sealed class ProjectRepository : IProjectRepository
             .OrderByDescending(p => p.CreatedAt)
             .ToListAsync(cancellationToken);
 
+    // Database-side semi-join: keep only projects that have a task assigned to this user. The
+    // subquery avoids fetching tasks and prevents an N+1 fan-out over the project list.
+    public async Task<IReadOnlyList<Project>> ListByAssignedUserAsync(Guid assignedToUserId, CancellationToken cancellationToken = default) =>
+        await _dbContext.Projects
+            .AsNoTracking()
+            .Where(p => _dbContext.Tasks.Any(t => t.ProjectId == p.Id && t.AssignedToUserId == assignedToUserId))
+            .OrderByDescending(p => p.CreatedAt)
+            .ToListAsync(cancellationToken);
+
+    public Task<bool> HasTaskAssignedToUserAsync(Guid projectId, Guid assignedToUserId, CancellationToken cancellationToken = default) =>
+        _dbContext.Tasks.AnyAsync(t => t.ProjectId == projectId && t.AssignedToUserId == assignedToUserId, cancellationToken);
+
     public async Task AddAsync(Project project, CancellationToken cancellationToken = default)
     {
         _dbContext.Projects.Add(project);
