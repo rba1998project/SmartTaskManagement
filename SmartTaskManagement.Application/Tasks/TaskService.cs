@@ -48,6 +48,7 @@ public sealed class TaskService
             return Result<TaskResponse>.Failure(ErrorType.Forbidden, "You do not have permission to add tasks to this project.");
 
         var task = new TaskItem(projectId, request.Title, request.Description, request.Priority, request.DueDate, DateTime.UtcNow);
+
         await _tasks.AddAsync(task, cancellationToken);
 
         return Result<TaskResponse>.Success(Map(task));
@@ -97,8 +98,9 @@ public sealed class TaskService
         if (request.AssignedToUserId is { } assigneeId)
         {
             var assignee = await _identity.FindByIdAsync(assigneeId, cancellationToken);
+
             if (assignee is null)
-                return Result<TaskResponse>.Failure(ErrorType.Validation, "Assigned user does not exist.");
+                return Result<TaskResponse>.Failure(ErrorType.NotFound, "Assigned user does not exist.");
         }
 
         task.AssignTo(request.AssignedToUserId, DateTime.UtcNow);
@@ -160,12 +162,13 @@ public sealed class TaskService
 
     // Admin may manage tasks in any project; a Project Manager only in projects they own. Team
     // Members never satisfy this — their limited access is handled by assignment checks instead.
-    private bool CanManageProjectTasks(Project project) =>
-        _currentUser.IsInRole(RoleNames.Admin)
-        || (
-            _currentUser.IsInRole(RoleNames.ProjectManager)
-            && project.CreatedByUserId == _currentUser.UserId
-           );
+    private bool CanManageProjectTasks(Project project)
+    {
+        return _currentUser.IsInRole(RoleNames.Admin)
+            || (    _currentUser.IsInRole(RoleNames.ProjectManager)
+                    && project.CreatedByUserId == _currentUser.UserId
+                );
+    }
 
     private bool IsAssignedToCurrentUser(TaskItem task)
     {
