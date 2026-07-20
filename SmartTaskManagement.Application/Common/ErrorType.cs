@@ -6,13 +6,15 @@ namespace SmartTaskManagement.Application.Common;
 /// Mapping contract (applied at the API boundary):
 /// <list type="bullet">
 ///   <item><description><see cref="Validation"/> → HTTP 400</description></item>
-///   <item><description><see cref="NotFound"/> → HTTP 404</description></item>
+///   <item><description><see cref="Unauthorized"/> → HTTP 401</description></item>
 ///   <item><description><see cref="Forbidden"/> → HTTP 403</description></item>
+///   <item><description><see cref="NotFound"/> → HTTP 404</description></item>
 /// </list>
 /// </summary>
 public enum ErrorType
 {
     Validation,
-    NotFound,
-    Forbidden
+    Unauthorized,
+    Forbidden,
+    NotFound
 }

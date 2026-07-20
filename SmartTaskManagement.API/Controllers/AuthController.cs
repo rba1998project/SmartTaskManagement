@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using SmartTaskManagement.API.Common;
 using SmartTaskManagement.Application.Authentication;
 using SmartTaskManagement.Application.Authentication.Dtos;
+using SmartTaskManagement.Application.Common;
 
 namespace SmartTaskManagement.API.Controllers;
 
@@ -28,7 +29,7 @@ public sealed class AuthController : ControllerBase
     {
         var result = await _authService.RegisterAsync(request, cancellationToken);
         if (!result.Succeeded)
-            return BadRequest(ApiResponse.Fail("Registration failed.", result.Errors));
+            return result.ToErrorResponse("Registration failed.");
 
         return Ok(ApiResponse.Ok<object?>(null, "Registration successful."));
     }
@@ -39,7 +40,7 @@ public sealed class AuthController : ControllerBase
     {
         var result = await _authService.LoginAsync(request, cancellationToken);
         if (!result.Succeeded)
-            return Unauthorized(ApiResponse.Fail("Login failed.", result.Errors));
+            return result.ToErrorResponse("Login failed.", ErrorType.Unauthorized);
 
         return Ok(ApiResponse.Ok(result.Value!, "Login successful."));
     }
@@ -50,7 +51,7 @@ public sealed class AuthController : ControllerBase
     {
         var result = await _authService.RefreshAsync(request, cancellationToken);
         if (!result.Succeeded)
-            return Unauthorized(ApiResponse.Fail("Token refresh failed.", result.Errors));
+            return result.ToErrorResponse("Token refresh failed.", ErrorType.Unauthorized);
 
         return Ok(ApiResponse.Ok(result.Value!, "Token refreshed."));
     }
