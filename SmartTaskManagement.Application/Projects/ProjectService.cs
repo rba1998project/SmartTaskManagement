@@ -67,14 +67,25 @@ public sealed class ProjectService
     public async Task<Result<ProjectResponse>> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         var project = await _projects.GetByIdAsync(id, cancellationToken);
-        return project is null
-            ? Result<ProjectResponse>.Failure(ErrorType.NotFound, "Project not found.")
-            : Result<ProjectResponse>.Success(Map(project));
+        if (project is null)
+            return Result<ProjectResponse>.Failure(ErrorType.NotFound, "Project not found.");
+
+        // A Team Member may only view a project that contains a task assigned to them. Admin and
+        // the owning Project Manager may view it regardless of assignment.
+        if (!CanView(project) && !await IsVisibleToTeamMemberAsync(project.Id, cancellationToken))
+            return Result<ProjectResponse>.Failure(ErrorType.NotFound, "Project not found.");
+
+        return Result<ProjectResponse>.Success(Map(project));
     }
 
     public async Task<Result<IReadOnlyList<ProjectResponse>>> ListAsync(CancellationToken cancellationToken = default)
     {
-        var projects = await _projects.ListAsync(cancellationToken);
+        // A Team Member sees only projects containing tasks assigned to them (filtered
+        // database-side); Admin and Project Managers see all projects.
+        var projects = _currentUser.IsInRole(RoleNames.TeamMember) && _currentUser.UserId is { } userId
+            ? await _projects.ListByAssignedUserAsync(userId, cancellationToken)
+            : await _projects.ListAsync(cancellationToken);
+
         IReadOnlyList<ProjectResponse> mapped = projects.Select(Map).ToArray();
         return Result<IReadOnlyList<ProjectResponse>>.Success(mapped);
     }
@@ -82,7 +93,21 @@ public sealed class ProjectService
     // Admin may modify any project; anyone else only projects they own. The API role-gate
     // already excludes Team Members from these operations, so this covers Admin vs owner.
     private bool CanModify(Project project) =>
-        _currentUser.IsInRole(RoleNames.Admin) || project.CreatedByUserId == _currentUser.UserId;
+        _currentUser.IsInRole(RoleNames.Admin)
+    || (
+          (_currentUser.IsInRole(RoleNames.ProjectManager)
+            && project.CreatedByUserId == _currentUser.UserId
+          )
+        );
+
+    // Admin and Project Managers retain unrestricted project visibility. Only a Team Member is
+    // narrowed to projects containing tasks assigned to them (checked separately, database-side).
+    private bool CanView(Project project) => !_currentUser.IsInRole(RoleNames.TeamMember);
+
+    // True when the current Team Member has a task assigned within the project.
+    private async Task<bool> IsVisibleToTeamMemberAsync(Guid projectId, CancellationToken cancellationToken) =>
+        _currentUser.UserId is { } userId
+        && await _projects.HasTaskAssignedToUserAsync(projectId, userId, cancellationToken);
 
     private static ProjectResponse Map(Project project) => new()
     {

@@ -2,6 +2,7 @@ using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using SmartTaskManagement.Application.Authentication;
 using SmartTaskManagement.Application.Projects;
+using SmartTaskManagement.Application.Tasks;
 
 namespace SmartTaskManagement.Application;
 
@@ -15,6 +16,7 @@ public static class DependencyInjection
     {
         services.AddScoped<AuthService>();
         services.AddScoped<ProjectService>();
+        services.AddScoped<TaskService>();
         services.AddValidatorsFromAssembly(typeof(DependencyInjection).Assembly);
 
         return services;

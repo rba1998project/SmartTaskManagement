@@ -1,0 +1,20 @@
+using SmartTaskManagement.Domain.Entities;
+
+namespace SmartTaskManagement.Application.Tasks.Dtos;
+
+/// <summary>
+/// Task representation returned at the API boundary — keeps the Domain entity from leaking.
+/// </summary>
+public sealed class TaskResponse
+{
+    public Guid Id { get; init; }
+    public Guid ProjectId { get; init; }
+    public string Title { get; init; } = string.Empty;
+    public string? Description { get; init; }
+    public TaskItemStatus Status { get; init; }
+    public TaskItemPriority Priority { get; init; }
+    public DateTime? DueDate { get; init; }
+    public Guid? AssignedToUserId { get; init; }
+    public DateTime CreatedAt { get; init; }
+    public DateTime UpdatedAt { get; init; }
+}
