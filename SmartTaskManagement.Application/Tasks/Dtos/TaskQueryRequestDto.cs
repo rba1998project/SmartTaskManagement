@@ -1,9 +1,10 @@
 using SmartTaskManagement.Application.Common;
+using SmartTaskManagement.Domain.Entities;
 
 namespace SmartTaskManagement.Application.Tasks.Dtos;
 
 /// <summary>
-/// Query parameters for the task list endpoint. Placeholder for Phase 5C.
+/// Query parameters for the task list endpoint.
 /// </summary>
 public sealed class TaskQueryRequestDto
 {
@@ -11,15 +12,18 @@ public sealed class TaskQueryRequestDto
     public string? Search { get; init; }
 
     /// <summary>Filter by task status.</summary>
-    public string? Status { get; init; }
+    public TaskItemStatus? Status { get; init; }
 
     /// <summary>Filter by task priority.</summary>
-    public string? Priority { get; init; }
+    public TaskItemPriority? Priority { get; init; }
 
     /// <summary>Filter by assigned user id.</summary>
     public Guid? AssignedToUserId { get; init; }
 
-    /// <summary>Filter by due date.</summary>
+    /// <summary>
+    /// Filter by due date. When supplied, only tasks due <b>on or before</b> this date are returned
+    /// (inclusive). Useful for upcoming/overdue task views.
+    /// </summary>
     public DateTime? DueDate { get; init; }
 
     /// <summary>Field to sort by.</summary>

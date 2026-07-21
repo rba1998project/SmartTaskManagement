@@ -23,7 +23,6 @@ public sealed class ProjectRepository : IProjectRepository
     public Task<Project?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default) =>
         _dbContext.Projects.FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
 
-
     public Task<bool> HasTaskAssignedToUserAsync(Guid projectId, Guid assignedToUserId, CancellationToken cancellationToken = default) =>
         _dbContext.Tasks.AnyAsync(t => t.ProjectId == projectId && t.AssignedToUserId == assignedToUserId, cancellationToken);
 

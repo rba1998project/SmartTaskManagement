@@ -5,7 +5,6 @@ namespace SmartTaskManagement.Application.Tasks.Validators;
 
 /// <summary>
 /// Validates <see cref="TaskQueryRequestDto"/> for server-side task list queries.
-/// Placeholder for Phase 5C.
 /// </summary>
 public sealed class TaskQueryRequestDtoValidator : AbstractValidator<TaskQueryRequestDto>
 {
@@ -14,6 +13,14 @@ public sealed class TaskQueryRequestDtoValidator : AbstractValidator<TaskQueryRe
         RuleFor(x => x.Search)
             .MaximumLength(200)
             .When(x => !string.IsNullOrWhiteSpace(x.Search));
+
+        RuleFor(x => x.Status)
+            .IsInEnum()
+            .When(x => x.Status.HasValue);
+
+        RuleFor(x => x.Priority)
+            .IsInEnum()
+            .When(x => x.Priority.HasValue);
 
         RuleFor(x => x.SortField)
             .IsInEnum();

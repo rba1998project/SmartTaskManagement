@@ -82,7 +82,10 @@ public sealed class ProjectService
     {
         // A Team Member sees only projects containing tasks assigned to them (filtered
         // database-side); Admin and Project Managers see all projects.
-        var teamMemberUserId = _currentUser.IsInRole(RoleNames.TeamMember) ? _currentUser.UserId : null;
+        Guid? teamMemberUserId = null;
+
+        if (_currentUser.IsInRole(RoleNames.TeamMember) && !_currentUser.IsInRole(RoleNames.Admin))
+            teamMemberUserId = _currentUser.UserId;
 
         var pagedResult = await _projects.QueryAsync(request, teamMemberUserId, cancellationToken);
 
@@ -108,7 +111,7 @@ public sealed class ProjectService
 
     // Admin and Project Managers retain unrestricted project visibility. Only a Team Member is
     // narrowed to projects containing tasks assigned to them (checked separately, database-side).
-    private bool CanView() => !_currentUser.IsInRole(RoleNames.TeamMember);
+    private bool CanView() => _currentUser.IsInRole(RoleNames.Admin) || !_currentUser.IsInRole(RoleNames.TeamMember);
 
     // True when the current Team Member has a task assigned within the project.
     private async Task<bool> IsVisibleToTeamMemberAsync(Guid projectId, CancellationToken cancellationToken) =>

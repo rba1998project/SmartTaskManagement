@@ -1,3 +1,5 @@
+using SmartTaskManagement.Application.Common;
+using SmartTaskManagement.Application.Tasks.Dtos;
 using SmartTaskManagement.Domain.Entities;
 
 namespace SmartTaskManagement.Application.Abstractions;
@@ -17,6 +19,18 @@ public interface ITaskRepository
     /// Member only the tasks assigned to them.
     /// </summary>
     Task<IReadOnlyList<TaskItem>> ListByProjectAsync(Guid projectId, Guid? assignedToUserId = null, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Returns tasks matching the query. Visibility is controlled by the two optional
+    /// parameters: pass <paramref name="assignedToUserId"/> to scope to a Team Member's
+    /// assignments, or <paramref name="projectOwnerUserId"/> to scope to tasks in projects
+    /// owned by a Project Manager. Pass <c>null</c> for both to return all tasks (Admin).
+    /// </summary>
+    Task<PagedResult<TaskItem>> QueryAsync(
+        TaskQueryRequestDto request,
+        Guid? assignedToUserId,
+        Guid? projectOwnerUserId,
+        CancellationToken cancellationToken = default);
 
     /// <summary>Adds and persists a new task.</summary>
     Task AddAsync(TaskItem task, CancellationToken cancellationToken = default);

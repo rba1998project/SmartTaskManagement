@@ -160,6 +160,27 @@ public sealed class TaskService
         return Result<IReadOnlyList<TaskResponseDto>>.Success(mapped);
     }
 
+    public async Task<Result<PagedResult<TaskResponseDto>>> ListAsync(TaskQueryRequestDto request, CancellationToken cancellationToken = default)
+    {
+        // Team Member: always restricted to their own assignments, regardless of request value.
+        // Project Manager: scoped to projects they own. Admin: no scoping.
+        var assignedToUserId = _currentUser.IsInRole(RoleNames.TeamMember) ? _currentUser.UserId : request.AssignedToUserId;
+        Guid? projectOwnerUserId = null;
+
+        if (_currentUser.IsInRole(RoleNames.ProjectManager) && !_currentUser.IsInRole(RoleNames.Admin))
+            projectOwnerUserId = _currentUser.UserId;
+
+        var pagedResult = await _tasks.QueryAsync(request, assignedToUserId, projectOwnerUserId, cancellationToken);
+
+        var mapped = new PagedResult<TaskResponseDto>(
+            pagedResult.Items.Select(Map).ToArray(),
+            pagedResult.TotalCount,
+            pagedResult.PageNumber,
+            pagedResult.PageSize);
+
+        return Result<PagedResult<TaskResponseDto>>.Success(mapped);
+    }
+
     // Admin may manage tasks in any project; a Project Manager only in projects they own. Team
     // Members never satisfy this — their limited access is handled by assignment checks instead.
     private bool CanManageProjectTasks(Project project)

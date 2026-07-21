@@ -47,6 +47,13 @@ public sealed class TasksController : ControllerBase
         return Ok(ApiResponse.Ok(result.Value!));
     }
 
+    [HttpGet("api/tasks")]
+    public async Task<IActionResult> List([FromQuery] TaskQueryRequestDto request, CancellationToken cancellationToken)
+    {
+        var result = await _taskService.ListAsync(request, cancellationToken);
+        return Ok(ApiResponse.Ok(result.Value!));
+    }
+
     [HttpGet("api/tasks/{id:guid}")]
     public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken)
     {
