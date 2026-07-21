@@ -36,31 +36,32 @@ public sealed class DashboardService
         if (_currentUser.IsInRole(RoleNames.ProjectManager) && !_currentUser.IsInRole(RoleNames.Admin))
             projectOwnerUserId = userId;
 
-        var totalProjectsTask = _projects.CountVisibleAsync(teamMemberUserId, cancellationToken);
-        var totalTasksTask = _tasks.CountAsync(_ => true, assignedToUserId, projectOwnerUserId, cancellationToken);
-        var tasksByStatusTask = _tasks.CountByStatusAsync(assignedToUserId, projectOwnerUserId, cancellationToken);
-        var tasksByPriorityTask = _tasks.CountByPriorityAsync(assignedToUserId, projectOwnerUserId, cancellationToken);
-        var upcomingDueTasksTask = _tasks.CountAsync(
+        //totals
+        var totalProjects = await _projects.CountVisibleAsync(teamMemberUserId, cancellationToken);
+        var totalTasks = await _tasks.CountAsync(_ => true, assignedToUserId, projectOwnerUserId, cancellationToken);
+
+        //breakdown of completed and pending tasks
+        var tasksByStatus = await _tasks.CountByStatusAsync(assignedToUserId, projectOwnerUserId, cancellationToken);
+        var tasksByPriority = await _tasks.CountByPriorityAsync(assignedToUserId, projectOwnerUserId, cancellationToken);
+
+        //derived metrics
+        var upcomingDueTasks = await _tasks.CountAsync(
             t => t.DueDate.HasValue && t.DueDate <= DateTime.UtcNow && (t.Status == TaskItemStatus.ToDo || t.Status == TaskItemStatus.InProgress),
             assignedToUserId, projectOwnerUserId, cancellationToken);
 
-        await Task.WhenAll(totalProjectsTask, totalTasksTask, tasksByStatusTask, tasksByPriorityTask, upcomingDueTasksTask);
-
-        var tasksByStatus = tasksByStatusTask.Result;
-        var tasksByPriority = tasksByPriorityTask.Result;
-
+        
         var completedTasks = tasksByStatus.GetValueOrDefault(TaskItemStatus.Completed);
         var pendingTasks = tasksByStatus.GetValueOrDefault(TaskItemStatus.ToDo) + tasksByStatus.GetValueOrDefault(TaskItemStatus.InProgress);
 
         var response = new DashboardResponse
         {
-            TotalProjects = totalProjectsTask.Result,
-            TotalTasks = totalTasksTask.Result,
+            TotalProjects = totalProjects,
+            TotalTasks = totalTasks,
             TasksByStatus = tasksByStatus,
             TasksByPriority = tasksByPriority,
             CompletedTasks = completedTasks,
             PendingTasks = pendingTasks,
-            UpcomingDueTasks = upcomingDueTasksTask.Result
+            UpcomingDueTasks = upcomingDueTasks
         };
 
         return Result<DashboardResponse>.Success(response);
