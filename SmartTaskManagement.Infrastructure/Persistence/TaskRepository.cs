@@ -1,8 +1,10 @@
+using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using SmartTaskManagement.Application.Abstractions;
 using SmartTaskManagement.Application.Common;
 using SmartTaskManagement.Application.Tasks.Dtos;
 using SmartTaskManagement.Domain.Entities;
+using SmartTaskManagement.Domain.Enums;
 
 namespace SmartTaskManagement.Infrastructure.Persistence;
 
@@ -44,19 +46,7 @@ public sealed class TaskRepository : ITaskRepository
         Guid? projectOwnerUserId,
         CancellationToken cancellationToken = default)
     {
-        var query = _dbContext.Tasks.AsNoTracking().AsQueryable();
-
-        if (assignedToUserId.HasValue)
-        {
-            var userId = assignedToUserId.Value;
-            query = query.Where(t => t.AssignedToUserId == userId);
-        }
-
-        if (projectOwnerUserId.HasValue)
-        {
-            var ownerId = projectOwnerUserId.Value;
-            query = query.Where(t => _dbContext.Projects.Any(p => p.Id == t.ProjectId && p.CreatedByUserId == ownerId));
-        }
+        var query = ApplyVisibility(assignedToUserId, projectOwnerUserId);
 
         if (!string.IsNullOrWhiteSpace(request.Search))
         {
@@ -101,6 +91,69 @@ public sealed class TaskRepository : ITaskRepository
 
         var items = await query.ToListAsync(cancellationToken);
         return new PagedResult<TaskItem>(items, totalCount, request.PageNumber, request.PageSize);
+    }
+
+    private IQueryable<TaskItem> ApplyVisibility(Guid? assignedToUserId, Guid? projectOwnerUserId)
+    {
+        var query = _dbContext.Tasks.AsNoTracking().AsQueryable();
+
+        if (assignedToUserId.HasValue)
+        {
+            var userId = assignedToUserId.Value;
+            query = query.Where(t => t.AssignedToUserId == userId);
+        }
+
+        if (projectOwnerUserId.HasValue)
+        {
+            var ownerId = projectOwnerUserId.Value;
+            query = query.Where(t => _dbContext.Projects.Any(p => p.Id == t.ProjectId && p.CreatedByUserId == ownerId));
+        }
+
+        return query;
+    }
+
+    public async Task<int> CountAsync(
+        Expression<Func<TaskItem, bool>> predicate,
+        Guid? assignedToUserId,
+        Guid? projectOwnerUserId,
+        CancellationToken cancellationToken = default)
+    {
+        var query = ApplyVisibility(assignedToUserId, projectOwnerUserId)
+            .Where(predicate);
+
+        return await query.CountAsync(cancellationToken);
+    }
+
+    public async Task<Dictionary<TaskItemStatus, int>> CountByStatusAsync(
+        Guid? assignedToUserId,
+        Guid? projectOwnerUserId,
+        CancellationToken cancellationToken = default)
+    {
+        var query = ApplyVisibility(assignedToUserId, projectOwnerUserId);
+
+        var counts = await query
+            .GroupBy(t => t.Status)
+            .Select(g => new { Status = g.Key, Count = g.Count() })
+            .ToListAsync(cancellationToken);
+
+        return Enum.GetValues<TaskItemStatus>()
+            .ToDictionary(status => status, status => counts.FirstOrDefault(c => c.Status == status)?.Count ?? 0);
+    }
+
+    public async Task<Dictionary<TaskItemPriority, int>> CountByPriorityAsync(
+        Guid? assignedToUserId,
+        Guid? projectOwnerUserId,
+        CancellationToken cancellationToken = default)
+    {
+        var query = ApplyVisibility(assignedToUserId, projectOwnerUserId);
+
+        var counts = await query
+            .GroupBy(t => t.Priority)
+            .Select(g => new { Priority = g.Key, Count = g.Count() })
+            .ToListAsync(cancellationToken);
+
+        return Enum.GetValues<TaskItemPriority>()
+            .ToDictionary(priority => priority, priority => counts.FirstOrDefault(c => c.Priority == priority)?.Count ?? 0);
     }
 
     public async Task AddAsync(TaskItem task, CancellationToken cancellationToken = default)

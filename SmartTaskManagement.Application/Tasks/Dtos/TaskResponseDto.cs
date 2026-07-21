@@ -1,4 +1,4 @@
-using SmartTaskManagement.Domain.Entities;
+using SmartTaskManagement.Domain.Enums;
 
 namespace SmartTaskManagement.Application.Tasks.Dtos;
 

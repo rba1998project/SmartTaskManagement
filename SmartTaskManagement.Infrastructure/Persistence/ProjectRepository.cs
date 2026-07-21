@@ -69,6 +69,19 @@ public sealed class ProjectRepository : IProjectRepository
         return new PagedResult<Project>(items, totalCount, request.PageNumber, request.PageSize);
     }
 
+    public async Task<int> CountVisibleAsync(Guid? teamMemberUserId, CancellationToken cancellationToken = default)
+    {
+        var query = _dbContext.Projects.AsNoTracking().AsQueryable();
+
+        if (teamMemberUserId.HasValue)
+        {
+            var userId = teamMemberUserId.Value;
+            query = query.Where(p => _dbContext.Tasks.Any(t => t.ProjectId == p.Id && t.AssignedToUserId == userId));
+        }
+
+        return await query.CountAsync(cancellationToken);
+    }
+
     public async Task AddAsync(Project project, CancellationToken cancellationToken = default)
     {
         _dbContext.Projects.Add(project);

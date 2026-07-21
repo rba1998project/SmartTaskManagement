@@ -31,6 +31,14 @@ public interface IProjectRepository
         Guid? teamMemberUserId,
         CancellationToken cancellationToken = default);
 
+    /// <summary>
+    /// Returns the count of projects visible to the given team member. Pass <c>null</c>
+    /// for Admin / Project Manager to count all projects.
+    /// </summary>
+    Task<int> CountVisibleAsync(
+        Guid? teamMemberUserId,
+        CancellationToken cancellationToken = default);
+
     /// <summary>Adds and persists a new project.</summary>
     Task AddAsync(Project project, CancellationToken cancellationToken = default);
 

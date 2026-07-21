@@ -1,3 +1,5 @@
+using SmartTaskManagement.Domain.Enums;
+
 namespace SmartTaskManagement.Domain.Entities;
 
 /// <summary>

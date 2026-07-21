@@ -1,4 +1,6 @@
-namespace SmartTaskManagement.Domain.Entities;
+using SmartTaskManagement.Domain.Entities;
+
+namespace SmartTaskManagement.Domain.Enums;
 
 /// <summary>
 /// Priority of a <see cref="TaskItem"/>.

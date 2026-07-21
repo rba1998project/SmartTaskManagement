@@ -1,6 +1,8 @@
+using System.Linq.Expressions;
 using SmartTaskManagement.Application.Common;
 using SmartTaskManagement.Application.Tasks.Dtos;
 using SmartTaskManagement.Domain.Entities;
+using SmartTaskManagement.Domain.Enums;
 
 namespace SmartTaskManagement.Application.Abstractions;
 
@@ -28,6 +30,35 @@ public interface ITaskRepository
     /// </summary>
     Task<PagedResult<TaskItem>> QueryAsync(
         TaskQueryRequestDto request,
+        Guid? assignedToUserId,
+        Guid? projectOwnerUserId,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Returns the count of tasks matching <paramref name="predicate"/>, scoped to the
+    /// current user's visibility rules. Pass <c>null</c> for both visibility parameters
+    /// to return all tasks (Admin).
+    /// </summary>
+    Task<int> CountAsync(
+        Expression<Func<TaskItem, bool>> predicate,
+        Guid? assignedToUserId,
+        Guid? projectOwnerUserId,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Returns the count of visible tasks grouped by <see cref="TaskItemStatus"/>.
+    /// The returned dictionary contains every enum value; missing values have count zero.
+    /// </summary>
+    Task<Dictionary<TaskItemStatus, int>> CountByStatusAsync(
+        Guid? assignedToUserId,
+        Guid? projectOwnerUserId,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Returns the count of visible tasks grouped by <see cref="TaskItemPriority"/>.
+    /// The returned dictionary contains every enum value; missing values have count zero.
+    /// </summary>
+    Task<Dictionary<TaskItemPriority, int>> CountByPriorityAsync(
         Guid? assignedToUserId,
         Guid? projectOwnerUserId,
         CancellationToken cancellationToken = default);
