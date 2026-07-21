@@ -4,7 +4,7 @@ namespace SmartTaskManagement.Application.Authentication.Dtos;
 /// Registration input. Registration creates the user and assigns the default
 /// Team Member role only — it does not issue tokens.
 /// </summary>
-public sealed class RegisterRequest
+public sealed class RegisterRequestDto
 {
     public string Email { get; init; } = string.Empty;
     public string Password { get; init; } = string.Empty;

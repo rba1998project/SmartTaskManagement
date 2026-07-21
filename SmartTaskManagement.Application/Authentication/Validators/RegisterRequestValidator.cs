@@ -7,9 +7,9 @@ namespace SmartTaskManagement.Application.Authentication.Validators;
 /// Validates registration input. Password complexity beyond a minimum length is enforced
 /// by Identity's own options at creation time; this guards the request shape.
 /// </summary>
-public sealed class RegisterRequestValidator : AbstractValidator<RegisterRequest>
+public sealed class RegisterRequestDtoValidator : AbstractValidator<RegisterRequestDto>
 {
-    public RegisterRequestValidator()
+    public RegisterRequestDtoValidator()
     {
         RuleFor(x => x.Email)
             .NotEmpty().WithMessage("Email is required.")

@@ -7,9 +7,9 @@ namespace SmartTaskManagement.Application.Tasks.Validators;
 /// Validates task status-change input. Status must be a defined enum value so an out-of-range
 /// value is rejected before it reaches the service.
 /// </summary>
-public sealed class UpdateTaskStatusRequestValidator : AbstractValidator<UpdateTaskStatusRequest>
+public sealed class UpdateTaskStatusRequestDtoValidator : AbstractValidator<UpdateTaskStatusRequestDto>
 {
-    public UpdateTaskStatusRequestValidator()
+    public UpdateTaskStatusRequestDtoValidator()
     {
         RuleFor(x => x.Status)
             .IsInEnum().WithMessage("Status is not a valid value.");

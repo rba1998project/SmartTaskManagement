@@ -5,7 +5,7 @@ namespace SmartTaskManagement.Application.Tasks.Dtos;
 /// <summary>
 /// Task representation returned at the API boundary — keeps the Domain entity from leaking.
 /// </summary>
-public sealed class TaskResponse
+public sealed class TaskResponseDto
 {
     public Guid Id { get; init; }
     public Guid ProjectId { get; init; }

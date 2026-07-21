@@ -7,9 +7,9 @@ namespace SmartTaskManagement.Application.Projects.Validators;
 /// Validates project creation input. Lengths mirror the persisted column sizes
 /// (Name 200, Description 2000) so invalid input is rejected before it reaches the database.
 /// </summary>
-public sealed class CreateProjectRequestValidator : AbstractValidator<CreateProjectRequest>
+public sealed class CreateProjectRequestDtoValidator : AbstractValidator<CreateProjectRequestDto>
 {
-    public CreateProjectRequestValidator()
+    public CreateProjectRequestDtoValidator()
     {
         RuleFor(x => x.Name)
             .NotEmpty().WithMessage("Project name is required.")

@@ -1,9 +1,9 @@
 namespace SmartTaskManagement.Application.Projects.Dtos;
 
 /// <summary>
-/// Input for updating a project's mutable fields. Ownership never changes through an update.
+/// Input for creating a project. The owner is taken from the authenticated caller, not the body.
 /// </summary>
-public sealed class UpdateProjectRequest
+public sealed class CreateProjectRequestDto
 {
     public string Name { get; init; } = string.Empty;
     public string? Description { get; init; }

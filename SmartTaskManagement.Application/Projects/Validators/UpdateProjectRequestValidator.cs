@@ -7,9 +7,9 @@ namespace SmartTaskManagement.Application.Projects.Validators;
 /// Validates project update input. Lengths mirror the persisted column sizes
 /// (Name 200, Description 2000) so invalid input is rejected before it reaches the database.
 /// </summary>
-public sealed class UpdateProjectRequestValidator : AbstractValidator<UpdateProjectRequest>
+public sealed class UpdateProjectRequestDtoValidator : AbstractValidator<UpdateProjectRequestDto>
 {
-    public UpdateProjectRequestValidator()
+    public UpdateProjectRequestDtoValidator()
     {
         RuleFor(x => x.Name)
             .NotEmpty().WithMessage("Project name is required.")

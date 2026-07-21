@@ -26,9 +26,9 @@ public sealed class ProjectsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> List(CancellationToken cancellationToken)
+    public async Task<IActionResult> List([FromQuery] ProjectQueryRequestDto request, CancellationToken cancellationToken)
     {
-        var result = await _projectService.ListAsync(cancellationToken);
+        var result = await _projectService.ListAsync(request, cancellationToken);
         return Ok(ApiResponse.Ok(result.Value!));
     }
 
@@ -44,7 +44,7 @@ public sealed class ProjectsController : ControllerBase
 
     [Authorize(Policy = Permissions.ProjectsCreate)]
     [HttpPost]
-    public async Task<IActionResult> Create(CreateProjectRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> Create(CreateProjectRequestDto request, CancellationToken cancellationToken)
     {
         var result = await _projectService.CreateAsync(request, cancellationToken);
         if (!result.Succeeded)
@@ -56,7 +56,7 @@ public sealed class ProjectsController : ControllerBase
 
     [Authorize(Policy = Permissions.ProjectsUpdate)]
     [HttpPut("{id:guid}")]
-    public async Task<IActionResult> Update(Guid id, UpdateProjectRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> Update(Guid id, UpdateProjectRequestDto request, CancellationToken cancellationToken)
     {
         var result = await _projectService.UpdateAsync(id, request, cancellationToken);
         if (!result.Succeeded)

@@ -38,36 +38,36 @@ public sealed class TaskService
         _currentUser = currentUser;
     }
 
-    public async Task<Result<TaskResponse>> CreateAsync(Guid projectId, CreateTaskRequest request, CancellationToken cancellationToken = default)
+    public async Task<Result<TaskResponseDto>> CreateAsync(Guid projectId, CreateTaskRequestDto request, CancellationToken cancellationToken = default)
     {
         var project = await _projects.GetByIdAsync(projectId, cancellationToken);
         if (project is null)
-            return Result<TaskResponse>.Failure(ErrorType.NotFound, "Project not found.");
+            return Result<TaskResponseDto>.Failure(ErrorType.NotFound, "Project not found.");
 
         if (!CanManageProjectTasks(project))
-            return Result<TaskResponse>.Failure(ErrorType.Forbidden, "You do not have permission to add tasks to this project.");
+            return Result<TaskResponseDto>.Failure(ErrorType.Forbidden, "You do not have permission to add tasks to this project.");
 
         var task = new TaskItem(projectId, request.Title, request.Description, request.Priority, request.DueDate, DateTime.UtcNow);
 
         await _tasks.AddAsync(task, cancellationToken);
 
-        return Result<TaskResponse>.Success(Map(task));
+        return Result<TaskResponseDto>.Success(Map(task));
     }
 
-    public async Task<Result<TaskResponse>> UpdateAsync(Guid id, UpdateTaskRequest request, CancellationToken cancellationToken = default)
+    public async Task<Result<TaskResponseDto>> UpdateAsync(Guid id, UpdateTaskRequestDto request, CancellationToken cancellationToken = default)
     {
         var task = await _tasks.GetByIdAsync(id, cancellationToken);
         if (task is null)
-            return Result<TaskResponse>.Failure(ErrorType.NotFound, "Task not found.");
+            return Result<TaskResponseDto>.Failure(ErrorType.NotFound, "Task not found.");
 
         var project = await _projects.GetByIdAsync(task.ProjectId, cancellationToken);
         if (project is null || !CanManageProjectTasks(project))
-            return Result<TaskResponse>.Failure(ErrorType.Forbidden, "You do not have permission to modify this task.");
+            return Result<TaskResponseDto>.Failure(ErrorType.Forbidden, "You do not have permission to modify this task.");
 
         task.UpdateDetails(request.Title, request.Description, request.Priority, request.DueDate, DateTime.UtcNow);
         await _tasks.UpdateAsync(task, cancellationToken);
 
-        return Result<TaskResponse>.Success(Map(task));
+        return Result<TaskResponseDto>.Success(Map(task));
     }
 
     public async Task<Result> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
@@ -84,15 +84,15 @@ public sealed class TaskService
         return Result.Success();
     }
 
-    public async Task<Result<TaskResponse>> AssignAsync(Guid id, AssignTaskRequest request, CancellationToken cancellationToken = default)
+    public async Task<Result<TaskResponseDto>> AssignAsync(Guid id, AssignTaskRequestDto request, CancellationToken cancellationToken = default)
     {
         var task = await _tasks.GetByIdAsync(id, cancellationToken);
         if (task is null)
-            return Result<TaskResponse>.Failure(ErrorType.NotFound, "Task not found.");
+            return Result<TaskResponseDto>.Failure(ErrorType.NotFound, "Task not found.");
 
         var project = await _projects.GetByIdAsync(task.ProjectId, cancellationToken);
         if (project is null || !CanManageProjectTasks(project))
-            return Result<TaskResponse>.Failure(ErrorType.Forbidden, "You do not have permission to assign this task.");
+            return Result<TaskResponseDto>.Failure(ErrorType.Forbidden, "You do not have permission to assign this task.");
 
         // A non-null assignee must reference an existing application user.
         if (request.AssignedToUserId is { } assigneeId)
@@ -100,64 +100,64 @@ public sealed class TaskService
             var assignee = await _identity.FindByIdAsync(assigneeId, cancellationToken);
 
             if (assignee is null)
-                return Result<TaskResponse>.Failure(ErrorType.NotFound, "Assigned user does not exist.");
+                return Result<TaskResponseDto>.Failure(ErrorType.NotFound, "Assigned user does not exist.");
         }
 
         task.AssignTo(request.AssignedToUserId, DateTime.UtcNow);
         await _tasks.UpdateAsync(task, cancellationToken);
 
-        return Result<TaskResponse>.Success(Map(task));
+        return Result<TaskResponseDto>.Success(Map(task));
     }
 
-    public async Task<Result<TaskResponse>> ChangeStatusAsync(Guid id, UpdateTaskStatusRequest request, CancellationToken cancellationToken = default)
+    public async Task<Result<TaskResponseDto>> ChangeStatusAsync(Guid id, UpdateTaskStatusRequestDto request, CancellationToken cancellationToken = default)
     {
         var task = await _tasks.GetByIdAsync(id, cancellationToken);
         if (task is null)
-            return Result<TaskResponse>.Failure(ErrorType.NotFound, "Task not found.");
+            return Result<TaskResponseDto>.Failure(ErrorType.NotFound, "Task not found.");
 
         var project = await _projects.GetByIdAsync(task.ProjectId, cancellationToken);
         if (project is null)
-            return Result<TaskResponse>.Failure(ErrorType.NotFound, "Task not found.");
+            return Result<TaskResponseDto>.Failure(ErrorType.NotFound, "Task not found.");
 
         // A Team Member may change status only on tasks assigned to them; Admin/PM (owner) always may.
         if (!CanManageProjectTasks(project) && !IsAssignedToCurrentUser(task))
-            return Result<TaskResponse>.Failure(ErrorType.Forbidden, "You do not have permission to change this task's status.");
+            return Result<TaskResponseDto>.Failure(ErrorType.Forbidden, "You do not have permission to change this task's status.");
 
         task.ChangeStatus(request.Status, DateTime.UtcNow);
         await _tasks.UpdateAsync(task, cancellationToken);
 
-        return Result<TaskResponse>.Success(Map(task));
+        return Result<TaskResponseDto>.Success(Map(task));
     }
 
-    public async Task<Result<TaskResponse>> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    public async Task<Result<TaskResponseDto>> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         var task = await _tasks.GetByIdAsync(id, cancellationToken);
         if (task is null)
-            return Result<TaskResponse>.Failure(ErrorType.NotFound, "Task not found.");
+            return Result<TaskResponseDto>.Failure(ErrorType.NotFound, "Task not found.");
 
         var project = await _projects.GetByIdAsync(task.ProjectId, cancellationToken);
         if (project is null)
-            return Result<TaskResponse>.Failure(ErrorType.NotFound, "Task not found.");
+            return Result<TaskResponseDto>.Failure(ErrorType.NotFound, "Task not found.");
 
         // Team Members see only tasks assigned to them; Admin/PM (owner) see all tasks in the project.
         if (!CanManageProjectTasks(project) && !IsAssignedToCurrentUser(task))
-            return Result<TaskResponse>.Failure(ErrorType.Forbidden, "You do not have permission to view this task.");
+            return Result<TaskResponseDto>.Failure(ErrorType.Forbidden, "You do not have permission to view this task.");
 
-        return Result<TaskResponse>.Success(Map(task));
+        return Result<TaskResponseDto>.Success(Map(task));
     }
 
-    public async Task<Result<IReadOnlyList<TaskResponse>>> ListByProjectAsync(Guid projectId, CancellationToken cancellationToken = default)
+    public async Task<Result<IReadOnlyList<TaskResponseDto>>> ListByProjectAsync(Guid projectId, CancellationToken cancellationToken = default)
     {
         var project = await _projects.GetByIdAsync(projectId, cancellationToken);
         if (project is null)
-            return Result<IReadOnlyList<TaskResponse>>.Failure(ErrorType.NotFound, "Project not found.");
+            return Result<IReadOnlyList<TaskResponseDto>>.Failure(ErrorType.NotFound, "Project not found.");
 
         // Admin/PM (owner) see every task in the project; a Team Member sees only their assignments.
         Guid? assigneeFilter = CanManageProjectTasks(project) ? null : _currentUser.UserId;
         var tasks = await _tasks.ListByProjectAsync(projectId, assigneeFilter, cancellationToken);
 
-        IReadOnlyList<TaskResponse> mapped = tasks.Select(Map).ToArray();
-        return Result<IReadOnlyList<TaskResponse>>.Success(mapped);
+        IReadOnlyList<TaskResponseDto> mapped = tasks.Select(Map).ToArray();
+        return Result<IReadOnlyList<TaskResponseDto>>.Success(mapped);
     }
 
     // Admin may manage tasks in any project; a Project Manager only in projects they own. Team
@@ -178,7 +178,7 @@ public sealed class TaskService
             && task.AssignedToUserId == userId.Value;
     }
 
-    private static TaskResponse Map(TaskItem task) => new()
+    private static TaskResponseDto Map(TaskItem task) => new()
     {
         Id = task.Id,
         ProjectId = task.ProjectId,

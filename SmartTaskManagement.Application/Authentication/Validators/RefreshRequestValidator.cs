@@ -6,9 +6,9 @@ namespace SmartTaskManagement.Application.Authentication.Validators;
 /// <summary>
 /// Validates refresh input — the raw refresh token must be present.
 /// </summary>
-public sealed class RefreshRequestValidator : AbstractValidator<RefreshRequest>
+public sealed class RefreshRequestDtoValidator : AbstractValidator<RefreshRequestDto>
 {
-    public RefreshRequestValidator()
+    public RefreshRequestDtoValidator()
     {
         RuleFor(x => x.RefreshToken)
             .NotEmpty().WithMessage("Refresh token is required.");

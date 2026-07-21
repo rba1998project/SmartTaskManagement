@@ -4,7 +4,7 @@ namespace SmartTaskManagement.Application.Tasks.Dtos;
 /// Input for (re)assigning a task. A <c>null</c> <see cref="AssignedToUserId"/> clears the
 /// assignment; a non-null value must reference an existing application user.
 /// </summary>
-public sealed class AssignTaskRequest
+public sealed class AssignTaskRequestDto
 {
     public Guid? AssignedToUserId { get; init; }
 }

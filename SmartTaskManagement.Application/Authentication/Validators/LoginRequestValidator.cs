@@ -7,9 +7,9 @@ namespace SmartTaskManagement.Application.Authentication.Validators;
 /// Validates login input. Only presence is checked — credential correctness is
 /// verified against Identity, and a wrong password must not be distinguishable here.
 /// </summary>
-public sealed class LoginRequestValidator : AbstractValidator<LoginRequest>
+public sealed class LoginRequestDtoValidator : AbstractValidator<LoginRequestDto>
 {
-    public LoginRequestValidator()
+    public LoginRequestDtoValidator()
     {
         RuleFor(x => x.Email)
             .NotEmpty().WithMessage("Email is required.")

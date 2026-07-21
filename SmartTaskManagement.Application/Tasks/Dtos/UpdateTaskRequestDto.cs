@@ -6,7 +6,7 @@ namespace SmartTaskManagement.Application.Tasks.Dtos;
 /// Input for updating a task's editable details. Status and assignment change through their
 /// own endpoints; the owning project never changes through an update.
 /// </summary>
-public sealed class UpdateTaskRequest
+public sealed class UpdateTaskRequestDto
 {
     public string Title { get; init; } = string.Empty;
     public string? Description { get; init; }

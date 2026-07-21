@@ -8,9 +8,9 @@ namespace SmartTaskManagement.Application.Tasks.Validators;
 /// Description 2000). Priority must be a defined enum value, and a due date, when supplied,
 /// must be in the future.
 /// </summary>
-public sealed class UpdateTaskRequestValidator : AbstractValidator<UpdateTaskRequest>
+public sealed class UpdateTaskRequestDtoValidator : AbstractValidator<UpdateTaskRequestDto>
 {
-    public UpdateTaskRequestValidator()
+    public UpdateTaskRequestDtoValidator()
     {
         RuleFor(x => x.Title)
             .NotEmpty().WithMessage("Task title is required.")

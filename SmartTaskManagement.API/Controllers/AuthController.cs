@@ -25,7 +25,7 @@ public sealed class AuthController : ControllerBase
 
     [AllowAnonymous]
     [HttpPost("register")]
-    public async Task<IActionResult> Register(RegisterRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> Register(RegisterRequestDto request, CancellationToken cancellationToken)
     {
         var result = await _authService.RegisterAsync(request, cancellationToken);
         if (!result.Succeeded)
@@ -36,7 +36,7 @@ public sealed class AuthController : ControllerBase
 
     [AllowAnonymous]
     [HttpPost("login")]
-    public async Task<IActionResult> Login(LoginRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> Login(LoginRequestDto request, CancellationToken cancellationToken)
     {
         var result = await _authService.LoginAsync(request, cancellationToken);
         if (!result.Succeeded)
@@ -47,7 +47,7 @@ public sealed class AuthController : ControllerBase
 
     [AllowAnonymous]
     [HttpPost("refresh")]
-    public async Task<IActionResult> Refresh(RefreshRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> Refresh(RefreshRequestDto request, CancellationToken cancellationToken)
     {
         var result = await _authService.RefreshAsync(request, cancellationToken);
         if (!result.Succeeded)
@@ -57,7 +57,7 @@ public sealed class AuthController : ControllerBase
     }
 
     [HttpPost("logout")]
-    public async Task<IActionResult> Logout(LogoutRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> Logout(LogoutRequestDto request, CancellationToken cancellationToken)
     {
         await _authService.LogoutAsync(request, cancellationToken);
         return Ok(ApiResponse.Ok<object?>(null, "Logout successful."));

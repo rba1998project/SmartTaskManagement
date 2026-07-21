@@ -3,7 +3,7 @@ namespace SmartTaskManagement.Application.Projects.Dtos;
 /// <summary>
 /// Project representation returned at the API boundary — keeps the Domain entity from leaking.
 /// </summary>
-public sealed class ProjectResponse
+public sealed class ProjectResponseDto
 {
     public Guid Id { get; init; }
     public string Name { get; init; } = string.Empty;

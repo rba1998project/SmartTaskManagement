@@ -4,7 +4,7 @@ namespace SmartTaskManagement.Application.Authentication.Dtos;
 /// Tokens and identity returned by login and refresh. The refresh token is the raw
 /// value — it is returned to the client once and only the hash is persisted server-side.
 /// </summary>
-public sealed class AuthResponse
+public sealed class AuthResponseDto
 {
     public string AccessToken { get; init; } = string.Empty;
     public DateTime AccessTokenExpiresAt { get; init; }

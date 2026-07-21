@@ -27,7 +27,7 @@ public sealed class TasksController : ControllerBase
 
     [Authorize(Policy = Permissions.TasksCreate)]
     [HttpPost("api/projects/{projectId:guid}/tasks")]
-    public async Task<IActionResult> Create(Guid projectId, CreateTaskRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> Create(Guid projectId, CreateTaskRequestDto request, CancellationToken cancellationToken)
     {
         var result = await _taskService.CreateAsync(projectId, request, cancellationToken);
         if (!result.Succeeded)
@@ -59,7 +59,7 @@ public sealed class TasksController : ControllerBase
 
     [Authorize(Policy = Permissions.TasksUpdate)]
     [HttpPut("api/tasks/{id:guid}")]
-    public async Task<IActionResult> Update(Guid id, UpdateTaskRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> Update(Guid id, UpdateTaskRequestDto request, CancellationToken cancellationToken)
     {
         var result = await _taskService.UpdateAsync(id, request, cancellationToken);
         if (!result.Succeeded)
@@ -81,7 +81,7 @@ public sealed class TasksController : ControllerBase
 
     [Authorize(Policy = Permissions.TasksAssign)]
     [HttpPut("api/tasks/{id:guid}/assignment")]
-    public async Task<IActionResult> Assign(Guid id, AssignTaskRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> Assign(Guid id, AssignTaskRequestDto request, CancellationToken cancellationToken)
     {
         var result = await _taskService.AssignAsync(id, request, cancellationToken);
         if (!result.Succeeded)
@@ -93,7 +93,7 @@ public sealed class TasksController : ControllerBase
     // Open to any authenticated user; a Team Member may change status only on tasks assigned to
     // them, which TaskService enforces.
     [HttpPut("api/tasks/{id:guid}/status")]
-    public async Task<IActionResult> ChangeStatus(Guid id, UpdateTaskStatusRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> ChangeStatus(Guid id, UpdateTaskStatusRequestDto request, CancellationToken cancellationToken)
     {
         var result = await _taskService.ChangeStatusAsync(id, request, cancellationToken);
         if (!result.Succeeded)

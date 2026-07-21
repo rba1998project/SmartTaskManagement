@@ -1,3 +1,5 @@
+using SmartTaskManagement.Application.Common;
+using SmartTaskManagement.Application.Projects.Dtos;
 using SmartTaskManagement.Domain.Entities;
 
 namespace SmartTaskManagement.Application.Abstractions;
@@ -11,22 +13,23 @@ public interface IProjectRepository
     /// <summary>Returns the project by id, or <c>null</c> if none exists.</summary>
     Task<Project?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
 
-    /// <summary>Returns all projects (read-only).</summary>
-    Task<IReadOnlyList<Project>> ListAsync(CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// Returns the projects that contain at least one task assigned to
-    /// <paramref name="assignedToUserId"/> (read-only). Filtering is done database-side so a
-    /// Team Member's project list is scoped to their assignments without an N+1 fan-out.
-    /// </summary>
-    Task<IReadOnlyList<Project>> ListByAssignedUserAsync(Guid assignedToUserId, CancellationToken cancellationToken = default);
-
     /// <summary>
     /// Returns <c>true</c> when the given project contains at least one task assigned to
     /// <paramref name="assignedToUserId"/>. Used to gate a Team Member's access to a single
     /// project's details database-side.
     /// </summary>
     Task<bool> HasTaskAssignedToUserAsync(Guid projectId, Guid assignedToUserId, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Returns projects matching the query, scoped to the current user's visibility rules.
+    /// When <paramref name="teamMemberUserId"/> is provided, only projects containing a task
+    /// assigned to that user are returned (Team Member visibility). Pass <c>null</c> for
+    /// Admin / Project Manager to return all projects.
+    /// </summary>
+    Task<PagedResult<Project>> QueryAsync(
+        ProjectQueryRequestDto request,
+        Guid? teamMemberUserId,
+        CancellationToken cancellationToken = default);
 
     /// <summary>Adds and persists a new project.</summary>
     Task AddAsync(Project project, CancellationToken cancellationToken = default);
