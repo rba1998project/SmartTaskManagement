@@ -5,13 +5,15 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using SmartTaskManagement.Application.Abstractions;
 using SmartTaskManagement.Application.Authentication.Models;
+using SmartTaskManagement.Application.Authorization;
 
 namespace SmartTaskManagement.Infrastructure.Authentication;
 
 /// <summary>
 /// Signs JWT access tokens with the User-Secrets signing key (HMAC-SHA256), using issuer,
-/// audience and lifetime from <see cref="JwtOptions"/>. Emits sub/email/name claims plus one
-/// role claim per assigned role to drive <c>[Authorize(Roles = ...)]</c>.
+/// audience and lifetime from <see cref="JwtOptions"/>. Emits sub/email/name claims, one role
+/// claim per assigned role, and one permission claim per granted permission (read by the API
+/// authorization policies).
 /// </summary>
 public sealed class JwtTokenGenerator : IJwtTokenGenerator
 {
@@ -25,7 +27,7 @@ public sealed class JwtTokenGenerator : IJwtTokenGenerator
         _signingCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
     }
 
-    public AccessToken GenerateAccessToken(AuthUser user, IReadOnlyList<string> roles)
+    public AccessToken GenerateAccessToken(AuthUser user, IReadOnlyList<string> roles, IReadOnlyList<string> permissions)
     {
         var expiresAt = DateTime.UtcNow.AddMinutes(_options.AccessTokenMinutes);
 
@@ -41,6 +43,9 @@ public sealed class JwtTokenGenerator : IJwtTokenGenerator
 
         foreach (var role in roles)
             claims.Add(new Claim(ClaimTypes.Role, role));
+
+        foreach (var permission in permissions)
+            claims.Add(new Claim(Permissions.ClaimType, permission));
 
         var token = new JwtSecurityToken(
             issuer: _options.Issuer,

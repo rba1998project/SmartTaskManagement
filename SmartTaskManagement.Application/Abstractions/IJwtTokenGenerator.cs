@@ -9,7 +9,8 @@ namespace SmartTaskManagement.Application.Abstractions;
 public interface IJwtTokenGenerator
 {
     /// <summary>
-    /// Builds a signed access token for the user carrying their id, email and role claims.
+    /// Builds a signed access token for the user carrying their id, email, role claims and
+    /// permission claims (the feature gate read by the API authorization policies).
     /// </summary>
-    AccessToken GenerateAccessToken(AuthUser user, IReadOnlyList<string> roles);
+    AccessToken GenerateAccessToken(AuthUser user, IReadOnlyList<string> roles, IReadOnlyList<string> permissions);
 }

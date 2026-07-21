@@ -31,4 +31,10 @@ public interface IIdentityService
     /// Returns the role names assigned to the user (empty if none).
     /// </summary>
     Task<IReadOnlyList<string>> GetRolesAsync(Guid userId, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Returns the distinct permission keys granted to the user through its roles (empty if none).
+    /// These become the permission claims carried in the access token.
+    /// </summary>
+    Task<IReadOnlyList<string>> GetPermissionsAsync(Guid userId, CancellationToken cancellationToken = default);
 }

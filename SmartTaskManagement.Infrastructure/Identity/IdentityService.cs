@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using SmartTaskManagement.Application.Abstractions;
 using SmartTaskManagement.Application.Authentication.Models;
+using SmartTaskManagement.Application.Authorization;
 using SmartTaskManagement.Application.Common;
 
 namespace SmartTaskManagement.Infrastructure.Identity;
@@ -13,10 +14,12 @@ namespace SmartTaskManagement.Infrastructure.Identity;
 public sealed class IdentityService : IIdentityService
 {
     private readonly UserManager<ApplicationUser> _userManager;
+    private readonly RoleManager<ApplicationRole> _roleManager;
 
-    public IdentityService(UserManager<ApplicationUser> userManager)
+    public IdentityService(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager)
     {
         _userManager = userManager;
+        _roleManager = roleManager;
     }
 
     public async Task<Result<AuthUser>> CreateUserAsync(string email, string password, string? fullName, string initialRole, CancellationToken cancellationToken = default)
@@ -65,6 +68,32 @@ public sealed class IdentityService : IIdentityService
 
         var roles = await _userManager.GetRolesAsync(user);
         return roles.ToList();
+    }
+
+    public async Task<IReadOnlyList<string>> GetPermissionsAsync(Guid userId, CancellationToken cancellationToken = default)
+    {
+        var user = await _userManager.FindByIdAsync(userId.ToString());
+        if (user is null)
+            return Array.Empty<string>();
+
+        var roleNames = await _userManager.GetRolesAsync(user);
+
+        var permissions = new HashSet<string>();
+        foreach (var roleName in roleNames)
+        {
+            var role = await _roleManager.FindByNameAsync(roleName);
+            if (role is null)
+                continue;
+
+            var roleClaims = await _roleManager.GetClaimsAsync(role);
+            foreach (var claim in roleClaims)
+            {
+                if (claim.Type == Permissions.ClaimType)
+                    permissions.Add(claim.Value);
+            }
+        }
+
+        return permissions.ToList();
     }
 
     private static AuthUser ToAuthUser(ApplicationUser user)

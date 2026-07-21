@@ -2,6 +2,7 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
+using SmartTaskManagement.Application.Authorization;
 using SmartTaskManagement.Infrastructure.Authentication;
 
 namespace SmartTaskManagement.API.Extensions;
@@ -42,6 +43,14 @@ public static class AuthenticationExtensions
             options.FallbackPolicy = new AuthorizationPolicyBuilder()
                 .RequireAuthenticatedUser()
                 .Build();
+
+            // One policy per permission: the policy name is the permission key, and it requires a
+            // matching permission claim (carried in the JWT). Endpoints opt in with [Authorize(Policy = ...)].
+            foreach (var permission in Permissions.All)
+            {
+                options.AddPolicy(permission, policy =>
+                    policy.RequireClaim(Permissions.ClaimType, permission));
+            }
         });
 
         return services;

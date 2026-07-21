@@ -18,6 +18,7 @@ public class IdentityDataSeeder(
     public async Task SeedAsync()
     {
         await SeedRolesAsync();
+        await SeedRolePermissionsAsync();
         await SeedAdminAsync();
     }
 
@@ -34,6 +35,36 @@ public class IdentityDataSeeder(
             else
                 logger.LogError("Failed to seed role {Role}: {Errors}",
                     roleName, string.Join("; ", result.Errors.Select(e => e.Description)));
+        }
+    }
+
+    // Grants each role its default permissions as role claims. Only adds claims that are
+    // missing, so it is safe to re-run and picks up new permissions on later startups.
+    private async Task SeedRolePermissionsAsync()
+    {
+        foreach (var mapping in Permissions.DefaultRolePermissions)
+        {
+            var role = await roleManager.FindByNameAsync(mapping.Key);
+            if (role is null)
+                continue;
+
+            var existingClaims = await roleManager.GetClaimsAsync(role);
+
+            foreach (var permission in mapping.Value)
+            {
+                var alreadyGranted = existingClaims.Any(c =>
+                    c.Type == Permissions.ClaimType && c.Value == permission);
+                if (alreadyGranted)
+                    continue;
+
+                var claim = new System.Security.Claims.Claim(Permissions.ClaimType, permission);
+                var result = await roleManager.AddClaimAsync(role, claim);
+                if (result.Succeeded)
+                    logger.LogInformation("Seeded permission {Permission} for role {Role}.", permission, mapping.Key);
+                else
+                    logger.LogError("Failed to seed permission {Permission} for role {Role}: {Errors}",
+                        permission, mapping.Key, string.Join("; ", result.Errors.Select(e => e.Description)));
+            }
         }
     }
 
