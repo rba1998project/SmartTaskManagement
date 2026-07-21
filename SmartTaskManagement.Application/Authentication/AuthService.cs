@@ -55,7 +55,8 @@ public sealed class AuthService
             return Result<AuthResponse>.Failure("Invalid email or password.");
 
         var roles = await _identityService.GetRolesAsync(user.Id, cancellationToken);
-        var accessToken = _jwtTokenGenerator.GenerateAccessToken(user, roles);
+        var permissions = await _identityService.GetPermissionsAsync(user.Id, cancellationToken);
+        var accessToken = _jwtTokenGenerator.GenerateAccessToken(user, roles, permissions);
         var refreshToken = await _refreshTokenService.IssueAsync(user.Id, cancellationToken);
 
         return Result<AuthResponse>.Success(BuildAuthResponse(user, roles, accessToken, refreshToken));
@@ -78,7 +79,8 @@ public sealed class AuthService
             return Result<AuthResponse>.Failure("Invalid refresh token.");
 
         var roles = await _identityService.GetRolesAsync(user.Id, cancellationToken);
-        var accessToken = _jwtTokenGenerator.GenerateAccessToken(user, roles);
+        var permissions = await _identityService.GetPermissionsAsync(user.Id, cancellationToken);
+        var accessToken = _jwtTokenGenerator.GenerateAccessToken(user, roles, permissions);
 
         return Result<AuthResponse>.Success(BuildAuthResponse(user, roles, accessToken, rotated));
     }

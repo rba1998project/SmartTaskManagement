@@ -42,7 +42,7 @@ public sealed class ProjectsController : ControllerBase
         return Ok(ApiResponse.Ok(result.Value!));
     }
 
-    [Authorize(Roles = $"{RoleNames.Admin},{RoleNames.ProjectManager}")]
+    [Authorize(Policy = Permissions.ProjectsCreate)]
     [HttpPost]
     public async Task<IActionResult> Create(CreateProjectRequest request, CancellationToken cancellationToken)
     {
@@ -54,7 +54,7 @@ public sealed class ProjectsController : ControllerBase
             ApiResponse.Ok(result.Value!, "Project created."));
     }
 
-    [Authorize(Roles = $"{RoleNames.Admin},{RoleNames.ProjectManager}")]
+    [Authorize(Policy = Permissions.ProjectsUpdate)]
     [HttpPut("{id:guid}")]
     public async Task<IActionResult> Update(Guid id, UpdateProjectRequest request, CancellationToken cancellationToken)
     {
@@ -65,7 +65,7 @@ public sealed class ProjectsController : ControllerBase
         return Ok(ApiResponse.Ok(result.Value!, "Project updated."));
     }
 
-    [Authorize(Roles = $"{RoleNames.Admin},{RoleNames.ProjectManager}")]
+    [Authorize(Policy = Permissions.ProjectsDelete)]
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
     {

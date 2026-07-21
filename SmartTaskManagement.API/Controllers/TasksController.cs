@@ -25,7 +25,7 @@ public sealed class TasksController : ControllerBase
         _taskService = taskService;
     }
 
-    [Authorize(Roles = $"{RoleNames.Admin},{RoleNames.ProjectManager}")]
+    [Authorize(Policy = Permissions.TasksCreate)]
     [HttpPost("api/projects/{projectId:guid}/tasks")]
     public async Task<IActionResult> Create(Guid projectId, CreateTaskRequest request, CancellationToken cancellationToken)
     {
@@ -57,7 +57,7 @@ public sealed class TasksController : ControllerBase
         return Ok(ApiResponse.Ok(result.Value!));
     }
 
-    [Authorize(Roles = $"{RoleNames.Admin},{RoleNames.ProjectManager}")]
+    [Authorize(Policy = Permissions.TasksUpdate)]
     [HttpPut("api/tasks/{id:guid}")]
     public async Task<IActionResult> Update(Guid id, UpdateTaskRequest request, CancellationToken cancellationToken)
     {
@@ -68,7 +68,7 @@ public sealed class TasksController : ControllerBase
         return Ok(ApiResponse.Ok(result.Value!, "Task updated."));
     }
 
-    [Authorize(Roles = $"{RoleNames.Admin},{RoleNames.ProjectManager}")]
+    [Authorize(Policy = Permissions.TasksDelete)]
     [HttpDelete("api/tasks/{id:guid}")]
     public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
     {
@@ -79,7 +79,7 @@ public sealed class TasksController : ControllerBase
         return Ok(ApiResponse.Ok<object?>(null, "Task deleted."));
     }
 
-    [Authorize(Roles = $"{RoleNames.Admin},{RoleNames.ProjectManager}")]
+    [Authorize(Policy = Permissions.TasksAssign)]
     [HttpPut("api/tasks/{id:guid}/assignment")]
     public async Task<IActionResult> Assign(Guid id, AssignTaskRequest request, CancellationToken cancellationToken)
     {
