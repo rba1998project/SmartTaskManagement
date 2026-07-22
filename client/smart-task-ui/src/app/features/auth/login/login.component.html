@@ -1,0 +1,48 @@
+<div class="login-container">
+  <mat-card class="login-card">
+    <mat-card-header>
+      <mat-card-title>Sign In</mat-card-title>
+      <mat-card-subtitle>Welcome to Smart Task Management</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form [formGroup]="form" (ngSubmit)="submit()">
+        <mat-form-field appearance="fill" class="full-width">
+          <mat-label>Email</mat-label>
+          <input matInput formControlName="email" type="email" autocomplete="email" />
+          @if (form.get('email')?.hasError('required') && form.get('email')?.touched) {
+            <mat-error>Email is required</mat-error>
+          }
+          @if (form.get('email')?.hasError('email') && form.get('email')?.touched) {
+            <mat-error>Please enter a valid email</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="fill" class="full-width">
+          <mat-label>Password</mat-label>
+          <input matInput formControlName="password" type="password" autocomplete="current-password" />
+          @if (form.get('password')?.hasError('required') && form.get('password')?.touched) {
+            <mat-error>Password is required</mat-error>
+          }
+          @if (form.get('password')?.hasError('minlength') && form.get('password')?.touched) {
+            <mat-error>Password must be at least 6 characters</mat-error>
+          }
+        </mat-form-field>
+
+        <button mat-raised-button color="primary" type="submit" class="full-width" [disabled]="form.invalid || loading()">
+          @if (loading()) {
+            <mat-spinner diameter="20"></mat-spinner>
+          } @else {
+            <span>Sign In</span>
+          }
+        </button>
+      </form>
+    </mat-card-content>
+
+    <mat-card-actions>
+      <p class="register-link">
+        Don't have an account? <a routerLink="/register">Register</a>
+      </p>
+    </mat-card-actions>
+  </mat-card>
+</div>

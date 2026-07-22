@@ -1,0 +1,62 @@
+.shell-container {
+  height: 100vh;
+}
+
+.shell-sidenav {
+  width: 260px;
+  border-right: 1px solid var(--mat-sidenav-divider-color, rgba(0, 0, 0, 0.12));
+}
+
+.sidenav-header {
+  padding: 16px;
+  border-bottom: 1px solid var(--mat-sidenav-divider-color, rgba(0, 0, 0, 0.12));
+}
+
+.sidenav-header h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 500;
+}
+
+.shell-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.menu-btn {
+  margin-right: 8px;
+}
+
+.toolbar-title {
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.user-info {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.25);
+  font-size: 0.85rem;
+  margin-right: 8px;
+}
+
+.shell-content {
+  padding: 24px;
+  height: calc(100vh - 64px);
+  overflow: auto;
+}
+
+@media (max-width: 599px) {
+  .shell-content {
+    padding: 16px;
+  }
+}

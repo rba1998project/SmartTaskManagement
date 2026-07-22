@@ -1,0 +1,25 @@
+@if (currentUser(); as user) {
+  <mat-card class="profile-card">
+    <mat-card-header>
+      <mat-card-title>My Account</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="profile-field">
+        <span class="label">Email</span>
+        <span class="value">{{ user.email }}</span>
+      </div>
+      <div class="profile-field">
+        <span class="label">Full Name</span>
+        <span class="value">{{ user.fullName || '-' }}</span>
+      </div>
+      <div class="profile-field">
+        <span class="label">Roles</span>
+        <div class="role-chips">
+          @for (role of user.roles; track $index) {
+            <mat-chip>{{ role }}</mat-chip>
+          }
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+}

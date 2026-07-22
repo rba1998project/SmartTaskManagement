@@ -1,0 +1,33 @@
+import { Component, inject } from '@angular/core';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { MatCardModule } from '@angular/material/card';
+
+@Component({
+  selector: 'app-project-form',
+  standalone: true,
+  imports: [MatCardModule, RouterModule],
+  template: `
+    <mat-card>
+      <mat-card-content>
+        <h2>{{ isEdit ? 'Edit' : 'Create' }} Project</h2>
+        <p class="muted">Project form implementation coming soon.</p>
+      </mat-card-content>
+    </mat-card>
+  `,
+  styles: [`
+    .muted { color: rgba(0,0,0,0.6); margin-top: 8px; }
+  `]
+})
+export class ProjectFormComponent {
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  isEdit = this.route.snapshot.url.some(seg => seg.path === 'edit');
+
+  canDeactivate(): boolean {
+    const confirmed = confirm('You have unsaved changes. Are you sure you want to leave?');
+    if (!confirmed) {
+      return false;
+    }
+    return true;
+  }
+}

@@ -1,0 +1,30 @@
+@import '../404/not-found.component.css';
+
+.error-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 16px;
+}
+
+.error-card {
+  max-width: 480px;
+  text-align: center;
+  padding: 32px;
+}
+
+.error-card h1 {
+  font-size: 4rem;
+  margin: 0;
+  color: #f44336;
+}
+
+.error-card h2 {
+  margin: 8px 0 16px;
+}
+
+.error-card p {
+  color: rgba(0, 0, 0, 0.6);
+  margin-bottom: 24px;
+}

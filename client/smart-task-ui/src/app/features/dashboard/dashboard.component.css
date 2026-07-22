@@ -1,0 +1,70 @@
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.stat-card {
+  min-height: 120px;
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: 500;
+  margin-top: 8px;
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  color: rgba(0, 0, 0, 0.6);
+  margin-top: 4px;
+}
+
+.stat-skeleton {
+  padding: 16px;
+}
+
+.skeleton-label {
+  height: 16px;
+  width: 60%;
+  background: #e0e0e0;
+  border-radius: 4px;
+  margin-bottom: 12px;
+}
+
+.skeleton-value {
+  height: 32px;
+  width: 40%;
+  background: #e0e0e0;
+  border-radius: 4px;
+}
+
+.error-state {
+  text-align: center;
+  padding: 48px 16px;
+}
+
+.error-state p {
+  margin-bottom: 16px;
+  color: rgba(0, 0, 0, 0.7);
+}
+
+.recent-section {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.recent-card {
+  min-height: 200px;
+}
+
+.empty-text {
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.secondary {
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 0.875rem;
+}

@@ -1,0 +1,33 @@
+.profile-card {
+  max-width: 600px;
+}
+
+.profile-field {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.profile-field .label {
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.profile-field .value {
+  color: rgba(0, 0, 0, 0.87);
+}
+
+.role-chips {
+  display: flex;
+  gap: 8px;
+}
+
+.chip {
+  background: #e3f2fd;
+  color: #1565c0;
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 0.85rem;
+  font-weight: 500;
+}

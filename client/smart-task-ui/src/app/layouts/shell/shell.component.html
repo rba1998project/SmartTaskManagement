@@ -1,0 +1,68 @@
+<mat-sidenav-container class="shell-container">
+  <mat-sidenav
+    #sidenav
+    [mode]="isMobile() ? 'over' : 'side'"
+    [opened]="sidenavOpened()"
+    (closed)="sidenavOpened.set(false)"
+    class="shell-sidenav"
+  >
+    <div class="sidenav-header">
+      <h2>Smart Tasks</h2>
+    </div>
+    <mat-nav-list>
+      <a mat-list-item routerLink="/dashboard" routerLinkActive="active" (click)="isMobile() && sidenav.close()">
+        <mat-icon matListIcon>dashboard</mat-icon>
+        <span>Dashboard</span>
+      </a>
+      <a mat-list-item routerLink="/projects" routerLinkActive="active" (click)="isMobile() && sidenav.close()">
+        <mat-icon matListIcon>folder</mat-icon>
+        <span>Projects</span>
+      </a>
+      @if (canCreateProject()) {
+        <a mat-list-item routerLink="/projects/create" routerLinkActive="active" (click)="isMobile() && sidenav.close()">
+          <mat-icon matListIcon>add_circle</mat-icon>
+          <span>New Project</span>
+        </a>
+      }
+      <a mat-list-item routerLink="/tasks" routerLinkActive="active" (click)="isMobile() && sidenav.close()">
+        <mat-icon matListIcon>check_circle</mat-icon>
+        <span>Tasks</span>
+      </a>
+      @if (canCreateTask()) {
+        <a mat-list-item routerLink="/tasks/create" routerLinkActive="active" (click)="isMobile() && sidenav.close()">
+          <mat-icon matListIcon>add_task</mat-icon>
+          <span>New Task</span>
+        </a>
+      }
+      <a mat-list-item routerLink="/account" routerLinkActive="active" (click)="isMobile() && sidenav.close()">
+        <mat-icon matListIcon>account_circle</mat-icon>
+        <span>My Account</span>
+      </a>
+    </mat-nav-list>
+  </mat-sidenav>
+
+  <mat-sidenav-content>
+    <mat-toolbar color="primary" class="shell-toolbar">
+      @if (isMobile()) {
+        <button
+          type="button"
+          mat-icon-button
+          class="menu-btn"
+          (click)="toggleSidenav()"
+        >
+          <mat-icon>menu</mat-icon>
+        </button>
+      }
+      <span class="toolbar-title">Smart Tasks</span>
+      <span class="spacer"></span>
+      <span class="user-info">{{ userInitials }}</span>
+      <button mat-icon-button (click)="logout()" title="Logout">
+        <mat-icon>logout</mat-icon>
+      </button>
+    </mat-toolbar>
+
+    <main class="shell-content">
+      <router-outlet></router-outlet>
+    </main>
+  </mat-sidenav-content>
+</mat-sidenav-container>

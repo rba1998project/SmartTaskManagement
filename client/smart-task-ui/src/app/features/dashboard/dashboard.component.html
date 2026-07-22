@@ -1,0 +1,112 @@
+@if (loading()) {
+  <div class="dashboard-grid">
+    @for (i of [1,2,3,4,5,6,7]; track $index) {
+      <mat-card class="stat-card">
+        <mat-card-content>
+          <div class="stat-skeleton">
+            <div class="skeleton-label"></div>
+            <div class="skeleton-value"></div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    }
+  </div>
+} @else if (error()) {
+  <div class="error-state">
+    <p>{{ error() }}</p>
+    <button mat-raised-button color="primary" (click)="load()">Retry</button>
+  </div>
+} @else if (data()) {
+  <div class="dashboard-grid">
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-value">{{ data()!.totalProjects }}</div>
+        <div class="stat-label">Total Projects</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-value">{{ data()!.totalTasks }}</div>
+        <div class="stat-label">Total Tasks</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-value">{{ getStatusValue(data()!.tasksByStatus, 0) }}</div>
+        <div class="stat-label">To Do</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-value">{{ getStatusValue(data()!.tasksByStatus, 1) }}</div>
+        <div class="stat-label">In Progress</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-value">{{ getStatusValue(data()!.tasksByStatus, 2) }}</div>
+        <div class="stat-label">Completed</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-value">{{ data()!.pendingTasks }}</div>
+        <div class="stat-label">Pending Tasks</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-value">{{ data()!.upcomingDueTasks }}</div>
+        <div class="stat-label">Upcoming Due</div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <div class="recent-section">
+    <mat-card class="recent-card">
+      <mat-card-header>
+        <mat-card-title>Recent Projects</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        @if (recentProjects().length === 0) {
+          <p class="empty-text">No projects yet.</p>
+        } @else {
+          <mat-list>
+            @for (project of recentProjects(); track project.id) {
+              <a mat-list-item routerLink="/projects/{{ project.id }}">
+                <div mat-line>{{ project.name }}</div>
+                <div mat-line class="secondary">{{ project.description || 'No description' }}</div>
+              </a>
+            }
+          </mat-list>
+        }
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="recent-card">
+      <mat-card-header>
+        <mat-card-title>Recent Tasks</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        @if (recentTasks().length === 0) {
+          <p class="empty-text">No tasks yet.</p>
+        } @else {
+          <mat-list>
+            @for (task of recentTasks(); track task.id) {
+              <a mat-list-item routerLink="/tasks/{{ task.id }}">
+                <div mat-line>{{ task.title }}</div>
+                <div mat-line class="secondary">{{ taskStatusLabel(task.status) }}</div>
+              </a>
+            }
+          </mat-list>
+        }
+      </mat-card-content>
+    </mat-card>
+  </div>
+}
