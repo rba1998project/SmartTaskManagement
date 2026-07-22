@@ -4,6 +4,7 @@ import { AuthService } from '../auth/auth.service';
 import { Router } from '@angular/router';
 import { catchError, map, of } from 'rxjs';
 
+// Allows only authenticated users; attempts silent refresh when possible.
 export const authGuard: CanActivateFn = (route, state) => {
   const authService = inject(AuthService);
   const router = inject(Router);

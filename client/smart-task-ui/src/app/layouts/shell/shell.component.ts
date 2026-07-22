@@ -10,6 +10,7 @@ import { AuthService } from '../../core/auth/auth.service';
 import { UserRole } from '../../core/models/enums';
 import { NotificationService } from '../../core/services/notification.service';
 
+// Main app shell/layout.
 @Component({
   selector: 'app-shell',
   standalone: true,

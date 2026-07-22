@@ -13,6 +13,8 @@ import { ProjectResponse } from '../../../core/models/project';
 import { AuthService } from '../../../core/auth/auth.service';
 import { UserRole } from '../../../core/models/enums';
 
+// Route: /projects/:id
+// Reads the project id from the route snapshot and loads the project.
 @Component({
   selector: 'app-project-detail',
   standalone: true,
@@ -71,6 +73,7 @@ export class ProjectDetailComponent implements OnInit {
     });
   }
 
+  // Navigate to the project edit route: /projects/:id/edit
   goToEdit(): void {
     this.router.navigate(['/projects', this.projectId, 'edit']);
   }

@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 
 @Injectable({ providedIn: 'root' })
+// Toast notification wrapper.
 export class NotificationService {
   private snackBar = inject(MatSnackBar);
 

@@ -3,6 +3,7 @@ import { ApiService } from '../services/api.service';
 import { AuthResponse } from '../models/auth';
 import { environment } from '../../../environments/environment';
 
+// Session token persistence.
 @Injectable({ providedIn: 'root' })
 export class TokenStorageService {
   private readonly ACCESS_KEY = 'access_token';

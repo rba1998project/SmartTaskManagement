@@ -4,6 +4,7 @@ import { environment } from '../../../environments/environment';
 import { ApiResponse } from '../models/api-response';
 import { PagedResult } from '../models/enums';
 
+// Shared query params for list endpoints.
 export interface ListParams {
   search?: string;
   sortField?: string;

@@ -4,6 +4,7 @@ import { roleGuard } from './core/guards/role.guard';
 import { unsavedChangesGuard } from './core/guards/unsaved-changes.guard';
 import { UserRole } from './core/models/enums';
 
+// Top-level route configuration.
 export const routes: Routes = [
   { path: 'login', loadComponent: () => import('./features/auth/login/login.component').then(m => m.LoginComponent) },
   { path: 'register', loadComponent: () => import('./features/auth/register/register.component').then(m => m.RegisterComponent) },

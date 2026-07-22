@@ -8,6 +8,7 @@ export interface AiStatus {
   model?: string;
 }
 
+// AI toggle state provider.
 @Injectable({ providedIn: 'root' })
 export class AiAvailabilityService {
   private api = inject(ApiService);

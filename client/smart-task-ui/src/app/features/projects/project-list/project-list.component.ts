@@ -18,6 +18,8 @@ import { UserRole } from '../../../core/models/enums';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { PagedResult } from '../../../core/models/enums';
 
+// Route: /projects
+// Loads paginated, sortable, and searchable project list.
 @Component({
   selector: 'app-project-list',
   standalone: true,
@@ -126,6 +128,7 @@ export class ProjectListComponent implements OnInit {
     this.router.navigate(['/projects', id]);
   }
 
+  // Delete project via confirmation dialog
   deleteProject(project: ProjectResponse): void {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       data: {

@@ -5,6 +5,7 @@ import { NotificationService } from '../services/notification.service';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
+// Maps HTTP errors to user-friendly toast messages.
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   const router = inject(Router);
   const notificationService = inject(NotificationService);

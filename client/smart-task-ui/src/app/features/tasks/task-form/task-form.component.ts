@@ -21,6 +21,10 @@ import { TASK_STATUS_LABELS } from '../../../shared/constants/task-status.consta
 import { TASK_PRIORITY_LABELS } from '../../../shared/constants/task-priority.constants';
 import { AiEnhanceButtonComponent } from '../../../shared/components/ai-enhance-button/ai-enhance-button.component';
 
+// Route: /tasks/create or /tasks/:id/edit
+// Loads existing task for edit mode.
+// TeamMembers get readonly title/description/priority/due-date/assigned-to fields.
+// canDeactivate prevents accidental navigation with unsaved changes.
 @Component({
   selector: 'app-task-form',
   standalone: true,
@@ -124,6 +128,7 @@ export class TaskFormComponent implements OnInit {
     });
   }
 
+  // Normalize form value into API payload; status/priority are enums stored as numbers
   submit(): void {
     if (this.form.invalid || this.loading()) return;
 
@@ -184,6 +189,7 @@ export class TaskFormComponent implements OnInit {
     this.router.navigate(['/tasks']);
   }
 
+  // Prompt before leaving if the form is dirty
   canDeactivate(): boolean {
     if (this.form.pristine && !this.isEdit) {
       return true;

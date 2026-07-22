@@ -8,6 +8,7 @@ export interface ConfirmDialogData {
   message: string;
 }
 
+// Reusable confirmation dialog.
 @Component({
   selector: 'app-confirm-dialog',
   standalone: true,

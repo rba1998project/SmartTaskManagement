@@ -16,6 +16,8 @@ import { TaskItemStatus, TaskItemPriority } from '../../../core/models/enums';
 import { TASK_STATUS_LABELS } from '../../../shared/constants/task-status.constants';
 import { TASK_PRIORITY_LABELS } from '../../../shared/constants/task-priority.constants';
 
+// Route: /tasks/:id
+// Reads task id from route snapshot and loads the task detail.
 @Component({
   selector: 'app-task-detail',
   standalone: true,
@@ -82,6 +84,7 @@ export class TaskDetailComponent implements OnInit {
     this.router.navigate(['/tasks']);
   }
 
+  // Helpers for mat-chip color and label in the template
   statusLabel(status: TaskItemStatus): string {
     return TASK_STATUS_LABELS[status] ?? String(status);
   }

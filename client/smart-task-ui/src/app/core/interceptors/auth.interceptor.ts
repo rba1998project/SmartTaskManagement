@@ -11,6 +11,7 @@ let refreshTokenSubject = new BehaviorSubject<string | null>(null);
 
 const excludePaths = ['/api/auth/login', '/api/auth/register', '/api/auth/refresh', '/api/ai/status'];
 
+// Attaches Bearer tokens and handles silent refresh on expiry.
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
   const router = inject(Router);

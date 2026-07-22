@@ -10,6 +10,9 @@ import { Router, RouterModule } from '@angular/router';
 import { ProjectsService } from '../../../core/services/projects.service';
 import { NotificationService } from '../../../core/services/notification.service';
 
+// Route: /projects/create or /projects/:id/edit
+// Parses the route id in ngOnInit; loads existing project for edit mode.
+// canDeactivate prevents accidental navigation with unsaved changes.
 @Component({
   selector: 'app-project-form',
   standalone: true,
@@ -118,6 +121,7 @@ export class ProjectFormComponent implements OnInit {
     this.router.navigate(['/projects']);
   }
 
+  // Prompt before leaving if the form is dirty
   canDeactivate(): boolean {
     if (this.form.pristine && !this.isEdit) {
       return true;

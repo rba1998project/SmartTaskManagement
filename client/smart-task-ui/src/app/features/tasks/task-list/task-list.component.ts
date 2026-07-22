@@ -24,6 +24,8 @@ import { TaskItemStatus, TaskItemPriority } from '../../../core/models/enums';
 import { TASK_STATUS_LABELS } from '../../../shared/constants/task-status.constants';
 import { TASK_PRIORITY_LABELS } from '../../../shared/constants/task-priority.constants';
 
+// Route: /tasks
+// Loads paginated, sortable, and filterable task list.
 @Component({
   selector: 'app-task-list',
   standalone: true,
@@ -131,18 +133,21 @@ export class TaskListComponent implements OnInit {
     this.load();
   }
 
+  // Reset filters and reload
   onStatusChange(value: TaskItemStatus | undefined): void {
     this.status.set(value);
     this.pageNumber.set(1);
     this.load();
   }
 
+  // Reset filters and reload
   onPriorityChange(value: TaskItemPriority | undefined): void {
     this.priority.set(value);
     this.pageNumber.set(1);
     this.load();
   }
 
+  // Map matSort event to service query params
   onSort(sort: { active: string; direction: string }): void {
     if (!sort.active || !sort.direction) return;
     this.sortField.set(sort.active as TaskQueryRequest['sortField']);
@@ -151,6 +156,7 @@ export class TaskListComponent implements OnInit {
     this.load();
   }
 
+  // Sync mat-paginator to reactive signals
   onPageChange(event: { pageIndex: number; pageSize: number }): void {
     this.pageNumber.set(event.pageIndex + 1);
     this.pageSize.set(event.pageSize);
@@ -169,6 +175,7 @@ export class TaskListComponent implements OnInit {
     this.router.navigate(['/tasks', id]);
   }
 
+  // Delete task via confirmation dialog
   deleteTask(task: TaskResponse): void {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       data: {
@@ -191,6 +198,7 @@ export class TaskListComponent implements OnInit {
     });
   }
 
+  // Improve mat-table rendering performance
   trackByTaskId(index: number, task: TaskResponse): string {
     return task.id;
   }

@@ -7,6 +7,7 @@ import { UserRole } from '../models/enums';
 import { Router } from '@angular/router';
 import { catchError, map, Observable, of, throwError } from 'rxjs';
 
+// Auth orchestration service.
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private api = inject(ApiService);

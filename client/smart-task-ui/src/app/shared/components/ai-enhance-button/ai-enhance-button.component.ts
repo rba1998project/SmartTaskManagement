@@ -8,6 +8,9 @@ import { TasksService } from '../../../core/services/tasks.service';
 import { NotificationService } from '../../../core/services/notification.service';
 import { ImproveDescriptionRequest } from '../../../core/models/task';
 
+// Reusable button for AI description improvement.
+// Emits the improved description through the `enhanced` output.
+// Disabled when the AI service reports it is not configured/enabled.
 @Component({
   selector: 'app-ai-enhance-button',
   standalone: true,
@@ -48,6 +51,7 @@ export class AiEnhanceButtonComponent {
 
   enhanced = output<string>();
 
+  // Call backend to improve the description and emit the result
   enhance(): void {
     const text = this.description();
     if (!text) {
