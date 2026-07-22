@@ -108,4 +108,14 @@ public sealed class TasksController : ControllerBase
 
         return Ok(ApiResponse.Ok(result.Value!, "Task status updated."));
     }
+
+    [HttpPost("api/tasks/improve-description")]
+    public async Task<IActionResult> ImproveDescription(ImproveTaskDescriptionRequest request, CancellationToken cancellationToken)
+    {
+        var result = await _taskService.ImproveDescriptionAsync(request.Description, cancellationToken);
+        if (!result.Succeeded)
+            return result.ToErrorResponse("Failed to improve description.");
+
+        return Ok(ApiResponse.Ok(result.Value!, "Description improved."));
+    }
 }

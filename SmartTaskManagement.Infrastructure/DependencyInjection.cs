@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using SmartTaskManagement.Application.Abstractions;
 using SmartTaskManagement.Infrastructure.Authentication;
+using SmartTaskManagement.Infrastructure.Ai;
 using SmartTaskManagement.Infrastructure.Identity;
 using SmartTaskManagement.Infrastructure.Persistence;
 
@@ -33,6 +34,9 @@ public static class DependencyInjection
         // Register JWT options with the DI container, binding them to the "Jwt" section of the configuration.
         services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.SectionName));
 
+        // Register AI provider options with the DI container, binding them to the "Ai" section of the configuration.
+        services.Configure<GeminiOptions>(configuration.GetSection(GeminiOptions.SectionName));
+
         // Register the JWT signing key with the DI container, throwing an exception if it is not found in the configuration.
         var signingKey = configuration["Jwt:SigningKey"]
             ?? throw new InvalidOperationException(
@@ -44,6 +48,9 @@ public static class DependencyInjection
         services.AddScoped<IJwtTokenGenerator>(sp =>
             new JwtTokenGenerator(sp.GetRequiredService<IOptions<JwtOptions>>(), signingKey));
         services.AddScoped<IRefreshTokenService, RefreshTokenService>();
+        services.AddScoped<IAiStatusService, AiStatusService>();
+
+        services.AddHttpClient<ITaskAiService, GeminiTaskAiService>();
 
         // Register the IdentityDataSeeder with the DI container, which is responsible for seeding initial identity data.
         services.AddScoped<IdentityDataSeeder>();

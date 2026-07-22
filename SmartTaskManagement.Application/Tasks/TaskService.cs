@@ -25,17 +25,20 @@ public sealed class TaskService
     private readonly IProjectRepository _projects;
     private readonly IIdentityService _identity;
     private readonly ICurrentUserService _currentUser;
+    private readonly ITaskAiService _taskAiService;
 
     public TaskService(
         ITaskRepository tasks,
         IProjectRepository projects,
         IIdentityService identity,
-        ICurrentUserService currentUser)
+        ICurrentUserService currentUser,
+        ITaskAiService taskAiService)
     {
         _tasks = tasks;
         _projects = projects;
         _identity = identity;
         _currentUser = currentUser;
+        _taskAiService = taskAiService;
     }
 
     public async Task<Result<TaskResponseDto>> CreateAsync(Guid projectId, CreateTaskRequestDto request, CancellationToken cancellationToken = default)
@@ -179,6 +182,18 @@ public sealed class TaskService
             pagedResult.PageSize);
 
         return Result<PagedResult<TaskResponseDto>>.Success(mapped);
+    }
+
+    public async Task<Result<ImproveTaskDescriptionResponse>> ImproveDescriptionAsync(string description, CancellationToken cancellationToken = default)
+    {
+        var result = await _taskAiService.ImproveDescriptionAsync(description, cancellationToken);
+        if (!result.Succeeded)
+            return Result<ImproveTaskDescriptionResponse>.Failure(result.Errors);
+
+        return Result<ImproveTaskDescriptionResponse>.Success(new ImproveTaskDescriptionResponse
+        {
+            ImprovedDescription = result.Value!
+        });
     }
 
     // Admin may manage tasks in any project; a Project Manager only in projects they own. Team
