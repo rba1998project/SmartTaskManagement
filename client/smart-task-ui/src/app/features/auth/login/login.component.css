@@ -11,6 +11,10 @@
   max-width: 420px;
 }
 
+.login-card ::ng-deep .mat-mdc-card-content {
+  padding-bottom: 0;
+}
+
 .full-width {
   width: 100%;
   margin-bottom: 12px;

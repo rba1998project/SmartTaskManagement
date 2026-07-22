@@ -1,55 +1,19 @@
-@import '@angular/material/prebuilt-themes/indigo-pink.css';
+@import '@angular/material/prebuilt-themes/deeppurple-amber.css';
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
-
-/* Design-token layer for the app shell and custom components. */
-/* Angular Material components are themed by the imported prebuilt theme stylesheet above. */
-/* Custom component colors reference these variables so a future dark theme only needs */
-/* to override the values inside .dark-theme. */
-
-:root {
-  --app-text-primary: rgba(0, 0, 0, 0.87);
-  --app-text-secondary: rgba(0, 0, 0, 0.6);
-  --app-text-disabled: rgba(0, 0, 0, 0.5);
-  --app-text-error: rgba(0, 0, 0, 0.7);
-  --app-border-subtle: rgba(0, 0, 0, 0.08);
-  --app-border-divider: rgba(0, 0, 0, 0.12);
-  --app-bg-surface: rgba(0, 0, 0, 0.04);
-  --app-bg-hover: rgba(0, 0, 0, 0.02);
-  --app-link: #1976d2;
-  --app-error: #f44336;
-  --app-warning: #ff9800;
-  --app-skeleton: #e0e0e0;
-  --app-avatar-bg: rgba(255, 255, 255, 0.25);
-}
-
-/* Uncomment and expand these values when a complete dark theme is enabled. */
-/* The toggle logic in ThemeService already adds/removes this class on <html>. */
-.dark-theme {
-  --app-text-primary: rgba(255, 255, 255, 0.87);
-  --app-text-secondary: rgba(255, 255, 255, 0.6);
-  --app-text-disabled: rgba(255, 255, 255, 0.5);
-  --app-text-error: rgba(255, 255, 255, 0.7);
-  --app-border-subtle: rgba(255, 255, 255, 0.08);
-  --app-border-divider: rgba(255, 255, 255, 0.12);
-  --app-bg-surface: rgba(255, 255, 255, 0.04);
-  --app-bg-hover: rgba(255, 255, 255, 0.02);
-  --app-link: #90caf9;
-  --app-error: #ef5350;
-  --app-warning: #ffb74d;
-  --app-skeleton: #424242;
-  --app-avatar-bg: rgba(255, 255, 255, 0.25);
-}
 
 html, body {
   height: 100%;
   margin: 0;
   font-family: 'Roboto', sans-serif;
-}
-
-mat-icon {
-  font-family: 'Material Symbols Outlined', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 * {
   box-sizing: border-box;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
 }

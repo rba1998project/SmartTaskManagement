@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -10,6 +10,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AuthService } from '../../../core/auth/auth.service';
 import { NotificationService } from '../../../core/services/notification.service';
 
+const SAVED_EMAIL_KEY = 'savedEmail';
+
 @Component({
   selector: 'app-login',
   standalone: true,
@@ -17,7 +19,7 @@ import { NotificationService } from '../../../core/services/notification.service
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   private fb = inject(FormBuilder);
   private router = inject(Router);
   private authService = inject(AuthService);
@@ -30,12 +32,23 @@ export class LoginComponent {
 
   loading = signal(false);
 
+  ngOnInit(): void {
+    const savedEmail = localStorage.getItem(SAVED_EMAIL_KEY);
+    if (savedEmail) {
+      this.form.patchValue({ email: savedEmail });
+    }
+  }
+
   submit(): void {
     if (this.form.invalid || this.loading()) return;
 
     this.loading.set(true);
     this.authService.login(this.form.value).subscribe({
       next: () => {
+        const email = this.form.value.email;
+        if (email) {
+          localStorage.setItem(SAVED_EMAIL_KEY, email);
+        }
         this.notificationService.show('Welcome back!');
         this.router.navigate(['/dashboard']);
       },

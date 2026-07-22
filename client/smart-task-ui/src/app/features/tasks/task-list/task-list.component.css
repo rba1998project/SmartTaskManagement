@@ -17,6 +17,7 @@
   flex: 1;
   max-width: 900px;
   flex-wrap: wrap;
+  align-items: flex-end;
 }
 
 .loading {
@@ -61,6 +62,17 @@
 
 .table-wrapper {
   overflow-x: auto;
+}
+
+.table-wrapper ::ng-deep .mat-mdc-table {
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.table-wrapper ::ng-deep .mat-mdc-header-cell {
+  font-weight: 500;
+  font-size: 0.875rem;
+  letter-spacing: 0.025em;
 }
 
 @media (max-width: 768px) {

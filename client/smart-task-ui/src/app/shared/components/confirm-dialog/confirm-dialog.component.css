@@ -1,16 +1,21 @@
 mat-dialog-title {
   font-weight: 500;
+  font-size: 1.25rem;
+  letter-spacing: 0.0125em;
 }
 
 mat-dialog-content {
   margin: 16px 0;
   color: var(--app-text-secondary);
+  font-size: 0.875rem;
+  line-height: 1.5;
 }
 
 mat-dialog-actions {
   display: flex;
   gap: 8px;
   justify-content: flex-end;
+  padding: 8px 0;
 }
 
 @media (max-width: 480px) {

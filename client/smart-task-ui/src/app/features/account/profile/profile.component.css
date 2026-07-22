@@ -2,6 +2,10 @@
   max-width: 600px;
 }
 
+.profile-card ::ng-deep .mat-mdc-card-content {
+  padding: 24px;
+}
+
 .profile-field {
   display: flex;
   justify-content: space-between;
@@ -10,9 +14,14 @@
   border-bottom: 1px solid var(--app-border-subtle);
 }
 
+.profile-field:last-child {
+  border-bottom: none;
+}
+
 .profile-field .label {
   font-weight: 500;
   color: var(--app-text-secondary);
+  font-size: 0.875rem;
 }
 
 .profile-field .value {

@@ -20,37 +20,67 @@
   margin: 0;
   font-size: 1.25rem;
   font-weight: 500;
+  letter-spacing: 0.0125em;
+}
+
+.shell-sidenav .mat-mdc-nav-list .mat-mdc-list-item {
+  height: 48px;
+  margin: 4px 8px;
+  border-radius: 8px;
+  padding: 0 12px;
+}
+
+.shell-sidenav .mat-mdc-nav-list .mat-mdc-list-item mat-icon {
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
+  line-height: 24px;
+}
+
+.shell-sidenav .mat-mdc-nav-list .mat-mdc-list-item:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+.shell-sidenav .mat-mdc-nav-list .mat-mdc-list-item.active {
+  background-color: rgba(0, 0, 0, 0.08);
+  font-weight: 500;
 }
 
 .shell-toolbar {
   position: sticky;
   top: 0;
   z-index: 10;
+  min-height: 64px;
+  padding: 0 16px;
 }
 
 .menu-btn {
   margin-right: 8px;
 }
 
-.toolbar-title {
-  font-size: 1.1rem;
-  font-weight: 500;
-}
-
 .spacer {
   flex: 1 1 auto;
 }
 
-.user-info {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+.user-avatar {
   width: 32px;
   height: 32px;
   border-radius: 50%;
   background: var(--app-avatar-bg);
   font-size: 0.85rem;
-  margin-right: 8px;
+  font-weight: 500;
+  letter-spacing: 0.025em;
+  margin-right: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: inherit;
+  line-height: 1;
+}
+
+.user-initials {
+  text-transform: uppercase;
+  user-select: none;
 }
 
 .shell-content {
@@ -62,5 +92,9 @@
 @media (max-width: 599px) {
   .shell-content {
     padding: 16px;
+  }
+
+  .shell-toolbar {
+    padding: 0 8px;
   }
 }

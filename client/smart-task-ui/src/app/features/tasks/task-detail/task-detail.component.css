@@ -33,7 +33,8 @@
 .detail-header h1 {
   margin: 0;
   font-size: 1.5rem;
-  font-weight: 500;
+  font-weight: 400;
+  letter-spacing: 0.0125em;
 }
 
 .header-actions {
@@ -45,19 +46,26 @@
   margin-bottom: 24px;
 }
 
+.detail-card ::ng-deep .mat-mdc-card-content {
+  padding: 24px;
+}
+
 .detail-row {
   display: flex;
   padding: 12px 0;
+  align-items: baseline;
 }
 
 .detail-row .label {
   width: 150px;
   font-weight: 500;
   color: var(--app-text-secondary);
+  font-size: 0.875rem;
 }
 
 .detail-row .value {
   flex: 1;
+  color: var(--app-text-primary);
 }
 
 @media (max-width: 768px) {
