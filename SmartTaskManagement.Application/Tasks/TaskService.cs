@@ -1,5 +1,6 @@
 using SmartTaskManagement.Application.Abstractions;
 using SmartTaskManagement.Application.Authorization;
+using SmartTaskManagement.Application.Authentication.Models;
 using SmartTaskManagement.Application.Common;
 using SmartTaskManagement.Application.Tasks.Dtos;
 using SmartTaskManagement.Domain.Entities;
@@ -97,10 +98,10 @@ public sealed class TaskService
         if (project is null || !CanManageProjectTasks(project))
             return Result<TaskResponseDto>.Failure(ErrorType.Forbidden, "You do not have permission to assign this task.");
 
-        // A non-null assignee must reference an existing application user.
+        AuthUser? assignee = null;
         if (request.AssignedToUserId is { } assigneeId)
         {
-            var assignee = await _identity.FindByIdAsync(assigneeId, cancellationToken);
+            assignee = await _identity.FindByIdAsync(assigneeId, cancellationToken);
 
             if (assignee is null)
                 return Result<TaskResponseDto>.Failure(ErrorType.NotFound, "Assigned user does not exist.");
@@ -109,8 +110,7 @@ public sealed class TaskService
         task.AssignTo(request.AssignedToUserId, DateTime.UtcNow);
         await _tasks.UpdateAsync(task, cancellationToken);
 
-        var assigneeName = request.AssignedToUserId is not null ? (await _identity.FindByIdAsync(request.AssignedToUserId.Value, cancellationToken))?.FullName : null;
-        return Result<TaskResponseDto>.Success(Map(task, project.Name, assigneeName));
+        return Result<TaskResponseDto>.Success(Map(task, project.Name, assignee?.FullName));
     }
 
     public async Task<Result<TaskResponseDto>> ChangeStatusAsync(Guid id, UpdateTaskStatusRequestDto request, CancellationToken cancellationToken = default)
