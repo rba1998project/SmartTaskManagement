@@ -46,6 +46,10 @@ html, body {
   font-family: 'Roboto', sans-serif;
 }
 
+mat-icon {
+  font-family: 'Material Symbols Outlined', sans-serif;
+}
+
 * {
   box-sizing: border-box;
 }
