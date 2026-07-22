@@ -1,6 +1,5 @@
-export interface UserResponse {
+export interface UserLookupResponse {
   id: string;
+  fullName: string;
   email: string;
-  fullName?: string;
-  roles: string[];
 }

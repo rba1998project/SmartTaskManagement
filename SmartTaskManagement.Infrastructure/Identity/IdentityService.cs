@@ -4,6 +4,7 @@ using SmartTaskManagement.Application.Abstractions;
 using SmartTaskManagement.Application.Authentication.Models;
 using SmartTaskManagement.Application.Authorization;
 using SmartTaskManagement.Application.Common;
+using SmartTaskManagement.Application.Users.Dtos;
 
 namespace SmartTaskManagement.Infrastructure.Identity;
 
@@ -72,6 +73,18 @@ public sealed class IdentityService : IIdentityService
             .ToListAsync(cancellationToken);
 
         return users.Select(ToAuthUser).ToArray();
+    }
+
+    public async Task<IReadOnlyList<UserLookupDto>> GetUserLookupAsync(CancellationToken cancellationToken = default)
+    {
+        var users = await _userManager.Users
+            .AsNoTracking()
+            .OrderBy(u => u.FullName)
+            .ThenBy(u => u.Email)
+            .Select(u => new UserLookupDto(u.Id, u.FullName ?? string.Empty, u.Email ?? string.Empty))
+            .ToListAsync(cancellationToken);
+
+        return users;
     }
 
     public async Task<IReadOnlyList<string>> GetRolesAsync(Guid userId, CancellationToken cancellationToken = default)

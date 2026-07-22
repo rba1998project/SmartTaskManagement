@@ -1,5 +1,6 @@
 using SmartTaskManagement.Application.Authentication.Models;
 using SmartTaskManagement.Application.Common;
+using SmartTaskManagement.Application.Users.Dtos;
 
 namespace SmartTaskManagement.Application.Abstractions;
 
@@ -28,10 +29,16 @@ public interface IIdentityService
     Task<AuthUser?> FindByIdAsync(Guid userId, CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Returns the users matching the given ids, or an empty list if none match.
+    /// Returns the matching users for the given ids, or an empty list if none match.
     /// Used for batch display-name lookups to avoid N+1 queries.
     /// </summary>
     Task<IReadOnlyList<AuthUser>> FindByIdsAsync(IEnumerable<Guid> userIds, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Returns a lightweight list of users for directory/selection UIs.
+    /// Returns only id, full name and email; excludes sensitive Identity fields.
+    /// </summary>
+    Task<IReadOnlyList<UserLookupDto>> GetUserLookupAsync(CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Returns the role names assigned to the user (empty if none).

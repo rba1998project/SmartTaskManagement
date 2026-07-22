@@ -54,6 +54,10 @@ export class TasksService {
     });
   }
 
+  listByProject(projectId: string) {
+    return this.api.get<TaskResponse[]>(`/api/projects/${projectId}/tasks`);
+  }
+
   improveDescription(request: { description: string }) {
     return this.api.post<{ improvedDescription: string }>('/api/tasks/improve-description', request);
   }

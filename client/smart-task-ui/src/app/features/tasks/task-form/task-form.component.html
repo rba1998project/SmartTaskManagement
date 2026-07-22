@@ -55,8 +55,26 @@
         </mat-form-field>
 
         <mat-form-field appearance="fill" class="full-width">
-          <mat-label>Assigned To (User ID)</mat-label>
-          <input matInput formControlName="assignedToUserId" placeholder="GUID" [readonly]="isTeamMember() && isEdit" />
+          <mat-label>Project</mat-label>
+          <input matInput formControlName="projectId" [matAutocomplete]="projectAuto" [readonly]="isTeamMember() && isEdit" />
+          <mat-autocomplete #projectAuto="matAutocomplete" [displayWith]="displayProject">
+            @for (project of filteredProjects(); track project.id) {
+              <mat-option [value]="project.id">{{ project.name }}</mat-option>
+            }
+          </mat-autocomplete>
+          @if (form.get('projectId')?.hasError('required') && form.get('projectId')?.touched) {
+            <mat-error>Project is required</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="fill" class="full-width">
+          <mat-label>Assign To</mat-label>
+          <input matInput formControlName="assignedToUserId" [matAutocomplete]="userAuto" [readonly]="isTeamMember() && isEdit" placeholder="Search by name or email..." />
+          <mat-autocomplete #userAuto="matAutocomplete" [displayWith]="displayUser">
+            @for (user of filteredUsers(); track user.id) {
+              <mat-option [value]="user.id">{{ user.fullName || user.email }}</mat-option>
+            }
+          </mat-autocomplete>
         </mat-form-field>
 
         <div class="form-actions">

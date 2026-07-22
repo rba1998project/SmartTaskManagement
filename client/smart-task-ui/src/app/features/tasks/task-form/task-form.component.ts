@@ -13,9 +13,14 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { TasksService } from '../../../core/services/tasks.service';
+import { ProjectsService } from '../../../core/services/projects.service';
+import { UsersService } from '../../../core/services/users.service';
 import { NotificationService } from '../../../core/services/notification.service';
+import { ProjectResponse } from '../../../core/models/project';
+import { UserLookupResponse } from '../../../core/models/user';
 import { UserRole } from '../../../core/models/enums';
 import { AuthService } from '../../../core/auth/auth.service';
 import { TaskItemStatus, TaskItemPriority } from '../../../core/models/enums';
@@ -23,10 +28,6 @@ import { TASK_STATUS_LABELS } from '../../../shared/constants/task-status.consta
 import { TASK_PRIORITY_LABELS } from '../../../shared/constants/task-priority.constants';
 import { AiEnhanceButtonComponent } from '../../../shared/components/ai-enhance-button/ai-enhance-button.component';
 
-// Route: /tasks/create or /tasks/:id/edit
-// Loads existing task for edit mode.
-// TeamMembers get readonly title/description/priority/due-date/assigned-to fields.
-// canDeactivate prevents accidental navigation with unsaved changes.
 @Component({
   selector: 'app-task-form',
   standalone: true,
@@ -43,6 +44,7 @@ import { AiEnhanceButtonComponent } from '../../../shared/components/ai-enhance-
     MatDatepickerModule,
     MatNativeDateModule,
     MatProgressSpinnerModule,
+    MatAutocompleteModule,
     AiEnhanceButtonComponent,
   ],
   templateUrl: './task-form.component.html',
@@ -54,6 +56,8 @@ export class TaskFormComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private tasksService = inject(TasksService);
+  private projectsService = inject(ProjectsService);
+  private usersService = inject(UsersService);
   private notificationService = inject(NotificationService);
   private snackBar = inject(MatSnackBar);
   private authService = inject(AuthService);
@@ -71,6 +75,13 @@ export class TaskFormComponent implements OnInit {
   loading = signal(false);
   isEdit = false;
   taskId: string | null = null;
+
+  readonly projects = signal<ProjectResponse[]>([]);
+  readonly projectsLoading = signal(false);
+  readonly filteredProjects = signal<ProjectResponse[]>([]);
+  readonly users = signal<UserLookupResponse[]>([]);
+  readonly usersLoading = signal(false);
+  readonly filteredUsers = signal<UserLookupResponse[]>([]);
 
   readonly statusOptions = [
     { value: TaskItemStatus.ToDo, label: TASK_STATUS_LABELS[TaskItemStatus.ToDo] },
@@ -100,11 +111,70 @@ export class TaskFormComponent implements OnInit {
       this.isEdit = true;
       this.loadTask(this.taskId);
     }
+    this.loadProjects();
+    this.loadUsers();
+  }
+
+  displayProject = (id: string): string => {
+    const project = this.projects().find(p => p.id === id);
+    return project ? project.name : '';
+  };
+
+  displayUser = (id: string): string => {
+    const user = this.users().find(u => u.id === id);
+    return user ? (user.fullName || user.email) : '';
+  };
+
+  loadProjects(): void {
+    this.projectsLoading.set(true);
+    this.projectsService.list({
+      sortField: 'Name',
+      sortDirection: 'Asc',
+      pageNumber: 1,
+      pageSize: 100,
+    }).pipe(this.untilDestroyed).subscribe({
+      next: (result) => {
+        this.projectsLoading.set(false);
+        if (result.success && result.data) {
+          this.projects.set(result.data.items);
+          this.filteredProjects.set(result.data.items);
+        } else {
+          this.projects.set([]);
+          this.filteredProjects.set([]);
+        }
+      },
+      error: () => {
+        this.projectsLoading.set(false);
+        this.projects.set([]);
+        this.filteredProjects.set([]);
+      }
+    });
+  }
+
+  loadUsers(): void {
+    this.usersLoading.set(true);
+    this.usersService.list().pipe(this.untilDestroyed).subscribe({
+      next: (result) => {
+        this.usersLoading.set(false);
+        if (result.success && result.data) {
+          this.users.set(result.data);
+          this.filteredUsers.set(result.data);
+        } else {
+          this.users.set([]);
+          this.filteredUsers.set([]);
+        }
+      },
+      error: () => {
+        this.usersLoading.set(false);
+        this.users.set([]);
+        this.filteredUsers.set([]);
+      }
+    });
   }
 
   loadTask(id: string): void {
     this.loading.set(true);
-      this.tasksService.get(id).pipe(this.untilDestroyed).subscribe({
+    this.tasksService.get(id).pipe(this.untilDestroyed).subscribe({
       next: (result) => {
         if (result.success && result.data) {
           const task = result.data;
@@ -131,7 +201,6 @@ export class TaskFormComponent implements OnInit {
     });
   }
 
-  // Normalize form value into API payload; status/priority are enums stored as numbers
   submit(): void {
     if (this.form.invalid || this.loading()) return;
 
@@ -192,7 +261,6 @@ export class TaskFormComponent implements OnInit {
     this.router.navigate(['/tasks']);
   }
 
-  // Prompt before leaving if the form is dirty
   canDeactivate(): boolean {
     if (this.form.pristine && !this.isEdit) {
       return true;
