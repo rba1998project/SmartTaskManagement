@@ -1,3 +1,7 @@
+/* Shell layout styles */
+/* Theme note: colors are driven by Angular Material prebuilt theme for shells/toolbars. */
+/* Custom colors (e.g., avatar background) use CSS custom properties for theme readiness. */
+
 .shell-container {
   height: 100vh;
 }

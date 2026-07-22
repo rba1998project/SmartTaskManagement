@@ -11,7 +11,13 @@ let refreshTokenSubject = new BehaviorSubject<string | null>(null);
 
 const excludePaths = ['/api/auth/login', '/api/auth/register', '/api/auth/refresh', '/api/ai/status'];
 
-// Attaches Bearer tokens and handles silent refresh on expiry.
+// Attaches Bearer tokens to outgoing requests and handles silent refresh on expiry.
+//
+// Behavior:
+//  1. Skip auth for public auth endpoints (login/register/refresh/ai-status).
+//  2. Attach access token if available.
+//  3. If token is near expiry, queue request and refresh first.
+//  4. If request returns 401, attempt refresh once more then logout + redirect to /login.
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
   const router = inject(Router);

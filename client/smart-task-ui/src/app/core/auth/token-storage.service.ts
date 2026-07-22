@@ -3,7 +3,12 @@ import { ApiService } from '../services/api.service';
 import { AuthResponse } from '../models/auth';
 import { environment } from '../../../environments/environment';
 
-// Session token persistence.
+// Session token persistence with in-memory cache + sessionStorage fallback.
+//
+// Pattern:
+//  - Writes go to both the in-memory signal and sessionStorage.
+//  - Reads prefer the in-memory signal (fast, avoids storage events), falling back to sessionStorage.
+//  - Clear wipes both stores so a stale token cannot survive a logout.
 @Injectable({ providedIn: 'root' })
 export class TokenStorageService {
   private readonly ACCESS_KEY = 'access_token';

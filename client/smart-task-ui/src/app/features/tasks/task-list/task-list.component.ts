@@ -68,8 +68,6 @@ export class TaskListComponent implements OnInit {
 
   displayedColumns: string[] = ['title', 'projectId', 'status', 'priority', 'dueDate', 'assignedToUserId', 'actions'];
 
-  currentUserId = this.authService.currentUser()?.userId ?? '';
-
   readonly statusOptions = [
     { value: undefined as TaskItemStatus | undefined, label: 'All' },
     { value: TaskItemStatus.ToDo, label: TASK_STATUS_LABELS[TaskItemStatus.ToDo] },

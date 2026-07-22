@@ -1,3 +1,6 @@
+/* Dashboard stat cards and recent lists. */
+/* All colors reference --app-* custom properties for theme readiness. */
+
 .dashboard-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));

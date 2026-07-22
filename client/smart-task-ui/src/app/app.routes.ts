@@ -5,12 +5,14 @@ import { unsavedChangesGuard } from './core/guards/unsaved-changes.guard';
 import { UserRole } from './core/models/enums';
 
 // Top-level route configuration.
+// Public auth routes (login/register) are siblings of the protected shell.
+// The shell acts as a layout wrapper for all authenticated feature routes.
 export const routes: Routes = [
   { path: 'login', loadComponent: () => import('./features/auth/login/login.component').then(m => m.LoginComponent) },
   { path: 'register', loadComponent: () => import('./features/auth/register/register.component').then(m => m.RegisterComponent) },
   {
     path: '',
-    canActivate: [authGuard],
+    canActivate: [authGuard], // Redirects to /login when unauthenticated; attempts silent refresh if refresh token exists.
     loadComponent: () => import('./layouts/shell/shell.component').then(m => m.ShellComponent),
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
@@ -21,8 +23,8 @@ export const routes: Routes = [
           { path: '', loadComponent: () => import('./features/projects/project-list/project-list.component').then(m => m.ProjectListComponent) },
           {
             path: 'create',
-            canActivate: [roleGuard],
-            canDeactivate: [unsavedChangesGuard],
+            canActivate: [roleGuard], // Restricts to Admin/ProjectManager.
+            canDeactivate: [unsavedChangesGuard], // Confirms before leaving dirty forms.
             data: { roles: [UserRole.Admin, UserRole.ProjectManager] },
             loadComponent: () => import('./features/projects/project-form/project-form.component').then(m => m.ProjectFormComponent)
           },

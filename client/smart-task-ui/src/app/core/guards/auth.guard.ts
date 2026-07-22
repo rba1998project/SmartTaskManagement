@@ -5,6 +5,11 @@ import { Router } from '@angular/router';
 import { catchError, map, of } from 'rxjs';
 
 // Allows only authenticated users; attempts silent refresh when possible.
+// flow:
+//   1. If already authenticated -> allow.
+//   2. If not authenticated but refresh token exists -> attempt silent refresh.
+//   3. If refresh succeeds -> allow; if refresh fails -> clear state and redirect to /login.
+//   4. If no refresh token -> redirect to /login.
 export const authGuard: CanActivateFn = (route, state) => {
   const authService = inject(AuthService);
   const router = inject(Router);

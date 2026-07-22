@@ -1,5 +1,5 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -11,6 +11,8 @@ import { UserRole } from '../../core/models/enums';
 import { NotificationService } from '../../core/services/notification.service';
 
 // Main app shell/layout.
+// Wraps the sidenav and toolbar; child routes render inside <router-outlet>.
+// The authGuard on the parent route ensures only authenticated users reach this shell.
 @Component({
   selector: 'app-shell',
   standalone: true,
@@ -22,6 +24,7 @@ export class ShellComponent implements OnInit {
   private breakpointObserver = inject(BreakpointObserver);
   private authService = inject(AuthService);
   private notificationService = inject(NotificationService);
+  private router = inject(Router);
 
   readonly isMobile = signal<boolean>(false);
   readonly sidenavOpened = signal<boolean>(false);
@@ -41,9 +44,13 @@ export class ShellComponent implements OnInit {
     this.sidenavOpened.update(v => !v);
   }
 
+  // Clears auth state then redirects to the login page.
+  // Important: authGuard cannot re-run here because the shell route is already activated,
+  // so explicit navigation is required to avoid leaving the user on a blank shell.
   logout(): void {
     this.authService.logout();
     this.notificationService.show('Logged out successfully');
+    this.router.navigate(['/login']);
   }
 
   canCreateProject(): boolean {

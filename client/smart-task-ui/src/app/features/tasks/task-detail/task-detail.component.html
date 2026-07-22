@@ -72,5 +72,10 @@
         </div>
       </mat-card-content>
     </mat-card>
+  } @else {
+    <div class="error-state">
+      <p>Task not found.</p>
+      <button mat-raised-button color="primary" (click)="goBack()">Back to Tasks</button>
+    </div>
   }
 </div>

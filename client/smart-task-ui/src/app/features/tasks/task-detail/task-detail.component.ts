@@ -53,6 +53,9 @@ export class TaskDetailComponent implements OnInit {
     this.taskId = this.route.snapshot.paramMap.get('id') || '';
     if (this.taskId) {
       this.loadTask();
+    } else {
+      this.loading.set(false);
+      this.error.set('Task not found');
     }
   }
 

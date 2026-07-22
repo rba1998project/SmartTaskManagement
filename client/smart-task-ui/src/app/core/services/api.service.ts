@@ -2,7 +2,6 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { ApiResponse } from '../models/api-response';
-import { PagedResult } from '../models/enums';
 
 // Shared query params for list endpoints.
 export interface ListParams {
@@ -13,6 +12,8 @@ export interface ListParams {
   pageSize: number;
 }
 
+// Generic HTTP wrapper that prefixes the API base URL and wraps responses in ApiResponse<T>.
+// All feature services should use this instead of injecting HttpClient directly.
 @Injectable({ providedIn: 'root' })
 export class ApiService {
   private http = inject(HttpClient);

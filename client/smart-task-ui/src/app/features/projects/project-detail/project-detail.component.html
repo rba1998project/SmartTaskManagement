@@ -38,5 +38,10 @@
         </div>
       </mat-card-content>
     </mat-card>
+  } @else {
+    <div class="error-state">
+      <p>Project not found.</p>
+      <button mat-raised-button color="primary" (click)="goBack()">Back to Projects</button>
+    </div>
   }
 </div>

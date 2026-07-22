@@ -50,6 +50,9 @@ export class ProjectDetailComponent implements OnInit {
     this.projectId = this.route.snapshot.paramMap.get('id') || '';
     if (this.projectId) {
       this.loadProject();
+    } else {
+      this.loading.set(false);
+      this.error.set('Project not found');
     }
   }
 

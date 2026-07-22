@@ -1,6 +1,11 @@
 @import '@angular/material/prebuilt-themes/indigo-pink.css';
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
 
+/* Design-token layer for the app shell and custom components. */
+/* Angular Material components are themed by the imported prebuilt theme stylesheet above. */
+/* Custom component colors reference these variables so a future dark theme only needs */
+/* to override the values inside .dark-theme. */
+
 :root {
   --app-text-primary: rgba(0, 0, 0, 0.87);
   --app-text-secondary: rgba(0, 0, 0, 0.6);
@@ -17,6 +22,8 @@
   --app-avatar-bg: rgba(255, 255, 255, 0.25);
 }
 
+/* Uncomment and expand these values when a complete dark theme is enabled. */
+/* The toggle logic in ThemeService already adds/removes this class on <html>. */
 .dark-theme {
   --app-text-primary: rgba(255, 255, 255, 0.87);
   --app-text-secondary: rgba(255, 255, 255, 0.6);
