@@ -1,5 +1,5 @@
 @import '../403/forbidden.component.css';
 
 .error-card h1 {
-  color: #ff9800;
+  color: var(--app-warning);
 }

@@ -16,7 +16,7 @@
 
 .stat-label {
   font-size: 0.875rem;
-  color: rgba(0, 0, 0, 0.6);
+  color: var(--app-text-secondary);
   margin-top: 4px;
 }
 
@@ -27,7 +27,7 @@
 .skeleton-label {
   height: 16px;
   width: 60%;
-  background: #e0e0e0;
+  background: var(--app-skeleton);
   border-radius: 4px;
   margin-bottom: 12px;
 }
@@ -35,7 +35,7 @@
 .skeleton-value {
   height: 32px;
   width: 40%;
-  background: #e0e0e0;
+  background: var(--app-skeleton);
   border-radius: 4px;
 }
 
@@ -46,7 +46,7 @@
 
 .error-state p {
   margin-bottom: 16px;
-  color: rgba(0, 0, 0, 0.7);
+  color: var(--app-text-error);
 }
 
 .recent-section {
@@ -61,10 +61,20 @@
 }
 
 .empty-text {
-  color: rgba(0, 0, 0, 0.6);
+  color: var(--app-text-secondary);
 }
 
 .secondary {
-  color: rgba(0, 0, 0, 0.6);
+  color: var(--app-text-secondary);
   font-size: 0.875rem;
+}
+
+@media (max-width: 768px) {
+  .dashboard-grid {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  }
+
+  .recent-section {
+    grid-template-columns: 1fr;
+  }
 }

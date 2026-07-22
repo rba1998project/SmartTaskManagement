@@ -49,6 +49,7 @@
       <p>No tasks found. Create your first task to get started.</p>
     </div>
   } @else {
+    <div class="table-wrapper">
     <table mat-table [dataSource]="tasks()" matSort (matSortChange)="onSort($event)" class="mat-elevation-z1">
       <ng-container matColumnDef="title">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Title</th>
@@ -103,6 +104,7 @@
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns; trackBy: trackByTaskId" (click)="goToDetail(row.id)" class="clickable-row"></tr>
     </table>
+    </div>
 
     <mat-paginator
       [length]="totalCount()"

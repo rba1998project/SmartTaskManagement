@@ -4,5 +4,21 @@ mat-dialog-title {
 
 mat-dialog-content {
   margin: 16px 0;
-  color: rgba(0, 0, 0, 0.7);
+  color: var(--app-text-secondary);
+}
+
+mat-dialog-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+@media (max-width: 480px) {
+  mat-dialog-actions {
+    flex-direction: column;
+  }
+
+  mat-dialog-actions button {
+    width: 100%;
+  }
 }

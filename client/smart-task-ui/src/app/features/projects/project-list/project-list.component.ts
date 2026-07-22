@@ -16,7 +16,6 @@ import { ProjectResponse, ProjectQueryRequest } from '../../../core/models/proje
 import { AuthService } from '../../../core/auth/auth.service';
 import { UserRole } from '../../../core/models/enums';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
-import { PagedResult } from '../../../core/models/enums';
 
 // Route: /projects
 // Loads paginated, sortable, and searchable project list.

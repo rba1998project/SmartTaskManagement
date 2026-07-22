@@ -19,7 +19,6 @@ import { TaskResponse, TaskQueryRequest } from '../../../core/models/task';
 import { AuthService } from '../../../core/auth/auth.service';
 import { UserRole } from '../../../core/models/enums';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
-import { PagedResult } from '../../../core/models/enums';
 import { TaskItemStatus, TaskItemPriority } from '../../../core/models/enums';
 import { TASK_STATUS_LABELS } from '../../../shared/constants/task-status.constants';
 import { TASK_PRIORITY_LABELS } from '../../../shared/constants/task-priority.constants';

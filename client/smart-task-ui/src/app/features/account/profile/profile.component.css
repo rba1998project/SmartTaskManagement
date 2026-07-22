@@ -5,29 +5,45 @@
 .profile-field {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   padding: 12px 0;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  border-bottom: 1px solid var(--app-border-subtle);
 }
 
 .profile-field .label {
   font-weight: 500;
-  color: rgba(0, 0, 0, 0.6);
+  color: var(--app-text-secondary);
 }
 
 .profile-field .value {
-  color: rgba(0, 0, 0, 0.87);
+  color: var(--app-text-primary);
+}
+
+.disabled-section {
+  opacity: 0.6;
+}
+
+.disabled-tooltip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 8px 12px;
+  border-radius: 4px;
+  background: var(--app-bg-surface);
+  color: var(--app-text-disabled);
+  font-size: 0.875rem;
+  cursor: not-allowed;
+  user-select: none;
+}
+
+.disabled-tooltip mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
 }
 
 .role-chips {
   display: flex;
   gap: 8px;
-}
-
-.chip {
-  background: #e3f2fd;
-  color: #1565c0;
-  padding: 4px 12px;
-  border-radius: 16px;
-  font-size: 0.85rem;
-  font-weight: 500;
 }

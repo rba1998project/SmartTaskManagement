@@ -30,6 +30,7 @@
       <p>No projects found. Create your first project to get started.</p>
     </div>
   } @else {
+    <div class="table-wrapper">
     <table mat-table [dataSource]="projects()" matSort (matSortChange)="onSort($event)" class="mat-elevation-z1">
       <ng-container matColumnDef="name">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
@@ -65,6 +66,7 @@
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="goToDetail(row.id)" class="clickable-row"></tr>
     </table>
+    </div>
 
     <mat-paginator
       [length]="totalCount()"

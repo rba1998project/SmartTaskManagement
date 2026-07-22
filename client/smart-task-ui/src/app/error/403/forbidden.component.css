@@ -1,5 +1,3 @@
-@import '../404/not-found.component.css';
-
 .error-container {
   display: flex;
   justify-content: center;
@@ -17,7 +15,7 @@
 .error-card h1 {
   font-size: 4rem;
   margin: 0;
-  color: #f44336;
+  color: var(--app-error);
 }
 
 .error-card h2 {
@@ -25,6 +23,6 @@
 }
 
 .error-card p {
-  color: rgba(0, 0, 0, 0.6);
+  color: var(--app-text-secondary);
   margin-bottom: 24px;
 }

@@ -1,3 +1,5 @@
+<!-- Route: /account -->
+<!-- Shows current user info and a disabled Change Password placeholder. -->
 @if (currentUser(); as user) {
   <mat-card class="profile-card">
     <mat-card-header>
@@ -19,6 +21,12 @@
             <mat-chip>{{ role }}</mat-chip>
           }
         </div>
+      </div>
+
+      <!-- Change Password is not available because the backend has no change-password endpoint. -->
+      <div matTooltip="This feature will be introduced soon." class="placeholder-note disabled-tooltip">
+        <mat-icon matTooltip="This feature will be introduced soon.">lock</mat-icon>
+        <span>Change Password</span>
       </div>
     </mat-card-content>
   </mat-card>

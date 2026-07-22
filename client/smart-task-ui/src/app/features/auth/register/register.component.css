@@ -19,11 +19,11 @@
 .login-link {
   text-align: center;
   margin: 16px 0 0;
-  color: rgba(0, 0, 0, 0.6);
+  color: var(--app-text-secondary);
 }
 
 .login-link a {
-  color: #1976d2;
+  color: var(--app-link);
   text-decoration: none;
   font-weight: 500;
 }
