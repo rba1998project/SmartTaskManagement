@@ -43,9 +43,8 @@
     </mat-nav-list>
   </mat-sidenav>
 
-  <mat-sidenav-content>
-    <mat-toolbar color="primary" class="shell-toolbar">
-      @if (isMobile()) {
+    <mat-sidenav-content>
+      <mat-toolbar color="primary" class="shell-toolbar">
         <button
           type="button"
           mat-icon-button
@@ -55,21 +54,20 @@
         >
           <mat-icon>menu</mat-icon>
         </button>
-      }
-      <span class="spacer"></span>
-      <button
-        mat-icon-button
-        class="user-avatar"
-        [routerLink]="['/account']"
-        title="My Account"
-        aria-label="My Account"
-      >
-        <span class="user-initials">{{ userInitials }}</span>
-      </button>
-      <button mat-icon-button (click)="logout()" title="Logout" aria-label="Logout">
-        <mat-icon>logout</mat-icon>
-      </button>
-    </mat-toolbar>
+        <span class="spacer"></span>
+        <button
+          mat-icon-button
+          class="user-avatar"
+          [routerLink]="['/account']"
+          title="My Account"
+          aria-label="My Account"
+        >
+          <span class="user-initials">{{ userInitials }}</span>
+        </button>
+        <button mat-icon-button (click)="logout()" title="Logout" aria-label="Logout">
+          <mat-icon>logout</mat-icon>
+        </button>
+      </mat-toolbar>
 
     <main class="shell-content">
       <router-outlet></router-outlet>

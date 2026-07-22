@@ -1,7 +1,7 @@
 export enum UserRole {
-  Admin = 1,
-  ProjectManager = 2,
-  TeamMember = 3
+  Admin = 'Admin',
+  ProjectManager = 'ProjectManager',
+  TeamMember = 'TeamMember'
 }
 
 export enum TaskItemStatus {

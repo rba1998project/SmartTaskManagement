@@ -12,22 +12,22 @@
 }
 
 .sidenav-header {
-  padding: 16px;
+  padding: var(--space-5);
   border-bottom: 1px solid var(--mat-sidenav-divider-color, rgba(0, 0, 0, 0.12));
 }
 
 .sidenav-header h2 {
   margin: 0;
-  font-size: 1.25rem;
-  font-weight: 500;
-  letter-spacing: 0.0125em;
+  font-size: var(--text-h3);
+  font-weight: var(--text-weight-medium);
+  letter-spacing: var(--text-letter-spacing);
 }
 
 .shell-sidenav .mat-mdc-nav-list .mat-mdc-list-item {
   height: 48px;
-  margin: 4px 8px;
+  margin: var(--space-1) var(--space-2);
   border-radius: 8px;
-  padding: 0 12px;
+  padding: 0 var(--space-3);
 }
 
 .shell-sidenav .mat-mdc-nav-list .mat-mdc-list-item mat-icon {
@@ -35,6 +35,7 @@
   width: 24px;
   height: 24px;
   line-height: 24px;
+  margin-right: var(--space-3);
 }
 
 .shell-sidenav .mat-mdc-nav-list .mat-mdc-list-item:hover {
@@ -43,7 +44,7 @@
 
 .shell-sidenav .mat-mdc-nav-list .mat-mdc-list-item.active {
   background-color: rgba(0, 0, 0, 0.08);
-  font-weight: 500;
+  font-weight: var(--text-weight-medium);
 }
 
 .shell-toolbar {
@@ -51,11 +52,11 @@
   top: 0;
   z-index: 10;
   min-height: 64px;
-  padding: 0 16px;
+  padding: 0 var(--space-5);
 }
 
 .menu-btn {
-  margin-right: 8px;
+  margin-right: var(--space-2);
 }
 
 .spacer {
@@ -67,10 +68,10 @@
   height: 32px;
   border-radius: 50%;
   background: var(--app-avatar-bg);
-  font-size: 0.85rem;
-  font-weight: 500;
-  letter-spacing: 0.025em;
-  margin-right: 4px;
+  font-size: var(--text-caption);
+  font-weight: var(--text-weight-medium);
+  letter-spacing: var(--text-letter-spacing);
+  margin-right: var(--space-2);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -84,17 +85,17 @@
 }
 
 .shell-content {
-  padding: 24px;
+  padding: var(--space-5);
   height: calc(100vh - 64px);
   overflow: auto;
 }
 
 @media (max-width: 599px) {
   .shell-content {
-    padding: 16px;
+    padding: var(--space-4);
   }
 
   .shell-toolbar {
-    padding: 0 8px;
+    padding: 0 var(--space-3);
   }
 }

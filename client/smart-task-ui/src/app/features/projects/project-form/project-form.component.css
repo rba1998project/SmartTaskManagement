@@ -6,14 +6,14 @@
 
 .full-width {
   width: 100%;
-  margin-bottom: 16px;
+  margin-bottom: var(--space-3);
 }
 
 .form-actions {
   display: flex;
-  gap: 12px;
+  gap: var(--space-3);
   justify-content: flex-end;
-  margin-top: 24px;
+  margin-top: var(--space-5);
 }
 
 @media (max-width: 600px) {

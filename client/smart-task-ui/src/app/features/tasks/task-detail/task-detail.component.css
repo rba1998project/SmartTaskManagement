@@ -5,62 +5,70 @@
 .loading {
   display: flex;
   justify-content: center;
-  padding: 48px;
+  align-items: center;
+  padding: var(--space-8);
+  min-height: 300px;
 }
 
 .error-state {
   text-align: center;
-  padding: 48px 16px;
+  padding: var(--space-8) var(--space-4);
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .error-state p {
-  margin-bottom: 16px;
+  margin-bottom: var(--space-4);
   color: var(--app-text-error);
+  font-size: var(--text-body);
 }
 
 .error-state button {
-  margin: 0 8px;
+  margin: 0 var(--space-2);
 }
 
 .detail-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
-  padding: 16px;
+  margin-bottom: var(--space-4);
+  padding: var(--space-4);
 }
 
 .detail-header h1 {
   margin: 0;
-  font-size: 1.5rem;
-  font-weight: 400;
-  letter-spacing: 0.0125em;
+  font-size: var(--text-h1);
+  font-weight: var(--text-weight-regular);
+  letter-spacing: var(--text-letter-spacing);
 }
 
 .header-actions {
   display: flex;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 .detail-card {
-  margin-bottom: 24px;
+  margin-bottom: var(--space-5);
 }
 
 .detail-card ::ng-deep .mat-mdc-card-content {
-  padding: 24px;
+  padding: var(--space-5);
 }
 
 .detail-row {
   display: flex;
-  padding: 12px 0;
+  padding: var(--space-3) 0;
   align-items: baseline;
 }
 
 .detail-row .label {
   width: 150px;
-  font-weight: 500;
+  font-weight: var(--text-weight-medium);
   color: var(--app-text-secondary);
-  font-size: 0.875rem;
+  font-size: var(--text-body);
 }
 
 .detail-row .value {
@@ -72,13 +80,13 @@
   .detail-header {
     flex-direction: column;
     align-items: flex-start;
-    gap: 12px;
+    gap: var(--space-3);
   }
 
   .detail-row {
     flex-direction: column;
-    gap: 4px;
-    padding: 12px 0;
+    gap: var(--space-1);
+    padding: var(--space-3) 0;
 
     .label {
       width: auto;

@@ -3,7 +3,7 @@
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  padding: 16px;
+  padding: var(--space-4);
 }
 
 .register-card {
@@ -15,19 +15,23 @@
   padding-bottom: 0;
 }
 
+.register-card ::ng-deep .mat-mdc-form-field-required-marker {
+  display: none;
+}
+
 .full-width {
   width: 100%;
-  margin-bottom: 12px;
+  margin-bottom: var(--space-3);
 }
 
 .login-link {
   text-align: center;
-  margin: 16px 0 0;
+  margin: var(--space-4) 0 0;
   color: var(--app-text-secondary);
 }
 
 .login-link a {
   color: var(--app-link);
   text-decoration: none;
-  font-weight: 500;
+  font-weight: var(--text-weight-medium);
 }

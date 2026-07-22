@@ -3,14 +3,14 @@
 }
 
 .profile-card ::ng-deep .mat-mdc-card-content {
-  padding: 24px;
+  padding: var(--space-5);
 }
 
 .profile-field {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 0;
+  padding: var(--space-3) 0;
   border-bottom: 1px solid var(--app-border-subtle);
 }
 
@@ -19,9 +19,9 @@
 }
 
 .profile-field .label {
-  font-weight: 500;
+  font-weight: var(--text-weight-medium);
   color: var(--app-text-secondary);
-  font-size: 0.875rem;
+  font-size: var(--text-body);
 }
 
 .profile-field .value {
@@ -35,13 +35,13 @@
 .disabled-tooltip {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  margin-top: 12px;
-  padding: 8px 12px;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+  padding: var(--space-2) var(--space-3);
   border-radius: 4px;
   background: var(--app-bg-surface);
   color: var(--app-text-disabled);
-  font-size: 0.875rem;
+  font-size: var(--text-body);
   cursor: not-allowed;
   user-select: none;
 }
@@ -54,5 +54,5 @@
 
 .role-chips {
   display: flex;
-  gap: 8px;
+  gap: var(--space-2);
 }
