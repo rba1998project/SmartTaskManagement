@@ -1,33 +1,127 @@
-import { Component, inject } from '@angular/core';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { Component, inject, signal, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { Router, RouterModule } from '@angular/router';
+import { ProjectsService } from '../../../core/services/projects.service';
+import { NotificationService } from '../../../core/services/notification.service';
 
 @Component({
   selector: 'app-project-form',
   standalone: true,
-  imports: [MatCardModule, RouterModule],
-  template: `
-    <mat-card>
-      <mat-card-content>
-        <h2>{{ isEdit ? 'Edit' : 'Create' }} Project</h2>
-        <p class="muted">Project form implementation coming soon.</p>
-      </mat-card-content>
-    </mat-card>
-  `,
-  styles: [`
-    .muted { color: rgba(0,0,0,0.6); margin-top: 8px; }
-  `]
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    RouterModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatCardModule,
+    MatProgressSpinnerModule,
+  ],
+  templateUrl: './project-form.component.html',
+  styleUrl: './project-form.component.css'
 })
-export class ProjectFormComponent {
-  private route = inject(ActivatedRoute);
+export class ProjectFormComponent implements OnInit {
+  private fb = inject(FormBuilder);
   private router = inject(Router);
-  isEdit = this.route.snapshot.url.some(seg => seg.path === 'edit');
+  private projectsService = inject(ProjectsService);
+  private notificationService = inject(NotificationService);
+
+  form: FormGroup = this.fb.group({
+    name: ['', [Validators.required, Validators.maxLength(200)]],
+    description: ['', [Validators.maxLength(2000)]],
+  });
+
+  loading = signal(false);
+  isEdit = false;
+  projectId: string | null = null;
+
+  ngOnInit(): void {
+    const id = this.router.url.split('/').pop();
+    if (id && id !== 'create') {
+      this.isEdit = true;
+      this.projectId = id;
+      this.loadProject(id);
+    }
+  }
+
+  loadProject(id: string): void {
+    this.loading.set(true);
+    this.projectsService.get(id).subscribe({
+      next: (result) => {
+        if (result.success && result.data) {
+          this.form.patchValue({
+            name: result.data.name,
+            description: result.data.description || '',
+          });
+        } else {
+          this.notificationService.showError(result.message || 'Failed to load project');
+          this.router.navigate(['/projects']);
+        }
+        this.loading.set(false);
+      },
+      error: (err: { message?: string }) => {
+        this.notificationService.showError(err.message || 'Failed to load project');
+        this.router.navigate(['/projects']);
+        this.loading.set(false);
+      }
+    });
+  }
+
+  submit(): void {
+    if (this.form.invalid || this.loading()) return;
+
+    this.loading.set(true);
+    const value = this.form.value;
+
+    if (this.isEdit && this.projectId) {
+      this.projectsService.update(this.projectId, value).subscribe({
+        next: (result) => {
+          if (result.success && result.data) {
+            this.notificationService.showSuccess('Project updated successfully');
+            this.router.navigate(['/projects']);
+          } else {
+            this.notificationService.showError(result.message || 'Update failed');
+            this.loading.set(false);
+          }
+        },
+        error: (err: { message?: string }) => {
+          this.notificationService.showError(err.message || 'Update failed');
+          this.loading.set(false);
+        }
+      });
+    } else {
+      this.projectsService.create({ name: value.name, description: value.description }).subscribe({
+        next: (result) => {
+          if (result.success && result.data) {
+            this.notificationService.showSuccess('Project created successfully');
+            this.router.navigate(['/projects']);
+          } else {
+            this.notificationService.showError(result.message || 'Creation failed');
+            this.loading.set(false);
+          }
+        },
+        error: (err: { message?: string }) => {
+          this.notificationService.showError(err.message || 'Creation failed');
+          this.loading.set(false);
+        }
+      });
+    }
+  }
+
+  cancel(): void {
+    this.router.navigate(['/projects']);
+  }
 
   canDeactivate(): boolean {
-    const confirmed = confirm('You have unsaved changes. Are you sure you want to leave?');
-    if (!confirmed) {
-      return false;
+    if (this.form.pristine && !this.isEdit) {
+      return true;
     }
-    return true;
+    return confirm('You have unsaved changes. Are you sure you want to leave?');
   }
 }

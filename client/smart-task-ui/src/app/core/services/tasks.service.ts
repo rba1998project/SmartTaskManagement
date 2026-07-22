@@ -53,4 +53,8 @@ export class TasksService {
       pageSize: 5,
     });
   }
+
+  improveDescription(request: { description: string }) {
+    return this.api.post<{ improvedDescription: string }>('/api/tasks/improve-description', request);
+  }
 }

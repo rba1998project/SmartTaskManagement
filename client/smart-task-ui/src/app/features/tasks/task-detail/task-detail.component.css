@@ -1,0 +1,60 @@
+.task-detail-container {
+  padding: 0;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  padding: 48px;
+}
+
+.error-state {
+  text-align: center;
+  padding: 48px 16px;
+}
+
+.error-state p {
+  margin-bottom: 16px;
+  color: rgba(0, 0, 0, 0.7);
+}
+
+.error-state button {
+  margin: 0 8px;
+}
+
+.detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.detail-header h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 500;
+}
+
+.header-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.detail-card {
+  margin-bottom: 24px;
+}
+
+.detail-row {
+  display: flex;
+  padding: 12px 0;
+}
+
+.detail-row .label {
+  width: 150px;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.7);
+}
+
+.detail-row .value {
+  flex: 1;
+}

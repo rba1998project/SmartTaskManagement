@@ -1,0 +1,74 @@
+<div class="task-detail-container">
+  @if (loading()) {
+    <div class="loading">
+      <mat-spinner diameter="40"></mat-spinner>
+    </div>
+  } @else if (error()) {
+    <div class="error-state">
+      <p>{{ error() }}</p>
+      <button mat-raised-button color="primary" (click)="loadTask()">Retry</button>
+      <button mat-button (click)="goBack()">Back to Tasks</button>
+    </div>
+  } @else if (task()) {
+    <div class="detail-header">
+      <h1>{{ task()!.title }}</h1>
+      <div class="header-actions">
+        @if (canMutate()) {
+          <button mat-raised-button color="primary" (click)="goToEdit()">
+            <mat-icon>edit</mat-icon>
+            Edit
+          </button>
+        }
+        <button mat-button (click)="goBack()">Back</button>
+      </div>
+    </div>
+
+    <mat-card class="detail-card">
+      <mat-card-content>
+        <div class="detail-row">
+          <span class="label">Description</span>
+          <span class="value">{{ task()!.description || 'No description provided' }}</span>
+        </div>
+        <mat-divider></mat-divider>
+        <div class="detail-row">
+          <span class="label">Status</span>
+          <span class="value">
+            <mat-chip [color]="statusColor(task()!.status)">{{ statusLabel(task()!.status) }}</mat-chip>
+          </span>
+        </div>
+        <mat-divider></mat-divider>
+        <div class="detail-row">
+          <span class="label">Priority</span>
+          <span class="value">
+            <mat-chip [color]="priorityColor(task()!.priority)">{{ priorityLabel(task()!.priority) }}</mat-chip>
+          </span>
+        </div>
+        <mat-divider></mat-divider>
+        <div class="detail-row">
+          <span class="label">Due Date</span>
+          <span class="value">{{ formatDate(task()!.dueDate) }}</span>
+        </div>
+        <mat-divider></mat-divider>
+        <div class="detail-row">
+          <span class="label">Project</span>
+          <span class="value">{{ task()!.projectId }}</span>
+        </div>
+        <mat-divider></mat-divider>
+        <div class="detail-row">
+          <span class="label">Assigned To</span>
+          <span class="value">{{ task()!.assignedToUserId || 'Unassigned' }}</span>
+        </div>
+        <mat-divider></mat-divider>
+        <div class="detail-row">
+          <span class="label">Created</span>
+          <span class="value">{{ task()!.createdAt | date:'medium' }}</span>
+        </div>
+        <mat-divider></mat-divider>
+        <div class="detail-row">
+          <span class="label">Last Updated</span>
+          <span class="value">{{ task()!.updatedAt | date:'medium' }}</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  }
+</div>

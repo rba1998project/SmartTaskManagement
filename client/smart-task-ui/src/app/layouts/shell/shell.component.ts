@@ -26,8 +26,6 @@ export class ShellComponent implements OnInit {
   readonly sidenavOpened = signal<boolean>(false);
   userInitials = '';
 
-  constructor() {}
-
   ngOnInit(): void {
     const email = this.authService.currentUser()?.email || 'U';
     this.userInitials = email.split('@')[0].slice(0, 2).toUpperCase();

@@ -1,0 +1,40 @@
+<div class="project-detail-container">
+  @if (loading()) {
+    <div class="loading">
+      <mat-spinner diameter="40"></mat-spinner>
+    </div>
+  } @else if (error()) {
+    <div class="error-state">
+      <p>{{ error() }}</p>
+      <button mat-raised-button color="primary" (click)="loadProject()">Retry</button>
+      <button mat-button (click)="goBack()">Back to Projects</button>
+    </div>
+  } @else if (project()) {
+    <div class="detail-header">
+      <h1>{{ project()!.name }}</h1>
+      <div class="header-actions">
+        @if (canMutate()) {
+          <button mat-raised-button color="primary" routerLink="/projects/{{ project()!.id }}/edit">
+            <mat-icon>edit</mat-icon>
+            Edit
+          </button>
+        }
+        <button mat-button (click)="goBack()">Back</button>
+      </div>
+    </div>
+
+    <mat-card class="detail-card">
+      <mat-card-content>
+        <div class="detail-row">
+          <span class="label">Description</span>
+          <span class="value">{{ project()!.description || 'No description provided' }}</span>
+        </div>
+        <mat-divider></mat-divider>
+        <div class="detail-row">
+          <span class="label">Created</span>
+          <span class="value">{{ project()!.createdAt | date:'medium' }}</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  }
+</div>

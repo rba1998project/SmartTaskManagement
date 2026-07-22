@@ -1,0 +1,69 @@
+.project-detail-container {
+  padding: 24px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  padding: 40px;
+}
+
+.error-state {
+  text-align: center;
+  padding: 40px;
+
+  p {
+    color: #f44336;
+    margin-bottom: 16px;
+  }
+
+  button {
+    margin: 0 8px;
+  }
+}
+
+.detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+
+  h1 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 500;
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 8px;
+  }
+}
+
+.detail-card {
+  mat-card-content {
+    padding: 24px;
+  }
+}
+
+.detail-row {
+  display: flex;
+  padding: 16px 0;
+
+  .label {
+    font-weight: 500;
+    width: 150px;
+    color: rgba(0, 0, 0, 0.6);
+  }
+
+  .value {
+    flex: 1;
+    color: rgba(0, 0, 0, 0.87);
+  }
+
+  mat-divider {
+    margin: 0;
+  }
+}
