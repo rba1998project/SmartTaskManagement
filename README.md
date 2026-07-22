@@ -1,14 +1,13 @@
 # Smart Task Management System
 
 A role-based task and project management system built as a 4-day interview assignment.
-Backend: ASP.NET Core 9 (Clean Architecture) with EF Core 9 and SQL Server. Frontend:
-Angular 21+ (added in a later phase).
+Backend: ASP.NET Core 9 (Clean Architecture) with EF Core 9 and SQL Server.
+Frontend: Angular 21+ with Angular Material.
 
-> **Status:** Backend feature work is complete. Authentication (JWT + rotating refresh
-> tokens), project management, task management, permission-based (RBAC) authorization,
-> search/filtering/sorting/pagination, the dashboard, and the AI task-description improver
-> are all implemented. Angular frontend (Phase 8) and final documentation/verification
-> (Phase 9) remain. See `PLAN.md`.
+> **Status:** Backend and Angular frontend are both implemented. Authentication (JWT +
+> rotating refresh tokens), project management, task management, permission-based (RBAC)
+> authorization, search/filtering/sorting/pagination, dashboard, AI task-description
+> improver, and responsive UI are all working. See `PLAN.md`.
 
 ## Technology Stack
 
@@ -22,7 +21,7 @@ Angular 21+ (added in a later phase).
 | Validation | FluentValidation |
 | Logging | Serilog (console + rolling file) |
 | API docs | Swashbuckle / Swagger (Development only) |
-| Frontend | Angular 21+ (later phase) |
+| Frontend | Angular 21+, Angular Material, standalone components, signal-based state |
 
 ## Folder Structure
 
@@ -38,24 +37,33 @@ SmartTaskManagement/
 │  ├─ Abstractions/                     # IProjectRepository, ITaskRepository, IIdentityService,
 │  │                                    #   IJwtTokenGenerator, IRefreshTokenService, ICurrentUserService
 │  ├─ Authentication/                   # auth DTOs, validators, AuthService
-│  ├─ Authorization/                    # RoleNames, Permissions (role→permission map)
+│  ├─ Authorization/                    # RoleNames, permissions
 │  ├─ Projects/                         # DTOs, validators, ProjectService
 │  ├─ Tasks/                            # DTOs, validators, TaskService
-│  └─ Common/                           # Result / ErrorType
+│  ├─ Dashboard/                        # DashboardService, DashboardResponse
+│  └─ Common/                           # Result / ErrorType / PagedResult / SortDirection
 ├─ SmartTaskManagement.Infrastructure/  # EF Core, DbContext, migrations → Application/Domain
 │  ├─ Identity/                         # ApplicationUser/Role, IdentityDataSeeder, IdentityService
 │  ├─ Authentication/                   # JwtTokenGenerator, RefreshTokenService, JwtOptions
 │  ├─ Persistence/                      # ApplicationDbContext, repositories, EF configurations
+│  ├─ Ai/                               # GeminiTaskAiService, AiPrompts, AiStatusService
 │  ├─ Migrations/
 │  └─ DependencyInjection.cs            # AddInfrastructure(IConfiguration)
 ├─ SmartTaskManagement.API/             # ASP.NET Core host → Application/Infrastructure
-│  ├─ Controllers/                      # AuthController, ProjectsController, TasksController
+│  ├─ Controllers/                      # AuthController, ProjectsController, TasksController, DashboardController, AiController
 │  ├─ Common/                           # ApiResponse envelope, Result→ActionResult mapping
 │  ├─ Extensions/                       # focused DI/pipeline composition
 │  ├─ Filters/ValidationActionFilter.cs # model validation → consistent error envelope
 │  ├─ Middleware/ExceptionHandlingMiddleware.cs
 │  └─ Program.cs                        # composition root
-└─ client/smart-task-ui/                # Angular app (later phase)
+└─ client/smart-task-ui/                # Angular 21+ frontend
+   └─ src/app/
+      ├─ app.config.ts
+      ├─ app.routes.ts
+      ├─ core/                           # auth, guards, interceptors, services, models
+      ├─ layouts/shell/                  # sidenav, toolbar, shell
+      ├─ features/                       # dashboard, projects, tasks, auth, account
+      └─ shared/                         # components, constants, pipes
 ```
 
 **Dependency direction:** `API → Application → Domain` and `Infrastructure → Application/Domain`.
@@ -66,33 +74,34 @@ Inner layers never reference outer layers.
 - .NET 9 SDK
 - SQL Server LocalDB (`(localdb)\MSSQLLocalDB`) — or adjust the connection string for your server
 - EF Core tools: `dotnet tool install --global dotnet-ef`
+- Node.js 18+ and npm (for the Angular frontend)
 
 ## Setup
 
-1. **Restore & build**
+1. **Restore & build backend**
    ```bash
    dotnet build
    ```
 
 2. **Configure secrets** (via User Secrets — never committed). The connection string, the JWT
-    signing key, the seeded admin password, and the AI API key all live here:
-    ```bash
-    dotnet user-secrets set "ConnectionStrings:SmartTaskConnection" "Server=(localdb)\MSSQLLocalDB;Database=SmartTaskManagementDb;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True" --project SmartTaskManagement.API
+   signing key, the seeded admin password, and the AI API key all live here:
+   ```bash
+   dotnet user-secrets set "ConnectionStrings:SmartTaskConnection" "Server=(localdb)\MSSQLLocalDB;Database=SmartTaskManagementDb;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True" --project SmartTaskManagement.API
 
-    # 64-byte (base64) random key used to sign JWTs
-    dotnet user-secrets set "Jwt:SigningKey" "<base64-encoded-random-key>" --project SmartTaskManagement.API
+   # 64-byte (base64) random key used to sign JWTs
+   dotnet user-secrets set "Jwt:SigningKey" "<base64-encoded-random-key>" --project SmartTaskManagement.API
 
-    # password for the seeded admin user (email is admin@smarttask.local)
-    # If this secret is not set, no admin user is created.
-    dotnet user-secrets set "Seed:AdminPassword" "<strong-password>" --project SmartTaskManagement.API
+   # password for the seeded admin user (email is admin@smarttask.local)
+   # If this secret is not set, no admin user is created.
+   dotnet user-secrets set "Seed:AdminPassword" "<strong-password>" --project SmartTaskManagement.API
 
-    # AI provider API key (optional; enables POST /api/tasks/improve-description)
-    dotnet user-secrets set "Ai:ApiKey" "<your-api-key>" --project SmartTaskManagement.API
-    ```
-    > The connection-string key is `SmartTaskConnection` (not `DefaultConnection`) to avoid
-    > colliding with an unrelated machine-level environment variable. `appsettings.json`
-    > intentionally holds no secrets — only non-secret config (`Jwt` issuer/audience/lifetimes,
-    > `Cors`, `Serilog`, `Seed:AdminEmail`, `Ai` provider/model/timeout/header).
+   # AI provider API key (optional; enables POST /api/tasks/improve-description)
+   dotnet user-secrets set "Ai:ApiKey" "<your-api-key>" --project SmartTaskManagement.API
+   ```
+   > The connection-string key is `SmartTaskConnection` (not `DefaultConnection`) to avoid
+   > colliding with an unrelated machine-level environment variable. `appsettings.json`
+   > intentionally holds no secrets — only non-secret config (`Jwt` issuer/audience/lifetimes,
+   > `Cors`, `Serilog`, `Seed:AdminEmail`, `Ai` provider/model/timeout/header).
 
 3. **Apply migrations** (creates `SmartTaskManagementDb`):
    ```bash
@@ -106,6 +115,15 @@ Inner layers never reference outer layers.
    - HTTP: `http://localhost:5193`
    - HTTPS: `https://localhost:7277`
    - On startup the app seeds the three roles and (if configured) a default admin user.
+
+5. **Run the Angular frontend** (in a separate terminal)
+   ```bash
+   cd client/smart-task-ui
+   npm install
+   npm start
+   ```
+   - The frontend proxies API requests to `https://localhost:7277`.
+   - Default login: `admin@smarttask.local` / the password set in User Secrets.
 
 ## Roles & Permissions
 
@@ -148,7 +166,7 @@ Refresh tokens are persisted as SHA-256 hashes, rotated on every use, and revoca
 | `PUT /api/projects/{id}` | `projects.update` | Update a project (ownership enforced). |
 | `DELETE /api/projects/{id}` | `projects.delete` | Delete a project; cascades to its tasks. |
 
-**List query parameters:** `search` (keyword), `sortBy` (`name`, `createdAt`, `updatedAt`), `sortDirection` (`asc`/`desc`), `page`, `pageSize`.
+**List query parameters:** `search` (keyword), `sortField` (`Name`, `CreatedAt`, `UpdatedAt`), `sortDirection` (`Asc`, `Desc`), `pageNumber`, `pageSize`.
 
 ### Tasks
 | Endpoint | Permission | Description |
@@ -165,7 +183,7 @@ Refresh tokens are persisted as SHA-256 hashes, rotated on every use, and revoca
 **Task status:** `ToDo`, `InProgress`, `Completed`, `Cancelled`.
 **Task priority:** `Low`, `Medium`, `High`, `Critical`.
 
-**List query parameters:** `search` (keyword), `status`, `priority`, `dueBefore`, `dueAfter`, `sortBy` (`title`, `status`, `priority`, `dueDate`, `createdAt`), `sortDirection` (`asc`/`desc`), `page`, `pageSize`.
+**List query parameters:** `search` (keyword), `status`, `priority`, `dueDate` (on or before), `sortField` (`Title`, `CreatedAt`, `DueDate`, `Priority`, `Status`), `sortDirection` (`Asc`, `Desc`), `pageNumber`, `pageSize`.
 
 ### Dashboard
 | Endpoint | Permission | Description |
@@ -212,14 +230,43 @@ Applied migrations:
 | `AddProjects` | `Projects` table. |
 | `AddTasks` | `Tasks` table with `Project → Task` cascade delete. |
 
+## Frontend Architecture
+
+The Angular frontend lives in `client/smart-task-ui/` and follows these conventions:
+
+- **Standalone components** — no NgModules.
+- **Angular Material + CDK** — `MatTable`, `MatPaginator`, `MatSort`, `MatDialog`, `MatSnackBar`, `BreakpointObserver`.
+- **Signal-based state** — `signal()`, `computed()`, and reactive forms.
+- **RxJS cleanup** — `takeUntilDestroyed()` from `@angular/core/rxjs-interop` on all subscriptions.
+- **Route structure:**
+  - `/login`, `/register` — auth pages
+  - `/dashboard` — stats and recent projects/tasks
+  - `/projects` — project list with search/sort/pagination
+  - `/projects/create` — create project
+  - `/projects/:id` — project detail
+  - `/projects/:id/edit` — edit project
+  - `/tasks` — task list with search/status/priority filters, sort/pagination
+  - `/tasks/create` — create task
+  - `/tasks/:id` — task detail
+  - `/tasks/:id/edit` — edit task
+  - `/account/profile` — current user profile
+- **Guards:** `authGuard` redirects unauthenticated users to `/login`; `roleGuard` restricts by role.
+- **Interceptors:** `authInterceptor` attaches JWT and handles refresh; `errorInterceptor` sanitizes error messages and maps HTTP status codes to user-friendly toasts.
+
 ## Commands
 
 ```bash
-dotnet build     # build the solution
-dotnet test      # run tests (test project added in a later phase)
-dotnet run --project SmartTaskManagement.API   # run the API
+# Backend
+dotnet build                                    # build the solution
+dotnet run --project SmartTaskManagement.API    # run the API
 
 # EF Core
 dotnet ef migrations add <Name> --project SmartTaskManagement.Infrastructure --startup-project SmartTaskManagement.API
-dotnet ef database update      --project SmartTaskManagement.Infrastructure --startup-project SmartTaskManagement.API
+dotnet ef database update                       --project SmartTaskManagement.Infrastructure --startup-project SmartTaskManagement.API
+
+# Frontend
+cd client/smart-task-ui
+npm install
+npm start                                       # dev server with proxy to API
+npm run build                                   # production build
 ```
