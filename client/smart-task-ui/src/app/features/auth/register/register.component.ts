@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -9,6 +9,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AuthService } from '../../../core/auth/auth.service';
 import { NotificationService } from '../../../core/services/notification.service';
+import { passwordValidator, confirmPasswordValidator } from '../../../core/validators/password.validator';
 
 @Component({
   selector: 'app-register',
@@ -17,7 +18,7 @@ import { NotificationService } from '../../../core/services/notification.service
   templateUrl: './register.component.html',
   styleUrl: './register.component.css'
 })
-export class RegisterComponent {
+export class RegisterComponent implements OnInit {
   private fb = inject(FormBuilder);
   private router = inject(Router);
   private authService = inject(AuthService);
@@ -26,13 +27,29 @@ export class RegisterComponent {
   form: FormGroup = this.fb.group({
     fullName: ['', [Validators.required]],
     email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required, Validators.minLength(6)]],
+    password: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(128), passwordValidator()]],
+    confirmPassword: ['', [Validators.required, confirmPasswordValidator('password')]],
   });
 
   loading = signal(false);
 
+  ngOnInit(): void {
+    const savedEmail = localStorage.getItem('savedEmail');
+    if (savedEmail) {
+      this.form.patchValue({ email: savedEmail });
+    }
+  }
+
   submit(): void {
     if (this.form.invalid || this.loading()) return;
+
+    const password = this.form.value.password;
+    const confirmPassword = this.form.value.confirmPassword;
+
+    if (password !== confirmPassword) {
+      this.notificationService.showError('Passwords do not match');
+      return;
+    }
 
     this.loading.set(true);
     this.authService.register(this.form.value).subscribe({

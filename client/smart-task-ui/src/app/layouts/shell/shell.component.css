@@ -2,49 +2,10 @@
 /* Theme note: colors are driven by Angular Material prebuilt theme for shells/toolbars. */
 /* Custom colors (e.g., avatar background) use CSS custom properties for theme readiness. */
 
-.shell-container {
+.shell-wrapper {
+  display: flex;
+  flex-direction: column;
   height: 100vh;
-}
-
-.shell-sidenav {
-  width: 260px;
-  border-right: 1px solid var(--mat-sidenav-divider-color, rgba(0, 0, 0, 0.12));
-}
-
-.sidenav-header {
-  padding: var(--space-5);
-  border-bottom: 1px solid var(--mat-sidenav-divider-color, rgba(0, 0, 0, 0.12));
-}
-
-.sidenav-header h2 {
-  margin: 0;
-  font-size: var(--text-h3);
-  font-weight: var(--text-weight-medium);
-  letter-spacing: var(--text-letter-spacing);
-}
-
-.shell-sidenav .mat-mdc-nav-list .mat-mdc-list-item {
-  height: 48px;
-  margin: var(--space-1) var(--space-2);
-  border-radius: 8px;
-  padding: 0 var(--space-3);
-}
-
-.shell-sidenav .mat-mdc-nav-list .mat-mdc-list-item mat-icon {
-  font-size: 24px;
-  width: 24px;
-  height: 24px;
-  line-height: 24px;
-  margin-right: var(--space-3);
-}
-
-.shell-sidenav .mat-mdc-nav-list .mat-mdc-list-item:hover {
-  background-color: rgba(0, 0, 0, 0.04);
-}
-
-.shell-sidenav .mat-mdc-nav-list .mat-mdc-list-item.active {
-  background-color: rgba(0, 0, 0, 0.08);
-  font-weight: var(--text-weight-medium);
 }
 
 .shell-toolbar {
@@ -53,10 +14,19 @@
   z-index: 10;
   min-height: 64px;
   padding: 0 var(--space-5);
+  flex-shrink: 0;
 }
 
-.menu-btn {
-  margin-right: var(--space-2);
+.toolbar-title {
+  font-size: 1.25rem;
+  font-weight: 500;
+  letter-spacing: var(--text-letter-spacing);
+}
+
+.menu-btn i {
+  font-size: 20px;
+  width: 20px;
+  text-align: center;
 }
 
 .spacer {
@@ -67,15 +37,15 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: var(--app-avatar-bg);
+  background: #bdbdbd;
   font-size: var(--text-caption);
-  font-weight: var(--text-weight-medium);
+  font-weight: 700;
   letter-spacing: var(--text-letter-spacing);
   margin-right: var(--space-2);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: inherit;
+  color: rgba(0, 0, 0, 0.87);
   line-height: 1;
 }
 
@@ -84,9 +54,61 @@
   user-select: none;
 }
 
+.shell-body {
+  flex: 1;
+  overflow: hidden;
+}
+
+.shell-sidenav {
+  width: 260px;
+  border-right: 1px solid var(--mat-sidenav-divider-color, rgba(0, 0, 0, 0.12));
+}
+
+.sidenav-nav {
+  padding: var(--space-2) 0;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  height: 48px;
+  padding: 0 var(--space-4) 0 var(--space-3);
+  margin: var(--space-1) var(--space-2);
+  border-radius: 8px;
+  color: inherit;
+  text-decoration: none;
+  gap: var(--space-3);
+  transition: background-color 0.15s ease;
+  cursor: pointer;
+}
+
+.nav-item:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+  text-decoration: none;
+}
+
+.nav-item.active {
+  background-color: rgba(0, 0, 0, 0.08);
+  font-weight: var(--text-weight-medium);
+}
+
+.nav-icon {
+  font-size: 20px;
+  width: 20px;
+  text-align: center;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.nav-text {
+  font-size: 0.95rem;
+  line-height: 1.25;
+  white-space: nowrap;
+}
+
 .shell-content {
   padding: var(--space-5);
-  height: calc(100vh - 64px);
+  height: 100%;
   overflow: auto;
 }
 

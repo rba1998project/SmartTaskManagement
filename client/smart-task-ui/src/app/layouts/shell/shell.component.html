@@ -1,76 +1,78 @@
-<mat-sidenav-container class="shell-container">
-  <mat-sidenav
-    #sidenav
-    [mode]="isMobile() ? 'over' : 'side'"
-    [opened]="sidenavOpened()"
-    (closed)="sidenavOpened.set(false)"
-    class="shell-sidenav"
-    role="navigation"
-    aria-label="Main navigation"
-  >
-    <div class="sidenav-header">
-      <h2>Smart Task Management</h2>
-    </div>
-    <mat-nav-list>
-      <a mat-list-item routerLink="/dashboard" routerLinkActive="active" (click)="isMobile() && sidenav.close()">
-        <mat-icon matListIcon>dashboard</mat-icon>
-        <span>Dashboard</span>
-      </a>
-      <a mat-list-item routerLink="/projects" routerLinkActive="active" (click)="isMobile() && sidenav.close()">
-        <mat-icon matListIcon>folder</mat-icon>
-        <span>Projects</span>
-      </a>
-      @if (canCreateProject()) {
-        <a mat-list-item routerLink="/projects/create" routerLinkActive="active" (click)="isMobile() && sidenav.close()">
-          <mat-icon matListIcon>add_circle</mat-icon>
-          <span>New Project</span>
+<div class="shell-wrapper">
+  <mat-toolbar color="primary" class="shell-toolbar">
+    <button
+      type="button"
+      mat-icon-button
+      class="menu-btn"
+      (click)="toggleSidenav()"
+      aria-label="Toggle navigation"
+    >
+      <i class="fa-solid fa-bars"></i>
+    </button>
+    <span class="toolbar-title">Smart Task Management</span>
+    <span class="spacer"></span>
+    <button
+      mat-icon-button
+      class="user-avatar"
+      [routerLink]="['/account']"
+      title="My Account"
+      aria-label="My Account"
+    >
+      <span class="user-initials">{{ userInitials }}</span>
+    </button>
+    <button mat-icon-button (click)="logout()" title="Logout" aria-label="Logout">
+      <i class="fa-solid fa-right-from-bracket"></i>
+    </button>
+  </mat-toolbar>
+
+  <mat-sidenav-container class="shell-body">
+    <mat-sidenav
+      #sidenav
+      [mode]="isMobile() ? 'over' : 'side'"
+      [opened]="sidenavOpened()"
+      [fixedInViewport]="isMobile()"
+      [fixedTopGap]="64"
+      (closed)="sidenavOpened.set(false)"
+      class="shell-sidenav"
+      role="navigation"
+      aria-label="Main navigation"
+    >
+      <nav class="sidenav-nav">
+        <a routerLink="/dashboard" routerLinkActive="active" class="nav-item" (click)="isMobile() && sidenav.close()">
+          <i class="fa-solid fa-gauge-high nav-icon"></i>
+          <span class="nav-text">Dashboard</span>
         </a>
-      }
-      <a mat-list-item routerLink="/tasks" routerLinkActive="active" (click)="isMobile() && sidenav.close()">
-        <mat-icon matListIcon>check_circle</mat-icon>
-        <span>Tasks</span>
-      </a>
-      @if (canCreateTask()) {
-        <a mat-list-item routerLink="/tasks/create" routerLinkActive="active" (click)="isMobile() && sidenav.close()">
-          <mat-icon matListIcon>add_task</mat-icon>
-          <span>New Task</span>
+        <a routerLink="/projects" routerLinkActive="active" class="nav-item" (click)="isMobile() && sidenav.close()">
+          <i class="fa-solid fa-folder nav-icon"></i>
+          <span class="nav-text">Projects</span>
         </a>
-      }
-      <a mat-list-item routerLink="/account" routerLinkActive="active" (click)="isMobile() && sidenav.close()">
-        <mat-icon matListIcon>account_circle</mat-icon>
-        <span>My Account</span>
-      </a>
-    </mat-nav-list>
-  </mat-sidenav>
+        @if (canCreateProject()) {
+          <a routerLink="/projects/create" routerLinkActive="active" class="nav-item" (click)="isMobile() && sidenav.close()">
+            <i class="fa-solid fa-circle-plus nav-icon"></i>
+            <span class="nav-text">New Project</span>
+          </a>
+        }
+        <a routerLink="/tasks" routerLinkActive="active" class="nav-item" (click)="isMobile() && sidenav.close()">
+          <i class="fa-solid fa-circle-check nav-icon"></i>
+          <span class="nav-text">Tasks</span>
+        </a>
+        @if (canCreateTask()) {
+          <a routerLink="/tasks/create" routerLinkActive="active" class="nav-item" (click)="isMobile() && sidenav.close()">
+            <i class="fa-solid fa-list-check nav-icon"></i>
+            <span class="nav-text">New Task</span>
+          </a>
+        }
+        <a routerLink="/account" routerLinkActive="active" class="nav-item" (click)="isMobile() && sidenav.close()">
+          <i class="fa-solid fa-user nav-icon"></i>
+          <span class="nav-text">My Account</span>
+        </a>
+      </nav>
+    </mat-sidenav>
 
     <mat-sidenav-content>
-      <mat-toolbar color="primary" class="shell-toolbar">
-        <button
-          type="button"
-          mat-icon-button
-          class="menu-btn"
-          (click)="toggleSidenav()"
-          aria-label="Toggle navigation"
-        >
-          <mat-icon>menu</mat-icon>
-        </button>
-        <span class="spacer"></span>
-        <button
-          mat-icon-button
-          class="user-avatar"
-          [routerLink]="['/account']"
-          title="My Account"
-          aria-label="My Account"
-        >
-          <span class="user-initials">{{ userInitials }}</span>
-        </button>
-        <button mat-icon-button (click)="logout()" title="Logout" aria-label="Logout">
-          <mat-icon>logout</mat-icon>
-        </button>
-      </mat-toolbar>
-
-    <main class="shell-content">
-      <router-outlet></router-outlet>
-    </main>
-  </mat-sidenav-content>
-</mat-sidenav-container>
+      <main class="shell-content">
+        <router-outlet></router-outlet>
+      </main>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+</div>

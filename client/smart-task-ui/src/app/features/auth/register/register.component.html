@@ -32,8 +32,28 @@
           @if (form.get('password')?.hasError('required') && form.get('password')?.touched) {
             <mat-error>Password is required</mat-error>
           }
-          @if (form.get('password')?.hasError('minlength') && form.get('password')?.touched) {
-            <mat-error>Password must be at least 6 characters</mat-error>
+          @if (!form.get('password')?.hasError('required') && form.get('password')?.touched && (form.get('password')?.hasError('minlength') || form.get('password')?.hasError('maxlength'))) {
+            <mat-error>Must be 8 characters</mat-error>
+          }
+          @if (!form.get('password')?.hasError('required') && form.get('password')?.touched && form.get('password')?.hasError('uppercase')) {
+            <mat-error>Include an uppercase letter</mat-error>
+          }
+          @if (!form.get('password')?.hasError('required') && form.get('password')?.touched && form.get('password')?.hasError('lowercase')) {
+            <mat-error>Include a lowercase letter</mat-error>
+          }
+          @if (!form.get('password')?.hasError('required') && form.get('password')?.touched && form.get('password')?.hasError('special')) {
+            <mat-error>Include a special character</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="fill" class="full-width">
+          <mat-label>Confirm Password</mat-label>
+          <input matInput formControlName="confirmPassword" type="password" autocomplete="new-password" />
+          @if (form.get('confirmPassword')?.hasError('required') && form.get('confirmPassword')?.touched) {
+            <mat-error>Please confirm your password</mat-error>
+          }
+          @if (form.get('confirmPassword')?.hasError('mismatch') && form.get('confirmPassword')?.touched) {
+            <mat-error>Passwords do not match</mat-error>
           }
         </mat-form-field>
 

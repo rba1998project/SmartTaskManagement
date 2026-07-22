@@ -27,7 +27,7 @@ export class ShellComponent implements OnInit {
   private router = inject(Router);
 
   readonly isMobile = signal<boolean>(false);
-  readonly sidenavOpened = signal<boolean>(false);
+  readonly sidenavOpened = signal<boolean>(true);
   userInitials = '';
 
   ngOnInit(): void {

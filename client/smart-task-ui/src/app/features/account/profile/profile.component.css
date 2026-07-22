@@ -1,9 +1,26 @@
 .profile-card {
-  max-width: 600px;
+  width: 100%;
 }
 
 .profile-card ::ng-deep .mat-mdc-card-content {
   padding: var(--space-5);
+}
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  padding: var(--space-4) var(--space-5) 0;
+  gap: var(--space-3);
+}
+
+.profile-header ::ng-deep .mat-mdc-card-title {
+  font-size: var(--text-h3);
+  font-weight: var(--text-weight-medium);
+  letter-spacing: var(--text-letter-spacing);
+}
+
+.profile-header .spacer {
+  flex: 1 1 auto;
 }
 
 .profile-field {
@@ -36,7 +53,6 @@
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
-  margin-top: var(--space-3);
   padding: var(--space-2) var(--space-3);
   border-radius: 4px;
   background: var(--app-bg-surface);
@@ -44,12 +60,18 @@
   font-size: var(--text-body);
   cursor: not-allowed;
   user-select: none;
+  opacity: 0.65;
 }
 
-.disabled-tooltip mat-icon {
-  font-size: 18px;
-  width: 18px;
-  height: 18px;
+.profile-header .disabled-tooltip {
+  margin-top: 0;
+}
+
+.disabled-tooltip .nav-icon-sm {
+  font-size: 16px;
+  width: 16px;
+  text-align: center;
+  line-height: 1;
 }
 
 .role-chips {
