@@ -4,10 +4,11 @@ A role-based task and project management system built as a 4-day interview assig
 Backend: ASP.NET Core 9 (Clean Architecture) with EF Core 9 and SQL Server. Frontend:
 Angular 21+ (added in a later phase).
 
-> **Status:** Backend feature work is in progress. Authentication (JWT + rotating refresh
-> tokens), project management, task management, and permission-based (RBAC) authorization are
-> complete. Search/filtering/sorting/pagination, the dashboard, the AI task-description
-> improver, and the Angular client are delivered in later phases. See `PLAN.md`.
+> **Status:** Backend feature work is complete. Authentication (JWT + rotating refresh
+> tokens), project management, task management, permission-based (RBAC) authorization,
+> search/filtering/sorting/pagination, the dashboard, and the AI task-description improver
+> are all implemented. Angular frontend (Phase 8) and final documentation/verification
+> (Phase 9) remain. See `PLAN.md`.
 
 ## Technology Stack
 
@@ -74,20 +75,24 @@ Inner layers never reference outer layers.
    ```
 
 2. **Configure secrets** (via User Secrets — never committed). The connection string, the JWT
-   signing key, and the seeded admin password all live here:
-   ```bash
-   dotnet user-secrets set "ConnectionStrings:SmartTaskConnection" "Server=(localdb)\MSSQLLocalDB;Database=SmartTaskManagementDb;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True" --project SmartTaskManagement.API
+    signing key, the seeded admin password, and the AI API key all live here:
+    ```bash
+    dotnet user-secrets set "ConnectionStrings:SmartTaskConnection" "Server=(localdb)\MSSQLLocalDB;Database=SmartTaskManagementDb;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True" --project SmartTaskManagement.API
 
-   # 64-byte (base64) random key used to sign JWTs
-   dotnet user-secrets set "Jwt:SigningKey" "<base64-encoded-random-key>" --project SmartTaskManagement.API
+    # 64-byte (base64) random key used to sign JWTs
+    dotnet user-secrets set "Jwt:SigningKey" "<base64-encoded-random-key>" --project SmartTaskManagement.API
 
-   # password for the seeded admin user (email is in appsettings under Seed:AdminEmail)
-   dotnet user-secrets set "Seed:AdminPassword" "<strong-password>" --project SmartTaskManagement.API
-   ```
-   > The connection-string key is `SmartTaskConnection` (not `DefaultConnection`) to avoid
-   > colliding with an unrelated machine-level environment variable. `appsettings.json`
-   > intentionally holds no secrets — only non-secret config (`Jwt` issuer/audience/lifetimes,
-   > `Cors`, `Serilog`, `Seed:AdminEmail`).
+    # password for the seeded admin user (email is admin@smarttask.local)
+    # If this secret is not set, no admin user is created.
+    dotnet user-secrets set "Seed:AdminPassword" "<strong-password>" --project SmartTaskManagement.API
+
+    # AI provider API key (optional; enables POST /api/tasks/improve-description)
+    dotnet user-secrets set "Ai:ApiKey" "<your-api-key>" --project SmartTaskManagement.API
+    ```
+    > The connection-string key is `SmartTaskConnection` (not `DefaultConnection`) to avoid
+    > colliding with an unrelated machine-level environment variable. `appsettings.json`
+    > intentionally holds no secrets — only non-secret config (`Jwt` issuer/audience/lifetimes,
+    > `Cors`, `Serilog`, `Seed:AdminEmail`, `Ai` provider/model/timeout/header).
 
 3. **Apply migrations** (creates `SmartTaskManagementDb`):
    ```bash
@@ -137,25 +142,41 @@ Refresh tokens are persisted as SHA-256 hashes, rotated on every use, and revoca
 ### Projects — `api/projects`
 | Endpoint | Permission | Description |
 |----------|-----------|-------------|
-| `GET /api/projects` | authenticated | List projects (Team Member sees only projects from assigned tasks). |
+| `GET /api/projects` | authenticated | List projects with search, filtering, sorting, and pagination. |
 | `GET /api/projects/{id}` | authenticated | Project details. |
 | `POST /api/projects` | `projects.create` | Create a project. |
 | `PUT /api/projects/{id}` | `projects.update` | Update a project (ownership enforced). |
 | `DELETE /api/projects/{id}` | `projects.delete` | Delete a project; cascades to its tasks. |
 
+**List query parameters:** `search` (keyword), `sortBy` (`name`, `createdAt`, `updatedAt`), `sortDirection` (`asc`/`desc`), `page`, `pageSize`.
+
 ### Tasks
 | Endpoint | Permission | Description |
 |----------|-----------|-------------|
 | `POST /api/projects/{projectId}/tasks` | `tasks.create` | Create a task in a project. |
-| `GET /api/projects/{projectId}/tasks` | authenticated | List a project's tasks. |
+| `GET /api/projects/{projectId}/tasks` | authenticated | List a project's tasks with search, filtering, sorting, and pagination. |
 | `GET /api/tasks/{id}` | authenticated | Task details. |
 | `PUT /api/tasks/{id}` | `tasks.update` | Update task details. |
 | `DELETE /api/tasks/{id}` | `tasks.delete` | Delete a task. |
 | `PUT /api/tasks/{id}/assignment` | `tasks.assign` | Assign the task to a user. |
 | `PUT /api/tasks/{id}/status` | authenticated | Change status (Team Member: only own assigned tasks). |
+| `POST /api/tasks/improve-description` | authenticated | Improve a task description using the AI provider. |
 
 **Task status:** `ToDo`, `InProgress`, `Completed`, `Cancelled`.
 **Task priority:** `Low`, `Medium`, `High`, `Critical`.
+
+**List query parameters:** `search` (keyword), `status`, `priority`, `dueBefore`, `dueAfter`, `sortBy` (`title`, `status`, `priority`, `dueDate`, `createdAt`), `sortDirection` (`asc`/`desc`), `page`, `pageSize`.
+
+### Dashboard
+| Endpoint | Permission | Description |
+|----------|-----------|-------------|
+| `GET /api/dashboard` | authenticated | Basic statistics: total projects, total tasks, tasks by status, tasks by priority, upcoming due tasks. |
+
+### AI
+| Endpoint | Permission | Description |
+|----------|-----------|-------------|
+| `GET /api/ai/status` | anonymous | Returns whether the AI description improver is configured (`enabled`). |
+| `POST /api/tasks/improve-description` | authenticated | Returns an improved task description (plain text). Requires `Ai:ApiKey` in User Secrets. |
 
 ### Operational
 | Endpoint | Description |
@@ -163,9 +184,6 @@ Refresh tokens are persisted as SHA-256 hashes, rotated on every use, and revoca
 | `GET /health` | Health check; returns an `ApiResponse` envelope with the DB check status. |
 | `GET /swagger` | Swagger UI (Development only). |
 | `GET /swagger/v1/swagger.json` | OpenAPI document (Development only). |
-
-> Not yet implemented: server-side search/filtering/sorting/pagination on list endpoints, the
-> dashboard statistics endpoint, and the AI task-description improver. See `PLAN.md`.
 
 ### Cross-cutting behavior
 - **Consistent responses:** every response uses the `ApiResponse` / `ApiResponse<T>` envelope
@@ -181,7 +199,7 @@ Refresh tokens are persisted as SHA-256 hashes, rotated on every use, and revoca
   (default `http://localhost:4200`).
 - **Rate limiting:** fixed-window global limiter, 100 requests/minute per client IP (429 on
   rejection).
-- **HTTPS redirection** enabled.
+- **HTTPS:** HTTPS redirection is enabled. For production, ensure TLS termination at your reverse proxy or app server.
 
 ## Database & Migrations
 
