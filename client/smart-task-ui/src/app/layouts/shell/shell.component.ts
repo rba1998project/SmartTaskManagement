@@ -1,5 +1,6 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { OperatorFunction } from 'rxjs';
 import { Router, RouterModule } from '@angular/router';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { MatSidenavModule } from '@angular/material/sidenav';
@@ -22,6 +23,7 @@ import { NotificationService } from '../../core/services/notification.service';
   styleUrl: './shell.component.css'
 })
 export class ShellComponent implements OnInit {
+  private untilDestroyed: OperatorFunction<any, any> = takeUntilDestroyed(inject(DestroyRef));
   private breakpointObserver = inject(BreakpointObserver);
   private authService = inject(AuthService);
   private notificationService = inject(NotificationService);
@@ -35,7 +37,7 @@ export class ShellComponent implements OnInit {
     const email = this.authService.currentUser()?.email || 'U';
     this.userInitials = email.split('@')[0].slice(0, 2).toUpperCase();
 
-    this.breakpointObserver.observe([Breakpoints.Handset, Breakpoints.Tablet]).pipe(takeUntilDestroyed()).subscribe(result => {
+    this.breakpointObserver.observe([Breakpoints.Handset, Breakpoints.Tablet]).pipe(this.untilDestroyed).subscribe(result => {
       this.isMobile.set(result.matches);
       this.sidenavOpened.set(!result.matches);
     });

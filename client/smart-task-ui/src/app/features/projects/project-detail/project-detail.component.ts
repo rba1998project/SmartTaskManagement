@@ -1,5 +1,6 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { OperatorFunction } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { Router } from '@angular/router';
@@ -33,6 +34,7 @@ import { UserRole } from '../../../core/models/enums';
   styleUrl: './project-detail.component.css'
 })
 export class ProjectDetailComponent implements OnInit {
+  private untilDestroyed: OperatorFunction<any, any> = takeUntilDestroyed(inject(DestroyRef));
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private projectsService = inject(ProjectsService);
@@ -61,7 +63,7 @@ export class ProjectDetailComponent implements OnInit {
     this.loading.set(true);
     this.error.set(null);
 
-    this.projectsService.get(this.projectId).pipe(takeUntilDestroyed()).subscribe({
+    this.projectsService.get(this.projectId).pipe(this.untilDestroyed).subscribe({
       next: (result) => {
         this.loading.set(false);
         if (result.success && result.data) {

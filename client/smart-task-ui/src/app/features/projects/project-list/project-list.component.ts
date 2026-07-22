@@ -1,5 +1,6 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { OperatorFunction } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
@@ -39,6 +40,7 @@ import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialo
   styleUrl: './project-list.component.css'
 })
 export class ProjectListComponent implements OnInit {
+  private untilDestroyed: OperatorFunction<any, any> = takeUntilDestroyed(inject(DestroyRef));
   private projectsService = inject(ProjectsService);
   private authService = inject(AuthService);
   private router = inject(Router);
@@ -78,7 +80,7 @@ export class ProjectListComponent implements OnInit {
       pageSize: this.pageSize(),
     };
 
-    this.projectsService.list(params).pipe(takeUntilDestroyed()).subscribe({
+    this.projectsService.list(params).pipe(this.untilDestroyed).subscribe({
       next: (result) => {
         if (result.success && result.data) {
           this.projects.set(result.data.items);
@@ -137,9 +139,9 @@ export class ProjectListComponent implements OnInit {
       },
     });
 
-    dialogRef.afterClosed().pipe(takeUntilDestroyed()).subscribe((confirmed: boolean) => {
+    dialogRef.afterClosed().pipe(this.untilDestroyed).subscribe((confirmed: boolean) => {
       if (confirmed) {
-        this.projectsService.delete(project.id).pipe(takeUntilDestroyed()).subscribe({
+        this.projectsService.delete(project.id).pipe(this.untilDestroyed).subscribe({
           next: () => {
             this.load();
           },

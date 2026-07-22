@@ -1,5 +1,6 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { OperatorFunction } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatListModule } from '@angular/material/list';
@@ -24,6 +25,7 @@ import { TASK_STATUS_LABELS } from '../../shared/constants/task-status.constants
   styleUrl: './dashboard.component.css'
 })
 export class DashboardComponent {
+  private untilDestroyed: OperatorFunction<any, any> = takeUntilDestroyed(inject(DestroyRef));
   private dashboardService = inject(DashboardService);
   private projectsService = inject(ProjectsService);
   private tasksService = inject(TasksService);
@@ -43,7 +45,7 @@ export class DashboardComponent {
   load(): void {
     this.loading.set(true);
     this.error.set(null);
-    this.dashboardService.getStats().pipe(takeUntilDestroyed()).subscribe({
+    this.dashboardService.getStats().pipe(this.untilDestroyed).subscribe({
       next: (result) => {
         if (result.success && result.data) {
           this.data.set(result.data);
@@ -58,7 +60,7 @@ export class DashboardComponent {
       }
     });
 
-    this.projectsService.recent().pipe(takeUntilDestroyed()).subscribe({
+    this.projectsService.recent().pipe(this.untilDestroyed).subscribe({
       next: (result) => {
         if (result.success && result.data) {
           this.recentProjects.set(result.data.items);
@@ -70,7 +72,7 @@ export class DashboardComponent {
       complete: () => this.recentLoading.set(false)
     });
 
-    this.tasksService.recent().pipe(takeUntilDestroyed()).subscribe({
+    this.tasksService.recent().pipe(this.untilDestroyed).subscribe({
       next: (result) => {
         if (result.success && result.data) {
           this.recentTasks.set(result.data.items);

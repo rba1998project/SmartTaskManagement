@@ -1,5 +1,6 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { OperatorFunction } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -21,6 +22,7 @@ const SAVED_EMAIL_KEY = 'savedEmail';
   styleUrl: './login.component.css'
 })
 export class LoginComponent implements OnInit {
+  private untilDestroyed: OperatorFunction<any, any> = takeUntilDestroyed(inject(DestroyRef));
   private fb = inject(FormBuilder);
   private router = inject(Router);
   private authService = inject(AuthService);
@@ -44,7 +46,7 @@ export class LoginComponent implements OnInit {
     if (this.form.invalid || this.loading()) return;
 
     this.loading.set(true);
-    this.authService.login(this.form.value).pipe(takeUntilDestroyed()).subscribe({
+    this.authService.login(this.form.value).pipe(this.untilDestroyed).subscribe({
       next: () => {
         const email = this.form.value.email;
         if (email) {

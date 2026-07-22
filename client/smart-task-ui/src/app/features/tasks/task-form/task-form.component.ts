@@ -1,5 +1,6 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { OperatorFunction } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -48,6 +49,7 @@ import { AiEnhanceButtonComponent } from '../../../shared/components/ai-enhance-
   styleUrl: './task-form.component.css'
 })
 export class TaskFormComponent implements OnInit {
+  private untilDestroyed: OperatorFunction<any, any> = takeUntilDestroyed(inject(DestroyRef));
   private fb = inject(FormBuilder);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
@@ -102,7 +104,7 @@ export class TaskFormComponent implements OnInit {
 
   loadTask(id: string): void {
     this.loading.set(true);
-      this.tasksService.get(id).pipe(takeUntilDestroyed()).subscribe({
+      this.tasksService.get(id).pipe(this.untilDestroyed).subscribe({
       next: (result) => {
         if (result.success && result.data) {
           const task = result.data;
@@ -147,7 +149,7 @@ export class TaskFormComponent implements OnInit {
     };
 
     if (this.isEdit && this.taskId) {
-      this.tasksService.update(this.taskId, payload).pipe(takeUntilDestroyed()).subscribe({
+      this.tasksService.update(this.taskId, payload).pipe(this.untilDestroyed).subscribe({
         next: (result) => {
           if (result.success && result.data) {
             this.notificationService.showSuccess('Task updated successfully');
@@ -168,7 +170,7 @@ export class TaskFormComponent implements OnInit {
         description: payload.description,
         priority: payload.priority,
         dueDate: payload.dueDate ?? undefined,
-      }).pipe(takeUntilDestroyed()).subscribe({
+      }).pipe(this.untilDestroyed).subscribe({
         next: (result) => {
           if (result.success && result.data) {
             this.notificationService.showSuccess('Task created successfully');

@@ -1,5 +1,6 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { OperatorFunction } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -32,6 +33,7 @@ import { NotificationService } from '../../../core/services/notification.service
   styleUrl: './project-form.component.css'
 })
 export class ProjectFormComponent implements OnInit {
+  private untilDestroyed: OperatorFunction<any, any> = takeUntilDestroyed(inject(DestroyRef));
   private fb = inject(FormBuilder);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
@@ -58,7 +60,7 @@ export class ProjectFormComponent implements OnInit {
 
   loadProject(id: string): void {
     this.loading.set(true);
-      this.projectsService.get(id).pipe(takeUntilDestroyed()).subscribe({
+      this.projectsService.get(id).pipe(this.untilDestroyed).subscribe({
       next: (result) => {
         if (result.success && result.data) {
           this.form.patchValue({
@@ -86,7 +88,7 @@ export class ProjectFormComponent implements OnInit {
     const value = this.form.value;
 
     if (this.isEdit && this.projectId) {
-      this.projectsService.update(this.projectId, value).pipe(takeUntilDestroyed()).subscribe({
+      this.projectsService.update(this.projectId, value).pipe(this.untilDestroyed).subscribe({
         next: (result) => {
           this.loading.set(false);
           if (result.success && result.data) {
@@ -104,7 +106,7 @@ export class ProjectFormComponent implements OnInit {
         }
       });
     } else {
-      this.projectsService.create({ name: value.name, description: value.description }).pipe(takeUntilDestroyed()).subscribe({
+      this.projectsService.create({ name: value.name, description: value.description }).pipe(this.untilDestroyed).subscribe({
         next: (result) => {
           this.loading.set(false);
           if (result.success && result.data) {

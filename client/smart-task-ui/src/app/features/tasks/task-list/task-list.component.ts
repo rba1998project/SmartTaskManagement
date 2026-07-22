@@ -1,5 +1,6 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { OperatorFunction } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
@@ -49,6 +50,7 @@ import { TASK_PRIORITY_LABELS } from '../../../shared/constants/task-priority.co
   styleUrl: './task-list.component.css'
 })
 export class TaskListComponent implements OnInit {
+  private untilDestroyed: OperatorFunction<any, any> = takeUntilDestroyed(inject(DestroyRef));
   private tasksService = inject(TasksService);
   private authService = inject(AuthService);
   private router = inject(Router);
@@ -113,7 +115,7 @@ export class TaskListComponent implements OnInit {
       pageSize: this.pageSize(),
     };
 
-    this.tasksService.list(params).pipe(takeUntilDestroyed()).subscribe({
+    this.tasksService.list(params).pipe(this.untilDestroyed).subscribe({
       next: (result) => {
         if (result.success && result.data) {
           this.tasks.set(result.data.items);
@@ -188,9 +190,9 @@ export class TaskListComponent implements OnInit {
       },
     });
 
-    dialogRef.afterClosed().pipe(takeUntilDestroyed()).subscribe((confirmed: boolean) => {
+    dialogRef.afterClosed().pipe(this.untilDestroyed).subscribe((confirmed: boolean) => {
       if (confirmed) {
-        this.tasksService.delete(task.id).pipe(takeUntilDestroyed()).subscribe({
+        this.tasksService.delete(task.id).pipe(this.untilDestroyed).subscribe({
           next: () => {
             this.load();
           },

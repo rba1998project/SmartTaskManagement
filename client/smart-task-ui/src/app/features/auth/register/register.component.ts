@@ -1,5 +1,6 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { OperatorFunction } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -20,6 +21,7 @@ import { passwordValidator, confirmPasswordValidator } from '../../../core/valid
   styleUrl: './register.component.css'
 })
 export class RegisterComponent implements OnInit {
+  private untilDestroyed: OperatorFunction<any, any> = takeUntilDestroyed(inject(DestroyRef));
   private fb = inject(FormBuilder);
   private router = inject(Router);
   private authService = inject(AuthService);
@@ -53,7 +55,7 @@ export class RegisterComponent implements OnInit {
     }
 
     this.loading.set(true);
-    this.authService.register(this.form.value).pipe(takeUntilDestroyed()).subscribe({
+    this.authService.register(this.form.value).pipe(this.untilDestroyed).subscribe({
       next: () => {
         this.notificationService.showSuccess('Registration successful! Please sign in.');
         this.router.navigate(['/login']);
