@@ -3,12 +3,14 @@ import { TaskItemStatus, TaskItemPriority, SortDirection } from './enums';
 export interface TaskResponse {
   id: string;
   projectId: string;
+  projectName: string;
   title: string;
   description: string | null;
   status: TaskItemStatus;
   priority: TaskItemPriority;
   dueDate: string | null;
   assignedToUserId: string | null;
+  assignedToUserName: string | null;
   createdAt: string;
   updatedAt: string;
 }

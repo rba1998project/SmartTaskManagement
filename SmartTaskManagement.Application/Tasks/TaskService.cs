@@ -54,7 +54,7 @@ public sealed class TaskService
 
         await _tasks.AddAsync(task, cancellationToken);
 
-        return Result<TaskResponseDto>.Success(Map(task));
+        return Result<TaskResponseDto>.Success(Map(task, project.Name, null));
     }
 
     public async Task<Result<TaskResponseDto>> UpdateAsync(Guid id, UpdateTaskRequestDto request, CancellationToken cancellationToken = default)
@@ -70,7 +70,7 @@ public sealed class TaskService
         task.UpdateDetails(request.Title, request.Description, request.Priority, request.DueDate, DateTime.UtcNow);
         await _tasks.UpdateAsync(task, cancellationToken);
 
-        return Result<TaskResponseDto>.Success(Map(task));
+        return Result<TaskResponseDto>.Success(Map(task, project.Name, null));
     }
 
     public async Task<Result> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
@@ -109,7 +109,8 @@ public sealed class TaskService
         task.AssignTo(request.AssignedToUserId, DateTime.UtcNow);
         await _tasks.UpdateAsync(task, cancellationToken);
 
-        return Result<TaskResponseDto>.Success(Map(task));
+        var assigneeName = request.AssignedToUserId is not null ? (await _identity.FindByIdAsync(request.AssignedToUserId.Value, cancellationToken))?.FullName : null;
+        return Result<TaskResponseDto>.Success(Map(task, project.Name, assigneeName));
     }
 
     public async Task<Result<TaskResponseDto>> ChangeStatusAsync(Guid id, UpdateTaskStatusRequestDto request, CancellationToken cancellationToken = default)
@@ -129,7 +130,8 @@ public sealed class TaskService
         task.ChangeStatus(request.Status, DateTime.UtcNow);
         await _tasks.UpdateAsync(task, cancellationToken);
 
-        return Result<TaskResponseDto>.Success(Map(task));
+        var assigneeName = task.AssignedToUserId is not null ? (await _identity.FindByIdAsync(task.AssignedToUserId.Value, cancellationToken))?.FullName : null;
+        return Result<TaskResponseDto>.Success(Map(task, project.Name, assigneeName));
     }
 
     public async Task<Result<TaskResponseDto>> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
@@ -146,7 +148,8 @@ public sealed class TaskService
         if (!CanManageProjectTasks(project) && !IsAssignedToCurrentUser(task))
             return Result<TaskResponseDto>.Failure(ErrorType.Forbidden, "You do not have permission to view this task.");
 
-        return Result<TaskResponseDto>.Success(Map(task));
+        var assigneeName = task.AssignedToUserId is not null ? (await _identity.FindByIdAsync(task.AssignedToUserId.Value, cancellationToken))?.FullName : null;
+        return Result<TaskResponseDto>.Success(Map(task, project.Name, assigneeName));
     }
 
     public async Task<Result<IReadOnlyList<TaskResponseDto>>> ListByProjectAsync(Guid projectId, CancellationToken cancellationToken = default)
@@ -159,7 +162,11 @@ public sealed class TaskService
         Guid? assigneeFilter = CanManageProjectTasks(project) ? null : _currentUser.UserId;
         var tasks = await _tasks.ListByProjectAsync(projectId, assigneeFilter, cancellationToken);
 
-        IReadOnlyList<TaskResponseDto> mapped = tasks.Select(Map).ToArray();
+        var userIds = tasks.Select(t => t.AssignedToUserId).Where(id => id.HasValue).Select(id => id!.Value).Distinct().ToArray();
+        var users = await _identity.FindByIdsAsync(userIds, cancellationToken);
+        var userMap = users.ToDictionary(u => u.Id, u => u.FullName);
+
+        var mapped = tasks.Select(t => Map(t, project.Name, t.AssignedToUserId is { } assigneeId && userMap.TryGetValue(assigneeId, out var assigneeName) ? assigneeName : null)).ToArray();
         return Result<IReadOnlyList<TaskResponseDto>>.Success(mapped);
     }
 
@@ -175,8 +182,21 @@ public sealed class TaskService
 
         var pagedResult = await _tasks.QueryAsync(request, assignedToUserId, projectOwnerUserId, cancellationToken);
 
+        var projectIds = pagedResult.Items.Select(t => t.ProjectId).Distinct().ToArray();
+        var projects = await _projects.GetByIdsAsync(projectIds, cancellationToken);
+        var projectMap = projects.ToDictionary(p => p.Id, p => p.Name);
+
+        var userIds = pagedResult.Items.Select(t => t.AssignedToUserId).Where(id => id.HasValue).Select(id => id!.Value).Distinct().ToArray();
+        var users = await _identity.FindByIdsAsync(userIds, cancellationToken);
+        var userMap = users.ToDictionary(u => u.Id, u => u.FullName);
+
         var mapped = new PagedResult<TaskResponseDto>(
-            pagedResult.Items.Select(Map).ToArray(),
+            pagedResult.Items.Select(t =>
+            {
+                var projectName = projectMap.TryGetValue(t.ProjectId, out var pName) ? pName : string.Empty;
+                var assigneeName = t.AssignedToUserId is { } aId && userMap.TryGetValue(aId, out var uName) ? uName : null;
+                return Map(t, projectName, assigneeName);
+            }).ToArray(),
             pagedResult.TotalCount,
             pagedResult.PageNumber,
             pagedResult.PageSize);
@@ -214,16 +234,18 @@ public sealed class TaskService
             && task.AssignedToUserId == userId.Value;
     }
 
-    private static TaskResponseDto Map(TaskItem task) => new()
+    private static TaskResponseDto Map(TaskItem task, string projectName, string? assignedToUserName = null) => new()
     {
         Id = task.Id,
         ProjectId = task.ProjectId,
+        ProjectName = projectName,
         Title = task.Title,
         Description = task.Description,
         Status = task.Status,
         Priority = task.Priority,
         DueDate = task.DueDate,
         AssignedToUserId = task.AssignedToUserId,
+        AssignedToUserName = assignedToUserName,
         CreatedAt = task.CreatedAt,
         UpdatedAt = task.UpdatedAt,
     };

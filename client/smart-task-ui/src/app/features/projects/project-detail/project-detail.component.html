@@ -33,6 +33,11 @@
         </div>
         <mat-divider></mat-divider>
         <div class="detail-row">
+          <span class="label">Created By</span>
+          <span class="value">{{ project()!.createdByUserName || 'Unknown' }}</span>
+        </div>
+        <mat-divider></mat-divider>
+        <div class="detail-row">
           <span class="label">Created</span>
           <span class="value">{{ project()!.createdAt | date:'medium' }}</span>
         </div>

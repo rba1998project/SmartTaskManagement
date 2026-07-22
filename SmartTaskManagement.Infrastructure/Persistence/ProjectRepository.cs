@@ -23,6 +23,17 @@ public sealed class ProjectRepository : IProjectRepository
     public Task<Project?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default) =>
         _dbContext.Projects.FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
 
+    public async Task<IReadOnlyList<Project>> GetByIdsAsync(IEnumerable<Guid> ids, CancellationToken cancellationToken = default)
+    {
+        var distinctIds = ids.Distinct().ToArray();
+        if (distinctIds.Length == 0)
+            return Array.Empty<Project>();
+
+        return await _dbContext.Projects
+            .Where(p => distinctIds.Contains(p.Id))
+            .ToListAsync(cancellationToken);
+    }
+
     public Task<bool> HasTaskAssignedToUserAsync(Guid projectId, Guid assignedToUserId, CancellationToken cancellationToken = default) =>
         _dbContext.Tasks.AnyAsync(t => t.ProjectId == projectId && t.AssignedToUserId == assignedToUserId, cancellationToken);
 

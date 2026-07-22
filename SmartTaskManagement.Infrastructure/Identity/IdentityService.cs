@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using SmartTaskManagement.Application.Abstractions;
 using SmartTaskManagement.Application.Authentication.Models;
 using SmartTaskManagement.Application.Authorization;
@@ -58,6 +59,19 @@ public sealed class IdentityService : IIdentityService
     {
         var user = await _userManager.FindByIdAsync(userId.ToString());
         return user is null ? null : ToAuthUser(user);
+    }
+
+    public async Task<IReadOnlyList<AuthUser>> FindByIdsAsync(IEnumerable<Guid> userIds, CancellationToken cancellationToken = default)
+    {
+        var ids = userIds.Distinct().ToArray();
+        if (ids.Length == 0)
+            return Array.Empty<AuthUser>();
+
+        var users = await _userManager.Users
+            .Where(u => ids.Contains(u.Id))
+            .ToListAsync(cancellationToken);
+
+        return users.Select(ToAuthUser).ToArray();
     }
 
     public async Task<IReadOnlyList<string>> GetRolesAsync(Guid userId, CancellationToken cancellationToken = default)

@@ -14,6 +14,12 @@ public interface IProjectRepository
     Task<Project?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Returns the projects whose ids are in <paramref name="ids"/>, or an empty list if none match.
+    /// Used for batch name lookups to avoid N+1 queries.
+    /// </summary>
+    Task<IReadOnlyList<Project>> GetByIdsAsync(IEnumerable<Guid> ids, CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Returns <c>true</c> when the given project contains at least one task assigned to
     /// <paramref name="assignedToUserId"/>. Used to gate a Team Member's access to a single
     /// project's details database-side.

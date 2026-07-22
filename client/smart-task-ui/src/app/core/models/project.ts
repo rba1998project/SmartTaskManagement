@@ -5,6 +5,7 @@ export interface ProjectResponse {
   name: string;
   description: string | null;
   createdByUserId: string;
+  createdByUserName: string | null;
   createdAt: string;
   updatedAt: string;
 }

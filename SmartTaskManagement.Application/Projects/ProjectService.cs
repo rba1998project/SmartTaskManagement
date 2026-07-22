@@ -18,11 +18,13 @@ public sealed class ProjectService
 {
     private readonly IProjectRepository _projects;
     private readonly ICurrentUserService _currentUser;
+    private readonly IIdentityService _identity;
 
-    public ProjectService(IProjectRepository projects, ICurrentUserService currentUser)
+    public ProjectService(IProjectRepository projects, ICurrentUserService currentUser, IIdentityService identity)
     {
         _projects = projects;
         _currentUser = currentUser;
+        _identity = identity;
     }
 
     public async Task<Result<ProjectResponseDto>> CreateAsync(CreateProjectRequestDto request, CancellationToken cancellationToken = default)
@@ -75,7 +77,8 @@ public sealed class ProjectService
         if (!CanView() && !await IsVisibleToTeamMemberAsync(project.Id, cancellationToken))
             return Result<ProjectResponseDto>.Failure(ErrorType.NotFound, "Project not found.");
 
-        return Result<ProjectResponseDto>.Success(Map(project));
+        var creator = await _identity.FindByIdAsync(project.CreatedByUserId, cancellationToken);
+        return Result<ProjectResponseDto>.Success(Map(project, creator?.FullName));
     }
 
     public async Task<Result<PagedResult<ProjectResponseDto>>> ListAsync(ProjectQueryRequestDto request, CancellationToken cancellationToken = default)
@@ -89,8 +92,16 @@ public sealed class ProjectService
 
         var pagedResult = await _projects.QueryAsync(request, teamMemberUserId, cancellationToken);
 
+        var creatorIds = pagedResult.Items
+            .Select(p => p.CreatedByUserId)
+            .Distinct()
+            .ToArray();
+
+        var creators = await _identity.FindByIdsAsync(creatorIds, cancellationToken);
+        var creatorMap = creators.ToDictionary(u => u.Id, u => u.FullName);
+
         var mapped = new PagedResult<ProjectResponseDto>(
-            pagedResult.Items.Select(Map).ToArray(),
+            pagedResult.Items.Select(p => Map(p, creatorMap.TryGetValue(p.CreatedByUserId, out var name) ? name : null)).ToArray(),
             pagedResult.TotalCount,
             pagedResult.PageNumber,
             pagedResult.PageSize);
@@ -118,12 +129,13 @@ public sealed class ProjectService
         _currentUser.UserId is { } userId
         && await _projects.HasTaskAssignedToUserAsync(projectId, userId, cancellationToken);
 
-    private static ProjectResponseDto Map(Project project) => new()
+    private static ProjectResponseDto Map(Project project, string? createdByUserName = null) => new()
     {
         Id = project.Id,
         Name = project.Name,
         Description = project.Description,
         CreatedByUserId = project.CreatedByUserId,
+        CreatedByUserName = createdByUserName,
         CreatedAt = project.CreatedAt,
         UpdatedAt = project.UpdatedAt,
     };

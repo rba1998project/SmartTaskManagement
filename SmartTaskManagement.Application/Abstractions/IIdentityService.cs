@@ -28,6 +28,12 @@ public interface IIdentityService
     Task<AuthUser?> FindByIdAsync(Guid userId, CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Returns the users matching the given ids, or an empty list if none match.
+    /// Used for batch display-name lookups to avoid N+1 queries.
+    /// </summary>
+    Task<IReadOnlyList<AuthUser>> FindByIdsAsync(IEnumerable<Guid> userIds, CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Returns the role names assigned to the user (empty if none).
     /// </summary>
     Task<IReadOnlyList<string>> GetRolesAsync(Guid userId, CancellationToken cancellationToken = default);
