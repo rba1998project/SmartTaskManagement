@@ -5,6 +5,11 @@ import { NotificationService } from '../services/notification.service';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
+function sanitizeErrorMessage(message: string | undefined): string {
+  if (!message) return 'An unexpected error occurred.';
+  return message.replace(/https?:\/\/[^\s]+/g, '[hidden]').trim() || 'An unexpected error occurred.';
+}
+
 // Maps HTTP errors to user-friendly toast messages.
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   const router = inject(Router);
@@ -38,7 +43,8 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
         notificationService.showError('An unexpected error occurred.');
       }
 
-      return throwError(() => error);
+      const sanitized = { ...error, message: sanitizeErrorMessage(error.message) };
+      return throwError(() => sanitized);
     })
   );
 };
