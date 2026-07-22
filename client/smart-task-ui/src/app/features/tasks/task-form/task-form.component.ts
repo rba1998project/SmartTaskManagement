@@ -75,6 +75,7 @@ export class TaskFormComponent implements OnInit {
   loading = signal(false);
   isEdit = false;
   taskId: string | null = null;
+  originalAssignedToUserId: string | null | undefined;
 
   readonly projects = signal<ProjectResponse[]>([]);
   readonly projectsLoading = signal(false);
@@ -125,6 +126,18 @@ export class TaskFormComponent implements OnInit {
     return user ? (user.fullName || user.email) : '';
   };
 
+  private refreshDisplay(): void {
+    if (!this.isEdit) return;
+    const projectId = this.form.get('projectId')!.value;
+    if (projectId) {
+      this.form.get('projectId')!.setValue(projectId, { emitEvent: false });
+    }
+    const userId = this.form.get('assignedToUserId')!.value;
+    if (userId) {
+      this.form.get('assignedToUserId')!.setValue(userId, { emitEvent: false });
+    }
+  }
+
   loadProjects(): void {
     this.projectsLoading.set(true);
     this.projectsService.list({
@@ -142,6 +155,7 @@ export class TaskFormComponent implements OnInit {
           this.projects.set([]);
           this.filteredProjects.set([]);
         }
+        this.refreshDisplay();
       },
       error: () => {
         this.projectsLoading.set(false);
@@ -163,6 +177,7 @@ export class TaskFormComponent implements OnInit {
           this.users.set([]);
           this.filteredUsers.set([]);
         }
+        this.refreshDisplay();
       },
       error: () => {
         this.usersLoading.set(false);
@@ -187,6 +202,7 @@ export class TaskFormComponent implements OnInit {
             projectId: task.projectId,
             assignedToUserId: task.assignedToUserId || '',
           });
+          this.originalAssignedToUserId = task.assignedToUserId || undefined;
         } else {
           this.notificationService.showError(result.message || 'Failed to load task');
           this.router.navigate(['/tasks']);
@@ -222,14 +238,25 @@ export class TaskFormComponent implements OnInit {
         next: (result) => {
           if (result.success && result.data) {
             this.notificationService.showSuccess('Task updated successfully');
-            this.router.navigate(['/tasks', this.taskId]);
+            this.form.markAsPristine();
+            const newAssignee = payload.assignedToUserId || undefined;
+            if (newAssignee !== this.originalAssignedToUserId) {
+              this.tasksService.assign(this.taskId!, newAssignee).pipe(this.untilDestroyed).subscribe({
+                next: () => this.router.navigate(['/tasks', this.taskId]),
+                error: () => {
+                  this.notificationService.showError('Task updated but assignment failed');
+                  this.router.navigate(['/tasks', this.taskId]);
+                }
+              });
+            } else {
+              this.router.navigate(['/tasks', this.taskId]);
+            }
           } else {
             this.notificationService.showError(result.message || 'Update failed');
             this.loading.set(false);
           }
         },
-        error: (err: { message?: string }) => {
-          this.notificationService.showError(err.message || 'Update failed');
+        error: () => {
           this.loading.set(false);
         }
       });
@@ -237,20 +264,32 @@ export class TaskFormComponent implements OnInit {
       this.tasksService.create(payload.projectId, {
         title: payload.title,
         description: payload.description,
+        status: payload.status,
         priority: payload.priority,
         dueDate: payload.dueDate ?? undefined,
       }).pipe(this.untilDestroyed).subscribe({
         next: (result) => {
           if (result.success && result.data) {
             this.notificationService.showSuccess('Task created successfully');
-            this.router.navigate(['/tasks', result.data.id]);
+            this.form.markAsPristine();
+            const newAssignee = payload.assignedToUserId || undefined;
+            if (newAssignee) {
+              this.tasksService.assign(result.data.id, newAssignee).pipe(this.untilDestroyed).subscribe({
+                next: () => this.router.navigate(['/tasks']),
+                error: () => {
+                  this.notificationService.showError('Task created but assignment failed');
+                  this.router.navigate(['/tasks']);
+                }
+              });
+            } else {
+              this.router.navigate(['/tasks']);
+            }
           } else {
             this.notificationService.showError(result.message || 'Creation failed');
             this.loading.set(false);
           }
         },
-        error: (err: { message?: string }) => {
-          this.notificationService.showError(err.message || 'Creation failed');
+        error: () => {
           this.loading.set(false);
         }
       });
@@ -262,7 +301,7 @@ export class TaskFormComponent implements OnInit {
   }
 
   canDeactivate(): boolean {
-    if (this.form.pristine && !this.isEdit) {
+    if (this.form.pristine) {
       return true;
     }
     return confirm('You have unsaved changes. Are you sure you want to leave?');

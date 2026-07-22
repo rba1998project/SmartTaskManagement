@@ -25,11 +25,11 @@ export class TasksService {
     return this.api.get<TaskResponse>(`/api/tasks/${id}`);
   }
 
-  create(projectId: string, data: { title: string; description?: string; priority: number; dueDate?: string }) {
+  create(projectId: string, data: { title: string; description?: string; status: number; priority: number; dueDate?: string }) {
     return this.api.post<TaskResponse>(`/api/projects/${projectId}/tasks`, data);
   }
 
-  update(id: string, data: { title: string; description?: string; priority: number; dueDate?: string }) {
+  update(id: string, data: { title: string; description?: string; status: number; priority: number; dueDate?: string }) {
     return this.api.put<TaskResponse>(`/api/tasks/${id}`, data);
   }
 

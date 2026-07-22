@@ -4,6 +4,7 @@ using SmartTaskManagement.Application.Authentication.Models;
 using SmartTaskManagement.Application.Common;
 using SmartTaskManagement.Application.Tasks.Dtos;
 using SmartTaskManagement.Domain.Entities;
+using SmartTaskManagement.Domain.Enums;
 
 namespace SmartTaskManagement.Application.Tasks;
 
@@ -52,6 +53,7 @@ public sealed class TaskService
             return Result<TaskResponseDto>.Failure(ErrorType.Forbidden, "You do not have permission to add tasks to this project.");
 
         var task = new TaskItem(projectId, request.Title, request.Description, request.Priority, request.DueDate, DateTime.UtcNow);
+        task.ChangeStatus(request.Status, DateTime.UtcNow);
 
         await _tasks.AddAsync(task, cancellationToken);
 
@@ -69,6 +71,10 @@ public sealed class TaskService
             return Result<TaskResponseDto>.Failure(ErrorType.Forbidden, "You do not have permission to modify this task.");
 
         task.UpdateDetails(request.Title, request.Description, request.Priority, request.DueDate, DateTime.UtcNow);
+        if (request.Status.HasValue)
+        {
+            task.ChangeStatus(request.Status.Value, DateTime.UtcNow);
+        }
         await _tasks.UpdateAsync(task, cancellationToken);
 
         return Result<TaskResponseDto>.Success(Map(task, project.Name, null));

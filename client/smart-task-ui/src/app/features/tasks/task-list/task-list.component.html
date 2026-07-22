@@ -59,7 +59,7 @@
       </ng-container>
 
       <ng-container matColumnDef="projectId">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Project</th>
+        <th mat-header-cell *matHeaderCellDef>Project</th>
         <td mat-cell *matCellDef="let task">{{ task.projectName }}</td>
       </ng-container>
 
@@ -84,17 +84,17 @@
 
       <ng-container matColumnDef="assignedToUserId">
         <th mat-header-cell *matHeaderCellDef>Assigned To</th>
-        <td mat-cell *matCellDef="let task">{{ task.assignedToUserName || 'Unassigned' }}</td>
+          <td mat-cell *matCellDef="let task">{{ task.assignedToUserName || '' }}</td>
       </ng-container>
 
       <ng-container matColumnDef="actions">
         <th mat-header-cell *matHeaderCellDef>Actions</th>
         <td mat-cell *matCellDef="let task">
           @if (canMutate()) {
-            <button mat-icon-button (click)="goToEdit(task.id)" title="Edit">
+            <button mat-icon-button (click)="$event.stopPropagation(); goToEdit(task.id)" title="Edit">
               <mat-icon>edit</mat-icon>
             </button>
-            <button mat-icon-button color="warn" (click)="deleteTask(task)" title="Delete">
+            <button mat-icon-button color="warn" (click)="$event.stopPropagation(); deleteTask(task)" title="Delete">
               <mat-icon>delete</mat-icon>
             </button>
           }
@@ -102,13 +102,14 @@
       </ng-container>
 
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns; trackBy: trackByTaskId" (click)="goToDetail(row.id)" class="clickable-row"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns" matRowDefTrackBy="trackByTaskId" (click)="goToDetail(row.id)" class="clickable-row"></tr>
     </table>
     </div>
 
     <mat-paginator
       [length]="totalCount()"
       [pageSize]="pageSize()"
+      [pageIndex]="pageNumber() - 1"
       [pageSizeOptions]="[5, 10, 25, 100]"
       showFirstLastButtons="true"
       (page)="onPageChange($event)"

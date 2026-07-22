@@ -22,6 +22,12 @@
   margin-top: var(--space-5);
 }
 
+.task-form-container .mat-mdc-input-element:read-only,
+.task-form-container .mat-mdc-input-element[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 @media (max-width: 600px) {
   .form-row {
     grid-template-columns: 1fr;

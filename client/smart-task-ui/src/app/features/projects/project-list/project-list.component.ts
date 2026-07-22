@@ -14,6 +14,7 @@ import { RouterModule } from '@angular/router';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { ProjectsService } from '../../../core/services/projects.service';
+import { TasksService } from '../../../core/services/tasks.service';
 import { ProjectResponse, ProjectQueryRequest } from '../../../core/models/project';
 import { AuthService } from '../../../core/auth/auth.service';
 import { UserRole } from '../../../core/models/enums';
@@ -42,6 +43,7 @@ import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialo
 export class ProjectListComponent implements OnInit {
   private untilDestroyed: OperatorFunction<any, any> = takeUntilDestroyed(inject(DestroyRef));
   private projectsService = inject(ProjectsService);
+  private tasksService = inject(TasksService);
   private authService = inject(AuthService);
   private router = inject(Router);
   private dialog = inject(MatDialog);
@@ -132,21 +134,51 @@ export class ProjectListComponent implements OnInit {
 
   // Delete project via confirmation dialog
   deleteProject(project: ProjectResponse): void {
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      data: {
-        title: 'Delete Project',
-        message: `Are you sure you want to delete "${project.name}"?`,
-      },
-    });
+    this.tasksService.listByProject(project.id).pipe(this.untilDestroyed).subscribe({
+      next: (result) => {
+        const hasTasks = result.success && result.data && result.data.length > 0;
+        const message = hasTasks
+          ? `Are you sure you want to delete "${project.name}"? This will also delete all tasks in this project.`
+          : `Are you sure you want to delete "${project.name}"?`;
 
-    dialogRef.afterClosed().pipe(this.untilDestroyed).subscribe((confirmed: boolean) => {
-      if (confirmed) {
-        this.projectsService.delete(project.id).pipe(this.untilDestroyed).subscribe({
-          next: () => {
-            this.load();
+        const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+          data: {
+            title: 'Delete Project',
+            message,
           },
-          error: (err: { message?: string }) => {
-            this.error.set(err.message || 'Failed to delete project');
+        });
+
+        dialogRef.afterClosed().pipe(this.untilDestroyed).subscribe((confirmed: boolean) => {
+          if (confirmed) {
+            this.projectsService.delete(project.id).pipe(this.untilDestroyed).subscribe({
+              next: () => {
+                this.load();
+              },
+              error: (err: { message?: string }) => {
+                this.error.set(err.message || 'Failed to delete project');
+              }
+            });
+          }
+        });
+      },
+      error: () => {
+        const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+          data: {
+            title: 'Delete Project',
+            message: `Are you sure you want to delete "${project.name}"?`,
+          },
+        });
+
+        dialogRef.afterClosed().pipe(this.untilDestroyed).subscribe((confirmed: boolean) => {
+          if (confirmed) {
+            this.projectsService.delete(project.id).pipe(this.untilDestroyed).subscribe({
+              next: () => {
+                this.load();
+              },
+              error: (err: { message?: string }) => {
+                this.error.set(err.message || 'Failed to delete project');
+              }
+            });
           }
         });
       }

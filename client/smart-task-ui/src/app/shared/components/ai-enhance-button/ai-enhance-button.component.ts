@@ -22,7 +22,6 @@ import { ImproveDescriptionRequest } from '../../../core/models/task';
       (click)="enhance()"
       [disabled]="disabled() || loading()"
       [matTooltip]="disabled() ? 'AI description improvement is not configured.' : 'Enhance description with AI'"
-      [matTooltipDisabled]="!disabled()"
       class="ai-btn"
     >
       @if (loading()) {
