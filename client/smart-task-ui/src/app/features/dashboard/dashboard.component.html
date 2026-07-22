@@ -18,49 +18,49 @@
   </div>
 } @else if (data()) {
   <div class="dashboard-grid">
-    <mat-card class="stat-card">
+    <mat-card class="stat-card clickable" (click)="goToProjects()">
       <mat-card-content>
         <div class="stat-value">{{ data()!.totalProjects }}</div>
         <div class="stat-label">Total Projects</div>
       </mat-card-content>
     </mat-card>
 
-    <mat-card class="stat-card">
+    <mat-card class="stat-card clickable" (click)="goToTasks()">
       <mat-card-content>
         <div class="stat-value">{{ data()!.totalTasks }}</div>
         <div class="stat-label">Total Tasks</div>
       </mat-card-content>
     </mat-card>
 
-    <mat-card class="stat-card">
+    <mat-card class="stat-card clickable" (click)="goToTasksByStatus('ToDo')">
       <mat-card-content>
         <div class="stat-value">{{ getStatusValue(data()!.tasksByStatus, 0) }}</div>
         <div class="stat-label">To Do</div>
       </mat-card-content>
     </mat-card>
 
-    <mat-card class="stat-card">
+    <mat-card class="stat-card clickable" (click)="goToTasksByStatus('InProgress')">
       <mat-card-content>
         <div class="stat-value">{{ getStatusValue(data()!.tasksByStatus, 1) }}</div>
         <div class="stat-label">In Progress</div>
       </mat-card-content>
     </mat-card>
 
-    <mat-card class="stat-card">
+    <mat-card class="stat-card clickable" (click)="goToTasksByStatus('Completed')">
       <mat-card-content>
         <div class="stat-value">{{ getStatusValue(data()!.tasksByStatus, 2) }}</div>
         <div class="stat-label">Completed</div>
       </mat-card-content>
     </mat-card>
 
-    <mat-card class="stat-card">
+    <mat-card class="stat-card clickable" (click)="goToPending()">
       <mat-card-content>
         <div class="stat-value">{{ data()!.pendingTasks }}</div>
         <div class="stat-label">Pending Tasks</div>
       </mat-card-content>
     </mat-card>
 
-    <mat-card class="stat-card">
+    <mat-card class="stat-card clickable" (click)="goToUpcomingDue()">
       <mat-card-content>
         <div class="stat-value">{{ data()!.upcomingDueTasks }}</div>
         <div class="stat-label">Upcoming Due</div>
@@ -69,7 +69,7 @@
   </div>
 
   <div class="recent-section">
-    <mat-card class="recent-card">
+    <mat-card class="recent-card recent-projects-card">
       <mat-card-header>
         <mat-card-title>Recent Projects</mat-card-title>
       </mat-card-header>
@@ -89,7 +89,7 @@
       </mat-card-content>
     </mat-card>
 
-    <mat-card class="recent-card">
+    <mat-card class="recent-card recent-tasks-card">
       <mat-card-header>
         <mat-card-title>Recent Tasks</mat-card-title>
       </mat-card-header>

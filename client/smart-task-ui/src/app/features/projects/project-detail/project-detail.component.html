@@ -9,7 +9,7 @@
     <div class="error-state">
       <p>{{ error() }}</p>
       <button mat-raised-button color="primary" (click)="loadProject()">Retry</button>
-      <button mat-button (click)="goBack()">Back to Projects</button>
+      <button mat-raised-button class="back-button" (click)="goBack()">Back to Projects</button>
     </div>
   } @else if (project()) {
     <div class="detail-header">
@@ -21,7 +21,7 @@
             Edit
           </button>
         }
-        <button mat-button (click)="goBack()">Back</button>
+          <button mat-raised-button class="back-button" (click)="goBack()">Back</button>
       </div>
     </div>
 
@@ -41,7 +41,7 @@
   } @else {
     <div class="error-state">
       <p>Project not found.</p>
-      <button mat-raised-button color="primary" (click)="goBack()">Back to Projects</button>
+      <button mat-raised-button class="back-button" (click)="goBack()">Back to Projects</button>
     </div>
   }
 </div>

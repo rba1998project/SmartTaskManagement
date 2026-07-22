@@ -5,10 +5,17 @@
 .toolbar {
   display: flex;
   gap: var(--space-4);
-  align-items: flex-end;
-  justify-content: space-between;
-  margin-bottom: var(--space-4);
-  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: var(--space-3);
+}
+
+.search {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.search mat-form-field {
+  width: 100%;
 }
 
 .loading {
@@ -67,7 +74,22 @@
 }
 
 .table-wrapper {
+  position: relative;
   overflow-x: auto;
+  border-radius: 8px;
+}
+
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.7);
+  z-index: 1;
   border-radius: 8px;
 }
 

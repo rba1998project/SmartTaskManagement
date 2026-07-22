@@ -13,6 +13,7 @@ import { MatOptionModule } from '@angular/material/core';
 import { MatChipsModule } from '@angular/material/chips';
 import { RouterModule } from '@angular/router';
 import { Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { TasksService } from '../../../core/services/tasks.service';
 import { TaskResponse, TaskQueryRequest } from '../../../core/models/task';
@@ -50,6 +51,7 @@ export class TaskListComponent implements OnInit {
   private tasksService = inject(TasksService);
   private authService = inject(AuthService);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
   private dialog = inject(MatDialog);
 
   readonly tasks = signal<TaskResponse[]>([]);
@@ -89,6 +91,10 @@ export class TaskListComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    const query = this.route.snapshot.queryParams;
+    if (query['status']) {
+      this.status.set(query['status'] as TaskItemStatus);
+    }
     this.load();
   }
 

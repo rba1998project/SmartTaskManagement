@@ -53,11 +53,4 @@ export class ShellComponent implements OnInit {
     this.router.navigate(['/login']);
   }
 
-  canCreateProject(): boolean {
-    return this.authService.hasAnyRole([UserRole.Admin, UserRole.ProjectManager]);
-  }
-
-  canCreateTask(): boolean {
-    return this.authService.hasAnyRole([UserRole.Admin, UserRole.ProjectManager]);
-  }
 }

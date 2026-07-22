@@ -46,22 +46,10 @@
           <i class="fa-solid fa-folder nav-icon"></i>
           <span class="nav-text">Projects</span>
         </a>
-        @if (canCreateProject()) {
-          <a routerLink="/projects/create" routerLinkActive="active" class="nav-item" (click)="isMobile() && sidenav.close()">
-            <i class="fa-solid fa-circle-plus nav-icon"></i>
-            <span class="nav-text">New Project</span>
-          </a>
-        }
         <a routerLink="/tasks" routerLinkActive="active" class="nav-item" (click)="isMobile() && sidenav.close()">
           <i class="fa-solid fa-circle-check nav-icon"></i>
           <span class="nav-text">Tasks</span>
         </a>
-        @if (canCreateTask()) {
-          <a routerLink="/tasks/create" routerLinkActive="active" class="nav-item" (click)="isMobile() && sidenav.close()">
-            <i class="fa-solid fa-list-check nav-icon"></i>
-            <span class="nav-text">New Task</span>
-          </a>
-        }
         <a routerLink="/account" routerLinkActive="active" class="nav-item" (click)="isMobile() && sidenav.close()">
           <i class="fa-solid fa-user nav-icon"></i>
           <span class="nav-text">My Account</span>

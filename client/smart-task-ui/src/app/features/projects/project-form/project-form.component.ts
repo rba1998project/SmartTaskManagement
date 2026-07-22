@@ -7,6 +7,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Router, RouterModule } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { ProjectsService } from '../../../core/services/projects.service';
 import { NotificationService } from '../../../core/services/notification.service';
 
@@ -31,6 +32,7 @@ import { NotificationService } from '../../../core/services/notification.service
 })
 export class ProjectFormComponent implements OnInit {
   private fb = inject(FormBuilder);
+  private route = inject(ActivatedRoute);
   private router = inject(Router);
   private projectsService = inject(ProjectsService);
   private notificationService = inject(NotificationService);
@@ -45,7 +47,7 @@ export class ProjectFormComponent implements OnInit {
   projectId: string | null = null;
 
   ngOnInit(): void {
-    const id = this.router.url.split('/').pop();
+    const id = this.route.snapshot.paramMap.get('id');
     if (id && id !== 'create') {
       this.isEdit = true;
       this.projectId = id;
@@ -85,33 +87,37 @@ export class ProjectFormComponent implements OnInit {
     if (this.isEdit && this.projectId) {
       this.projectsService.update(this.projectId, value).subscribe({
         next: (result) => {
+          this.loading.set(false);
           if (result.success && result.data) {
+            this.form.markAsPristine();
+            this.form.markAsUntouched();
             this.notificationService.showSuccess('Project updated successfully');
             this.router.navigate(['/projects']);
           } else {
             this.notificationService.showError(result.message || 'Update failed');
-            this.loading.set(false);
           }
         },
         error: (err: { message?: string }) => {
-          this.notificationService.showError(err.message || 'Update failed');
           this.loading.set(false);
+          this.notificationService.showError(err.message || 'Update failed');
         }
       });
     } else {
       this.projectsService.create({ name: value.name, description: value.description }).subscribe({
         next: (result) => {
+          this.loading.set(false);
           if (result.success && result.data) {
+            this.form.markAsPristine();
+            this.form.markAsUntouched();
             this.notificationService.showSuccess('Project created successfully');
             this.router.navigate(['/projects']);
           } else {
             this.notificationService.showError(result.message || 'Creation failed');
-            this.loading.set(false);
           }
         },
         error: (err: { message?: string }) => {
-          this.notificationService.showError(err.message || 'Creation failed');
           this.loading.set(false);
+          this.notificationService.showError(err.message || 'Creation failed');
         }
       });
     }
@@ -123,7 +129,7 @@ export class ProjectFormComponent implements OnInit {
 
   // Prompt before leaving if the form is dirty
   canDeactivate(): boolean {
-    if (this.form.pristine && !this.isEdit) {
+    if (this.form.pristine) {
       return true;
     }
     return confirm('You have unsaved changes. Are you sure you want to leave?');

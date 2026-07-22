@@ -5,6 +5,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatButtonModule } from '@angular/material/button';
 import { RouterModule } from '@angular/router';
+import { Router } from '@angular/router';
 import { DashboardService } from '../../core/services/dashboard.service';
 import { ProjectsService } from '../../core/services/projects.service';
 import { TasksService } from '../../core/services/tasks.service';
@@ -25,6 +26,7 @@ export class DashboardComponent {
   private dashboardService = inject(DashboardService);
   private projectsService = inject(ProjectsService);
   private tasksService = inject(TasksService);
+  private router = inject(Router);
 
   readonly data = signal<DashboardResponse | null>(null);
   readonly loading = signal(true);
@@ -85,5 +87,26 @@ export class DashboardComponent {
 
   taskStatusLabel(status: number): string {
     return TASK_STATUS_LABELS[status as TaskItemStatus] ?? String(status);
+  }
+
+  goToProjects(): void {
+    this.router.navigate(['/projects']);
+  }
+
+  goToTasks(): void {
+    this.router.navigate(['/tasks']);
+  }
+
+  goToTasksByStatus(status: string): void {
+    this.router.navigate(['/tasks'], { queryParams: { status } });
+  }
+
+  goToPending(): void {
+    this.router.navigate(['/tasks']);
+  }
+
+  goToUpcomingDue(): void {
+    const today = new Date().toISOString().split('T')[0];
+    this.router.navigate(['/tasks'], { queryParams: { dueDate: today } });
   }
 }

@@ -32,6 +32,11 @@
   }
 }
 
+.back-button {
+  background-color: #f5f5f5;
+  color: rgba(0, 0, 0, 0.87);
+}
+
 .detail-header {
   display: flex;
   justify-content: space-between;

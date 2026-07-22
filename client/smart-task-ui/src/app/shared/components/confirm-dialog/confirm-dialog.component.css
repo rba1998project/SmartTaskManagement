@@ -15,7 +15,18 @@ mat-dialog-actions {
   display: flex;
   gap: var(--space-2);
   justify-content: flex-end;
-  padding: var(--space-2) 0;
+  padding: var(--space-2) var(--space-4);
+  margin: 0;
+}
+
+mat-dialog-actions button {
+  border-radius: 8px;
+  min-width: 64px;
+  box-sizing: border-box;
+}
+
+:host ::ng-deep .mdc-dialog__surface {
+  border-radius: 16px !important;
 }
 
 @media (max-width: 480px) {
