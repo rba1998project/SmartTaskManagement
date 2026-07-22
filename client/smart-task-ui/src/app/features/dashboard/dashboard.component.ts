@@ -1,4 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatListModule } from '@angular/material/list';
@@ -42,7 +43,7 @@ export class DashboardComponent {
   load(): void {
     this.loading.set(true);
     this.error.set(null);
-    this.dashboardService.getStats().subscribe({
+    this.dashboardService.getStats().pipe(takeUntilDestroyed()).subscribe({
       next: (result) => {
         if (result.success && result.data) {
           this.data.set(result.data);
@@ -57,7 +58,7 @@ export class DashboardComponent {
       }
     });
 
-    this.projectsService.recent().subscribe({
+    this.projectsService.recent().pipe(takeUntilDestroyed()).subscribe({
       next: (result) => {
         if (result.success && result.data) {
           this.recentProjects.set(result.data.items);
@@ -69,7 +70,7 @@ export class DashboardComponent {
       complete: () => this.recentLoading.set(false)
     });
 
-    this.tasksService.recent().subscribe({
+    this.tasksService.recent().pipe(takeUntilDestroyed()).subscribe({
       next: (result) => {
         if (result.success && result.data) {
           this.recentTasks.set(result.data.items);

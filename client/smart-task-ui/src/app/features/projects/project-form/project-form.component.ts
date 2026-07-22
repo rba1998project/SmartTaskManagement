@@ -1,4 +1,5 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -57,7 +58,7 @@ export class ProjectFormComponent implements OnInit {
 
   loadProject(id: string): void {
     this.loading.set(true);
-    this.projectsService.get(id).subscribe({
+      this.projectsService.get(id).pipe(takeUntilDestroyed()).subscribe({
       next: (result) => {
         if (result.success && result.data) {
           this.form.patchValue({
@@ -85,7 +86,7 @@ export class ProjectFormComponent implements OnInit {
     const value = this.form.value;
 
     if (this.isEdit && this.projectId) {
-      this.projectsService.update(this.projectId, value).subscribe({
+      this.projectsService.update(this.projectId, value).pipe(takeUntilDestroyed()).subscribe({
         next: (result) => {
           this.loading.set(false);
           if (result.success && result.data) {
@@ -103,7 +104,7 @@ export class ProjectFormComponent implements OnInit {
         }
       });
     } else {
-      this.projectsService.create({ name: value.name, description: value.description }).subscribe({
+      this.projectsService.create({ name: value.name, description: value.description }).pipe(takeUntilDestroyed()).subscribe({
         next: (result) => {
           this.loading.set(false);
           if (result.success && result.data) {

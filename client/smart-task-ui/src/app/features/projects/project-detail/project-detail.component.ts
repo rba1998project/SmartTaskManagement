@@ -1,4 +1,5 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { Router } from '@angular/router';
@@ -60,7 +61,7 @@ export class ProjectDetailComponent implements OnInit {
     this.loading.set(true);
     this.error.set(null);
 
-    this.projectsService.get(this.projectId).subscribe({
+    this.projectsService.get(this.projectId).pipe(takeUntilDestroyed()).subscribe({
       next: (result) => {
         this.loading.set(false);
         if (result.success && result.data) {

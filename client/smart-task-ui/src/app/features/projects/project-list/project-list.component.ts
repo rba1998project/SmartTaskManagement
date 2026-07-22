@@ -1,4 +1,5 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
@@ -77,7 +78,7 @@ export class ProjectListComponent implements OnInit {
       pageSize: this.pageSize(),
     };
 
-    this.projectsService.list(params).subscribe({
+    this.projectsService.list(params).pipe(takeUntilDestroyed()).subscribe({
       next: (result) => {
         if (result.success && result.data) {
           this.projects.set(result.data.items);
@@ -136,9 +137,9 @@ export class ProjectListComponent implements OnInit {
       },
     });
 
-    dialogRef.afterClosed().subscribe((confirmed: boolean) => {
+    dialogRef.afterClosed().pipe(takeUntilDestroyed()).subscribe((confirmed: boolean) => {
       if (confirmed) {
-        this.projectsService.delete(project.id).subscribe({
+        this.projectsService.delete(project.id).pipe(takeUntilDestroyed()).subscribe({
           next: () => {
             this.load();
           },

@@ -1,4 +1,5 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { Router } from '@angular/router';
@@ -63,7 +64,7 @@ export class TaskDetailComponent implements OnInit {
     this.loading.set(true);
     this.error.set(null);
 
-    this.tasksService.get(this.taskId).subscribe({
+    this.tasksService.get(this.taskId).pipe(takeUntilDestroyed()).subscribe({
       next: (result) => {
         if (result.success && result.data) {
           this.task.set(result.data);

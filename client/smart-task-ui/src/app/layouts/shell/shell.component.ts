@@ -1,4 +1,5 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router, RouterModule } from '@angular/router';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { MatSidenavModule } from '@angular/material/sidenav';
@@ -34,7 +35,7 @@ export class ShellComponent implements OnInit {
     const email = this.authService.currentUser()?.email || 'U';
     this.userInitials = email.split('@')[0].slice(0, 2).toUpperCase();
 
-    this.breakpointObserver.observe([Breakpoints.Handset, Breakpoints.Tablet]).subscribe(result => {
+    this.breakpointObserver.observe([Breakpoints.Handset, Breakpoints.Tablet]).pipe(takeUntilDestroyed()).subscribe(result => {
       this.isMobile.set(result.matches);
       this.sidenavOpened.set(!result.matches);
     });

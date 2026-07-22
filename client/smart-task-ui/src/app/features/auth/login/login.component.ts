@@ -1,4 +1,5 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -43,7 +44,7 @@ export class LoginComponent implements OnInit {
     if (this.form.invalid || this.loading()) return;
 
     this.loading.set(true);
-    this.authService.login(this.form.value).subscribe({
+    this.authService.login(this.form.value).pipe(takeUntilDestroyed()).subscribe({
       next: () => {
         const email = this.form.value.email;
         if (email) {

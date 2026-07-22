@@ -1,4 +1,5 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -101,7 +102,7 @@ export class TaskFormComponent implements OnInit {
 
   loadTask(id: string): void {
     this.loading.set(true);
-    this.tasksService.get(id).subscribe({
+      this.tasksService.get(id).pipe(takeUntilDestroyed()).subscribe({
       next: (result) => {
         if (result.success && result.data) {
           const task = result.data;
@@ -146,7 +147,7 @@ export class TaskFormComponent implements OnInit {
     };
 
     if (this.isEdit && this.taskId) {
-      this.tasksService.update(this.taskId, payload).subscribe({
+      this.tasksService.update(this.taskId, payload).pipe(takeUntilDestroyed()).subscribe({
         next: (result) => {
           if (result.success && result.data) {
             this.notificationService.showSuccess('Task updated successfully');
@@ -167,7 +168,7 @@ export class TaskFormComponent implements OnInit {
         description: payload.description,
         priority: payload.priority,
         dueDate: payload.dueDate ?? undefined,
-      }).subscribe({
+      }).pipe(takeUntilDestroyed()).subscribe({
         next: (result) => {
           if (result.success && result.data) {
             this.notificationService.showSuccess('Task created successfully');
