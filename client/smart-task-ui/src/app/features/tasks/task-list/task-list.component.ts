@@ -72,10 +72,7 @@ export class TaskListComponent implements OnInit {
   readonly totalCount = signal(0);
   readonly totalPages = signal(0);
 
-  get displayedColumns(): string[] {
-    const base = ['title', 'projectId', 'status', 'priority', 'dueDate', 'assignedToUserId', 'actions'];
-    return this.canMutate() ? base : base.filter(column => column !== 'actions');
-  }
+  readonly displayedColumns = ['title', 'projectId', 'status', 'priority', 'dueDate', 'assignedToUserId', 'actions'];
 
   readonly statusOptions = [
     { value: undefined as TaskItemStatus | undefined, label: 'All' },
@@ -99,6 +96,19 @@ export class TaskListComponent implements OnInit {
 
   canMutate(): boolean {
     return this.authService.hasAnyRole([UserRole.Admin, UserRole.ProjectManager]);
+  }
+
+  isAssignedToMe(task: TaskResponse): boolean {
+    return task.assignedToUserId === this.authService.currentUser()?.userId;
+  }
+
+  updateTaskStatus(taskId: string, status: TaskItemStatus): void {
+    this.tasksService.updateStatus(taskId, status).pipe(this.untilDestroyed).subscribe({
+      next: () => this.load(),
+      error: (err: { message?: string }) => {
+        this.error.set(err.message || 'Failed to update status');
+      }
+    });
   }
 
   private readonly searchSubject = new Subject<string>();
