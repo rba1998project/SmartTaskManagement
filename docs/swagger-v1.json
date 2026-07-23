@@ -23,7 +23,7 @@
                                                           "tags":  [
                                                                        "Auth"
                                                                    ],
-                                                          "summary":  "Creates a new user account with the default Team Member role.\r\nDoes not return tokens — use M:SmartTaskManagement.API.Controllers.AuthController.Login(SmartTaskManagement.Application.Authentication.Dtos.LoginRequestDto,System.Threading.CancellationToken) afterwards.",
+                                                          "summary":  "Creates a new user account with the default Team Member role.\r\nRegistration does not return tokens — authenticate afterwards to obtain them.",
                                                           "description":  "The password must meet the backend complexity rules (minimum 8 characters, upper, lower, digit, special).",
                                                           "requestBody":  {
                                                                               "description":  "Registration input.",

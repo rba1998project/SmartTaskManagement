@@ -9,6 +9,7 @@ namespace SmartTaskManagement.API.Controllers;
 /// Dashboard endpoint. Returns aggregate statistics and recent activity for the current user.
 /// Visibility rules are enforced inside <see cref="DashboardService"/>.
 /// </summary>
+// The controller stays thin: it delegates to the service and maps the returned Result onto HTTP.
 [ApiController]
 [Route("api/dashboard")]
 [Authorize]

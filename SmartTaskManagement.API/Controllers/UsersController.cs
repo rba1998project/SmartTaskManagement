@@ -11,6 +11,7 @@ namespace SmartTaskManagement.API.Controllers;
 /// Lightweight user directory endpoint for UI dropdowns and lookup flows.
 /// Returns only non-sensitive fields; gated to users with task-assign permission.
 /// </summary>
+// Returns only non-sensitive fields; gated to users with task-assign permission.
 [ApiController]
 [Route("api/users")]
 public sealed class UsersController : ControllerBase

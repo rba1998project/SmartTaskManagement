@@ -12,6 +12,7 @@ namespace SmartTaskManagement.API.Controllers;
 /// Manager; listing, viewing and status changes are open to any authenticated user, with the
 /// per-project ownership and assigned-task visibility rules enforced inside <see cref="TaskService"/>.
 /// </summary>
+// The controller stays thin: it delegates to the service and maps the returned Result onto HTTP.
 [ApiController]
 [Authorize]
 public sealed class TasksController : ControllerBase

@@ -12,6 +12,7 @@ namespace SmartTaskManagement.API.Controllers;
 /// create/update/delete are gated to Admin and Project Manager, with per-project
 /// ownership enforced inside <see cref="ProjectService"/>.
 /// </summary>
+// The controller stays thin: it delegates to the service and maps the returned Result onto HTTP.
 [ApiController]
 [Route("api/projects")]
 public sealed class ProjectsController : ControllerBase

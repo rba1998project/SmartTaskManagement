@@ -8,6 +8,7 @@ namespace SmartTaskManagement.API.Controllers;
 /// <summary>
 /// Lightweight endpoint indicating whether AI description improvement is available.
 /// </summary>
+// Returns a simple payload indicating whether the AI feature is configured.
 [ApiController]
 [AllowAnonymous]
 public sealed class AiController : ControllerBase

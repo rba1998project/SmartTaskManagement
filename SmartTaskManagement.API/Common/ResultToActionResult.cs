@@ -7,8 +7,8 @@ namespace SmartTaskManagement.API.Common;
 /// Maps a failed <see cref="Result"/> onto an HTTP response, applying the
 /// <see cref="ErrorType"/> contract: Validation → 400, Unauthorized → 401,
 /// Forbidden → 403, NotFound → 404. An uncategorized failure falls back to
-/// <paramref name="fallback"/> (bad request by default). This is the single place
-/// the API translates Application outcomes into status codes, keeping controllers thin.
+/// bad request by default. This is the single place the API translates Application
+/// outcomes into status codes, keeping controllers thin.
 /// </summary>
 public static class ResultToActionResult
 {

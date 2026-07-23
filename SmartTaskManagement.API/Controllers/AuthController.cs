@@ -11,6 +11,7 @@ namespace SmartTaskManagement.API.Controllers;
 /// Authentication endpoints. Registration and login are anonymous; refresh is anonymous
 /// but requires a valid refresh token; logout requires authentication.
 /// </summary>
+// Controller stays thin — all orchestration lives in AuthService.
 [ApiController]
 [Route("api/auth")]
 public sealed class AuthController : ControllerBase
@@ -26,7 +27,7 @@ public sealed class AuthController : ControllerBase
 
     /// <summary>
     /// Creates a new user account with the default Team Member role.
-    /// Does not return tokens — use <see cref="Login"/> afterwards.
+    /// Registration does not return tokens — authenticate afterwards to obtain them.
     /// </summary>
     /// <remarks>
     /// The password must meet the backend complexity rules (minimum 8 characters, upper, lower, digit, special).
