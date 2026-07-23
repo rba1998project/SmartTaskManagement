@@ -52,7 +52,7 @@ export class LoginComponent implements OnInit {
         if (email) {
           localStorage.setItem(SAVED_EMAIL_KEY, email);
         }
-        this.notificationService.show('Welcome back!');
+        this.notificationService.showSuccess('Welcome back!');
         this.router.navigate(['/dashboard']);
       },
       error: (err: Error) => {

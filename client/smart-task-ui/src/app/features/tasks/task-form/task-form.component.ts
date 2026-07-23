@@ -12,7 +12,6 @@ import { MatOptionModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { TasksService } from '../../../core/services/tasks.service';
@@ -59,7 +58,6 @@ export class TaskFormComponent implements OnInit {
   private projectsService = inject(ProjectsService);
   private usersService = inject(UsersService);
   private notificationService = inject(NotificationService);
-  private snackBar = inject(MatSnackBar);
   private authService = inject(AuthService);
 
   form: FormGroup = this.fb.group({

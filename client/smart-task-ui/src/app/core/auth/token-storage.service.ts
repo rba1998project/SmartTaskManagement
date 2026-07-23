@@ -1,7 +1,6 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { ApiService } from '../services/api.service';
 import { AuthResponse } from '../models/auth';
-import { environment } from '../../../environments/environment';
 
 // Session token persistence with in-memory cache + sessionStorage fallback.
 //

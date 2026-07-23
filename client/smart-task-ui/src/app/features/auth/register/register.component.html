@@ -33,7 +33,7 @@
             <mat-error>Password is required</mat-error>
           }
           @if (!form.get('password')?.hasError('required') && form.get('password')?.touched && (form.get('password')?.hasError('minlength') || form.get('password')?.hasError('maxlength'))) {
-            <mat-error>Must be 8 characters</mat-error>
+            <mat-error>Must be 8–128 characters</mat-error>
           }
           @if (!form.get('password')?.hasError('required') && form.get('password')?.touched && form.get('password')?.hasError('uppercase')) {
             <mat-error>Include an uppercase letter</mat-error>

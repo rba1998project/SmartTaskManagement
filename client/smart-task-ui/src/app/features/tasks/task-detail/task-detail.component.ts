@@ -15,8 +15,8 @@ import { TaskResponse } from '../../../core/models/task';
 import { AuthService } from '../../../core/auth/auth.service';
 import { UserRole } from '../../../core/models/enums';
 import { TaskItemStatus, TaskItemPriority } from '../../../core/models/enums';
-import { TASK_STATUS_LABELS } from '../../../shared/constants/task-status.constants';
-import { TASK_PRIORITY_LABELS } from '../../../shared/constants/task-priority.constants';
+import { TASK_STATUS_LABELS, TASK_STATUS_COLORS } from '../../../shared/constants/task-status.constants';
+import { TASK_PRIORITY_LABELS, TASK_PRIORITY_COLORS } from '../../../shared/constants/task-priority.constants';
 
 // Route: /tasks/:id
 // Reads task id from route snapshot and loads the task detail.
@@ -100,23 +100,11 @@ export class TaskDetailComponent implements OnInit {
   }
 
   statusColor(status: TaskItemStatus): string {
-    const colors: Record<TaskItemStatus, string> = {
-      [TaskItemStatus.ToDo]: 'primary',
-      [TaskItemStatus.InProgress]: 'accent',
-      [TaskItemStatus.Completed]: '',
-      [TaskItemStatus.Cancelled]: 'warn',
-    };
-    return colors[status] ?? '';
+    return TASK_STATUS_COLORS[status] ?? '';
   }
 
   priorityColor(priority: TaskItemPriority): string {
-    const colors: Record<TaskItemPriority, string> = {
-      [TaskItemPriority.Low]: '',
-      [TaskItemPriority.Medium]: 'primary',
-      [TaskItemPriority.High]: 'accent',
-      [TaskItemPriority.Critical]: 'warn',
-    };
-    return colors[priority] ?? '';
+    return TASK_PRIORITY_COLORS[priority] ?? '';
   }
 
   formatDate(date: string | null): string {

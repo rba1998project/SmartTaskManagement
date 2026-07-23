@@ -108,6 +108,7 @@ Inner layers never reference outer layers.
    ```
    - HTTP: `http://localhost:5193`
    - HTTPS: `https://localhost:7277`
+   - Swagger UI: `https://localhost:7277/swagger` (Development only)
    - On startup the app seeds the three roles and (if configured) a default admin user.
 
 5. **Run the Angular frontend** (in a separate terminal)
@@ -116,7 +117,7 @@ Inner layers never reference outer layers.
    npm install
    npm start
    ```
-   - The frontend proxies API requests to `https://localhost:7277`.
+   - The frontend calls the API directly at `https://localhost:7277` (configured in `environment.ts`).
    - Default login: `admin@smarttask.local` / the password set in User Secrets.
 
 ## Roles & Permissions

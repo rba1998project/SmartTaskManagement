@@ -36,7 +36,6 @@ export class DashboardComponent {
   readonly error = signal<string | null>(null);
   readonly recentProjects = signal<ProjectResponse[]>([]);
   readonly recentTasks = signal<TaskResponse[]>([]);
-  readonly recentLoading = signal(true);
 
   constructor() {
     this.load();
@@ -68,8 +67,7 @@ export class DashboardComponent {
           this.recentProjects.set([]);
         }
       },
-      error: () => this.recentProjects.set([]),
-      complete: () => this.recentLoading.set(false)
+      error: () => this.recentProjects.set([])
     });
 
     this.tasksService.recent().pipe(this.untilDestroyed).subscribe({
@@ -102,10 +100,6 @@ export class DashboardComponent {
 
   goToTasksByStatus(status: string): void {
     this.router.navigate(['/tasks'], { queryParams: { status } });
-  }
-
-  goToPending(): void {
-    this.router.navigate(['/tasks']);
   }
 
   goToUpcomingDue(): void {
