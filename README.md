@@ -124,14 +124,16 @@ Inner layers never reference outer layers.
 
 Authorization is **permission-based**. Each role is seeded with a set of `permission` claims;
 those claims are carried in the JWT, and protected endpoints require a matching policy. Resource
-ownership (a Project Manager may touch only their own projects; a Team Member may change status
-only on tasks assigned to them) is enforced in the service layer, not in the token.
+ownership is enforced in the service layer, not in the token:
+- **Admin:** full access to every project, task, and user management.
+- **Project Manager:** can view, create, update, and delete only their own projects and the tasks within them.
+- **Team Member:** can view only projects/tasks assigned to them, and change status on tasks assigned to them.
 
 | Role | Feature permissions | Notes |
 |------|--------------------|-------|
 | Admin | all | Full access to every project, task, and user management. |
-| Project Manager | projects.*, tasks.* | Can manage projects and tasks. Ownership narrows create/update/delete to their own projects/tasks. Cannot manage users. |
-| Team Member | none | Reads assigned work and changes status on tasks assigned to them. |
+| Project Manager | projects.*, tasks.* | Can view, create, update, and delete only their own projects and the tasks within them. Cannot manage users. |
+| Team Member | none | Can view only projects/tasks assigned to them, and change status on tasks assigned to them. |
 
 Permissions in use: `projects.create`, `projects.update`, `projects.delete`, `tasks.create`,
 `tasks.update`, `tasks.delete`, `tasks.assign`, `users.manage`. Listing, viewing, and task status changes are
@@ -155,8 +157,8 @@ Refresh tokens are persisted as SHA-256 hashes, rotated on every use, and revoca
 ### Projects — `api/projects`
 | Endpoint | Permission | Description |
 |----------|-----------|-------------|
-| `GET /api/projects` | authenticated | List projects with search, filtering, sorting, and pagination. |
-| `GET /api/projects/{id}` | authenticated | Project details. |
+| `GET /api/projects` | authenticated | List projects with search, filtering, sorting, and pagination. Visibility: Admin sees all; Project Manager sees only their own; Team Member sees only projects containing tasks assigned to them. |
+| `GET /api/projects/{id}` | authenticated | Project details. Visibility rules same as list. |
 | `POST /api/projects` | `projects.create` | Create a project. |
 | `PUT /api/projects/{id}` | `projects.update` | Update a project (ownership enforced). |
 | `DELETE /api/projects/{id}` | `projects.delete` | Soft-delete a project; cascades soft deletion to its tasks. |
@@ -193,14 +195,14 @@ Refresh tokens are persisted as SHA-256 hashes, rotated on every use, and revoca
 ### Tasks
 | Endpoint | Permission | Description |
 |----------|-----------|-------------|
-| `GET /api/tasks` | authenticated | Global task list with search, filtering, sorting, and pagination. |
-| `GET /api/projects/{projectId}/tasks` | authenticated | List a single project's tasks with search, filtering, sorting, and pagination. |
-| `GET /api/tasks/{id}` | authenticated | Task details. |
+| `GET /api/tasks` | authenticated | Global task list with search, filtering, sorting, and pagination. Visibility: Admin sees all; Project Manager sees only tasks in their own projects; Team Member sees only tasks assigned to them. |
+| `GET /api/projects/{projectId}/tasks` | authenticated | List a single project's tasks. Visibility rules same as global task list. |
+| `GET /api/tasks/{id}` | authenticated | Task details. Visibility rules same as global task list. |
 | `POST /api/projects/{projectId}/tasks` | `tasks.create` | Create a task in a project. |
 | `PUT /api/tasks/{id}` | `tasks.update` | Update task details. |
 | `DELETE /api/tasks/{id}` | `tasks.delete` | Soft-delete a task. |
 | `PUT /api/tasks/{id}/assignment` | `tasks.assign` | Assign the task to a user. |
-| `PUT /api/tasks/{id}/status` | authenticated | Change status (Team Member: only own assigned tasks). |
+| `PUT /api/tasks/{id}/status` | authenticated | Change status. Team Member can change only on tasks assigned to them; Project Manager can change status on tasks in their own projects or assigned to them. |
 | `POST /api/tasks/improve-description` | authenticated | Improve a task description using the AI provider. |
 
 **Task status:** `ToDo`, `InProgress`, `Completed`, `Cancelled`.

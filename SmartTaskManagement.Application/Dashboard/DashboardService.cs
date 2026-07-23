@@ -37,7 +37,7 @@ public sealed class DashboardService
             projectOwnerUserId = userId;
 
         //totals
-        var totalProjects = await _projects.CountVisibleAsync(teamMemberUserId, cancellationToken);
+        var totalProjects = await _projects.CountVisibleAsync(teamMemberUserId, projectOwnerUserId, cancellationToken);
         var totalTasks = await _tasks.CountAsync(_ => true, assignedToUserId, projectOwnerUserId, cancellationToken);
 
         //breakdown of completed and pending tasks

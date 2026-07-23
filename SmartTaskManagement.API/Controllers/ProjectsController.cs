@@ -8,8 +8,9 @@ using SmartTaskManagement.Application.Projects.Dtos;
 namespace SmartTaskManagement.API.Controllers;
 
 /// <summary>
-/// Project endpoints. Reads (list and details) are open to any authenticated user;
-/// create/update/delete are gated to Admin and Project Manager, with per-project
+/// Project endpoints. Reads are scoped by role: Admin sees all projects; Project Manager
+/// sees only their own projects; Team Member sees only projects containing tasks assigned
+/// to them. create/update/delete are gated to Admin and Project Manager, with per-project
 /// ownership enforced inside <see cref="ProjectService"/>.
 /// </summary>
 // The controller stays thin: it delegates to the service and maps the returned Result onto HTTP.

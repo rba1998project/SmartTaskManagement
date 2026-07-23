@@ -31,18 +31,23 @@ public interface IProjectRepository
     /// When <paramref name="teamMemberUserId"/> is provided, only projects containing a task
     /// assigned to that user are returned (Team Member visibility). Pass <c>null</c> for
     /// Admin / Project Manager to return all projects.
+    /// When <paramref name="projectOwnerUserId"/> is provided, only projects created by that
+    /// user are returned (Project Manager ownership view).
     /// </summary>
     Task<PagedResult<Project>> QueryAsync(
         ProjectQueryRequestDto request,
         Guid? teamMemberUserId,
+        Guid? projectOwnerUserId,
         CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Returns the count of projects visible to the given team member. Pass <c>null</c>
-    /// for Admin / Project Manager to count all projects.
+    /// Returns the count of projects visible to the current user. Pass <c>null</c> for
+    /// Admin to count all projects. Provide <paramref name="teamMemberUserId"/> for Team Member
+    /// visibility, or <paramref name="projectOwnerUserId"/> for Project Manager ownership view.
     /// </summary>
     Task<int> CountVisibleAsync(
         Guid? teamMemberUserId,
+        Guid? projectOwnerUserId,
         CancellationToken cancellationToken = default);
 
     /// <summary>Adds and persists a new project.</summary>

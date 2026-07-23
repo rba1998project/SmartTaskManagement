@@ -40,6 +40,7 @@ public sealed class ProjectRepository : IProjectRepository
     public async Task<PagedResult<Project>> QueryAsync(
         ProjectQueryRequestDto request,
         Guid? teamMemberUserId,
+        Guid? projectOwnerUserId,
         CancellationToken cancellationToken = default)
     {
         var query = _dbContext.Projects.AsNoTracking().AsQueryable();
@@ -48,6 +49,12 @@ public sealed class ProjectRepository : IProjectRepository
         {
             var userId = teamMemberUserId.Value;
             query = query.Where(p => _dbContext.Tasks.Any(t => t.ProjectId == p.Id && t.AssignedToUserId == userId));
+        }
+
+        if (projectOwnerUserId.HasValue)
+        {
+            var ownerId = projectOwnerUserId.Value;
+            query = query.Where(p => p.CreatedByUserId == ownerId);
         }
 
         if (!string.IsNullOrWhiteSpace(request.Search))
@@ -80,7 +87,7 @@ public sealed class ProjectRepository : IProjectRepository
         return new PagedResult<Project>(items, totalCount, request.PageNumber, request.PageSize);
     }
 
-    public async Task<int> CountVisibleAsync(Guid? teamMemberUserId, CancellationToken cancellationToken = default)
+    public async Task<int> CountVisibleAsync(Guid? teamMemberUserId, Guid? projectOwnerUserId, CancellationToken cancellationToken = default)
     {
         var query = _dbContext.Projects.AsNoTracking().AsQueryable();
 
@@ -88,6 +95,12 @@ public sealed class ProjectRepository : IProjectRepository
         {
             var userId = teamMemberUserId.Value;
             query = query.Where(p => _dbContext.Tasks.Any(t => t.ProjectId == p.Id && t.AssignedToUserId == userId));
+        }
+
+        if (projectOwnerUserId.HasValue)
+        {
+            var ownerId = projectOwnerUserId.Value;
+            query = query.Where(p => p.CreatedByUserId == ownerId);
         }
 
         return await query.CountAsync(cancellationToken);

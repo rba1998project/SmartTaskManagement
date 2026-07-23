@@ -10,9 +10,10 @@ namespace SmartTaskManagement.Application.Projects;
 /// <summary>
 /// Project use cases: create, update, delete, details, list. Controllers stay thin by
 /// delegating here. Resource-ownership rules live in this layer (not the API): an Admin may
-/// modify any project; a Project Manager only projects they own. All authenticated users may
-/// view and list. Role-gating of who may reach create/update/delete at all is enforced at the
-/// API with <c>[Authorize(Policy = ...)]</c>; the ownership check here is the second gate.
+/// view or modify any project; a Project Manager may view or modify only projects they own.
+/// A Team Member may view only projects containing a task assigned to them.
+/// Role-gating of who may reach create/update/delete at all is enforced at the API with
+/// <c>[Authorize(Policy = ...)]</c>; the ownership check here is the second gate.
 /// Expected failures are returned as a categorized <see cref="Result"/> — never exceptions.
 /// </summary>
 public sealed class ProjectService
@@ -85,6 +86,12 @@ public sealed class ProjectService
         if (project is null)
             return Result<ProjectResponseDto>.Failure(ErrorType.NotFound, "Project not found.");
 
+        if (_currentUser.IsInRole(RoleNames.ProjectManager) && !_currentUser.IsInRole(RoleNames.Admin))
+        {
+            if (project.CreatedByUserId != _currentUser.UserId)
+                return Result<ProjectResponseDto>.Failure(ErrorType.NotFound, "Project not found.");
+        }
+
         // A Team Member may only view a project that contains a task assigned to them. Admin and
         // the owning Project Manager may view it regardless of assignment.
         if (!CanView() && !await IsVisibleToTeamMemberAsync(project.Id, cancellationToken))
@@ -96,14 +103,15 @@ public sealed class ProjectService
 
     public async Task<Result<PagedResult<ProjectResponseDto>>> ListAsync(ProjectQueryRequestDto request, CancellationToken cancellationToken = default)
     {
-        // A Team Member sees only projects containing tasks assigned to them (filtered
-        // database-side); Admin and Project Managers see all projects.
         Guid? teamMemberUserId = null;
-
         if (_currentUser.IsInRole(RoleNames.TeamMember) && !_currentUser.IsInRole(RoleNames.Admin))
             teamMemberUserId = _currentUser.UserId;
 
-        var pagedResult = await _projects.QueryAsync(request, teamMemberUserId, cancellationToken);
+        Guid? projectOwnerUserId = null;
+        if (_currentUser.IsInRole(RoleNames.ProjectManager) && !_currentUser.IsInRole(RoleNames.Admin))
+            projectOwnerUserId = _currentUser.UserId;
+
+        var pagedResult = await _projects.QueryAsync(request, teamMemberUserId, projectOwnerUserId, cancellationToken);
 
         var creatorIds = pagedResult.Items
             .Select(p => p.CreatedByUserId)
