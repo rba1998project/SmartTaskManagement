@@ -1,4 +1,6 @@
 using Microsoft.OpenApi;
+using System.Reflection;
+using System.Xml.XPath;
 
 namespace SmartTaskManagement.API.Extensions;
 
@@ -9,6 +11,13 @@ public static class SwaggerExtensions
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen(options =>
         {
+            var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+            var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFilename);
+            if (File.Exists(xmlPath))
+            {
+                options.IncludeXmlComments(xmlPath);
+            }
+
             options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
                 Name = "Authorization",

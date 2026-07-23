@@ -14,9 +14,7 @@ public sealed class AiController : ControllerBase
 {
     private readonly IAiStatusService _aiStatusService;
 
-    /// <summary>
-    /// Initializes a new instance of <see cref="AiController"/>.
-    /// </summary>
+    /// <summary>Initializes a new instance of <see cref="AiController"/>.</summary>
     /// <param name="aiStatusService">Service that reports AI availability.</param>
     public AiController(IAiStatusService aiStatusService)
     {
@@ -26,6 +24,7 @@ public sealed class AiController : ControllerBase
     /// <summary>
     /// Returns a simple payload indicating whether the AI feature is configured.
     /// </summary>
+    /// <returns>Anonymous object with <c>enabled</c> boolean.</returns>
     [HttpGet("api/ai/status")]
     public IActionResult GetStatus()
     {

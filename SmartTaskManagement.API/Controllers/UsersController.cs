@@ -17,11 +17,18 @@ public sealed class UsersController : ControllerBase
 {
     private readonly IIdentityService _identityService;
 
+    /// <summary>Initializes a new instance of <see cref="UsersController"/>.</summary>
+    /// <param name="identityService">Identity lookup service.</param>
     public UsersController(IIdentityService identityService)
     {
         _identityService = identityService;
     }
 
+    /// <summary>
+    /// Returns a lightweight directory of users for assignment dropdowns.
+    /// </summary>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>List of <see cref="UserLookupDto"/>.</returns>
     [HttpGet("lookup")]
     [Authorize(Policy = Permissions.TasksAssign)]
     public async Task<IActionResult> Lookup(CancellationToken cancellationToken)

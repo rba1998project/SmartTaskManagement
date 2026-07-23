@@ -1,0 +1,966 @@
+﻿{
+    "openapi":  "3.0.4",
+    "info":  {
+                 "title":  "SmartTaskManagement.API",
+                 "version":  "1.0"
+             },
+    "paths":  {
+                  "/api/ai/status":  {
+                                         "get":  {
+                                                     "tags":  [
+                                                                  "Ai"
+                                                              ],
+                                                     "summary":  "Returns a simple payload indicating whether the AI feature is configured.",
+                                                     "responses":  {
+                                                                       "200":  {
+                                                                                   "description":  "OK"
+                                                                               }
+                                                                   }
+                                                 }
+                                     },
+                  "/api/auth/register":  {
+                                             "post":  {
+                                                          "tags":  [
+                                                                       "Auth"
+                                                                   ],
+                                                          "summary":  "Creates a new user account with the default Team Member role.\r\nDoes not return tokens — use M:SmartTaskManagement.API.Controllers.AuthController.Login(SmartTaskManagement.Application.Authentication.Dtos.LoginRequestDto,System.Threading.CancellationToken) afterwards.",
+                                                          "description":  "The password must meet the backend complexity rules (minimum 8 characters, upper, lower, digit, special).",
+                                                          "requestBody":  {
+                                                                              "description":  "Registration input.",
+                                                                              "content":  {
+                                                                                              "application/json":  {
+                                                                                                                       "schema":  {
+                                                                                                                                      "$ref":  "#/components/schemas/RegisterRequestDto"
+                                                                                                                                  }
+                                                                                                                   },
+                                                                                              "text/json":  {
+                                                                                                                "schema":  {
+                                                                                                                               "$ref":  "#/components/schemas/RegisterRequestDto"
+                                                                                                                           }
+                                                                                                            },
+                                                                                              "application/*+json":  {
+                                                                                                                         "schema":  {
+                                                                                                                                        "$ref":  "#/components/schemas/RegisterRequestDto"
+                                                                                                                                    }
+                                                                                                                     }
+                                                                                          }
+                                                                          },
+                                                          "responses":  {
+                                                                            "200":  {
+                                                                                        "description":  "OK"
+                                                                                    }
+                                                                        }
+                                                      }
+                                         },
+                  "/api/auth/login":  {
+                                          "post":  {
+                                                       "tags":  [
+                                                                    "Auth"
+                                                                ],
+                                                       "summary":  "Authenticates a user and returns access and refresh tokens.",
+                                                       "requestBody":  {
+                                                                           "description":  "Login credentials.",
+                                                                           "content":  {
+                                                                                           "application/json":  {
+                                                                                                                    "schema":  {
+                                                                                                                                   "$ref":  "#/components/schemas/LoginRequestDto"
+                                                                                                                               }
+                                                                                                                },
+                                                                                           "text/json":  {
+                                                                                                             "schema":  {
+                                                                                                                            "$ref":  "#/components/schemas/LoginRequestDto"
+                                                                                                                        }
+                                                                                                         },
+                                                                                           "application/*+json":  {
+                                                                                                                      "schema":  {
+                                                                                                                                     "$ref":  "#/components/schemas/LoginRequestDto"
+                                                                                                                                 }
+                                                                                                                  }
+                                                                                       }
+                                                                       },
+                                                       "responses":  {
+                                                                         "200":  {
+                                                                                     "description":  "OK"
+                                                                                 }
+                                                                     }
+                                                   }
+                                      },
+                  "/api/auth/refresh":  {
+                                            "post":  {
+                                                         "tags":  [
+                                                                      "Auth"
+                                                                  ],
+                                                         "summary":  "Rotates an existing refresh token pair and returns a new access token\r\nand refresh token. The presented refresh token is revoked.",
+                                                         "requestBody":  {
+                                                                             "description":  "Refresh token input.",
+                                                                             "content":  {
+                                                                                             "application/json":  {
+                                                                                                                      "schema":  {
+                                                                                                                                     "$ref":  "#/components/schemas/RefreshRequestDto"
+                                                                                                                                 }
+                                                                                                                  },
+                                                                                             "text/json":  {
+                                                                                                               "schema":  {
+                                                                                                                              "$ref":  "#/components/schemas/RefreshRequestDto"
+                                                                                                                          }
+                                                                                                           },
+                                                                                             "application/*+json":  {
+                                                                                                                        "schema":  {
+                                                                                                                                       "$ref":  "#/components/schemas/RefreshRequestDto"
+                                                                                                                                   }
+                                                                                                                    }
+                                                                                         }
+                                                                         },
+                                                         "responses":  {
+                                                                           "200":  {
+                                                                                       "description":  "OK"
+                                                                                   }
+                                                                       }
+                                                     }
+                                        },
+                  "/api/auth/logout":  {
+                                           "post":  {
+                                                        "tags":  [
+                                                                     "Auth"
+                                                                 ],
+                                                        "summary":  "Revokes the supplied refresh token so it can no longer be exchanged.",
+                                                        "requestBody":  {
+                                                                            "description":  "Logout input containing the refresh token.",
+                                                                            "content":  {
+                                                                                            "application/json":  {
+                                                                                                                     "schema":  {
+                                                                                                                                    "$ref":  "#/components/schemas/LogoutRequestDto"
+                                                                                                                                }
+                                                                                                                 },
+                                                                                            "text/json":  {
+                                                                                                              "schema":  {
+                                                                                                                             "$ref":  "#/components/schemas/LogoutRequestDto"
+                                                                                                                         }
+                                                                                                          },
+                                                                                            "application/*+json":  {
+                                                                                                                       "schema":  {
+                                                                                                                                      "$ref":  "#/components/schemas/LogoutRequestDto"
+                                                                                                                                  }
+                                                                                                                   }
+                                                                                        }
+                                                                        },
+                                                        "responses":  {
+                                                                          "200":  {
+                                                                                      "description":  "OK"
+                                                                                  }
+                                                                      }
+                                                    }
+                                       },
+                  "/api/dashboard":  {
+                                         "get":  {
+                                                     "tags":  [
+                                                                  "Dashboard"
+                                                              ],
+                                                     "summary":  "Retrieves dashboard statistics for the current user.",
+                                                     "responses":  {
+                                                                       "200":  {
+                                                                                   "description":  "OK"
+                                                                               }
+                                                                   }
+                                                 }
+                                     },
+                  "/api/projects":  {
+                                        "get":  {
+                                                    "tags":  [
+                                                                 "Projects"
+                                                             ],
+                                                    "summary":  "Lists projects visible to the current user, with optional search, sorting, and pagination.",
+                                                    "parameters":  [
+                                                                       {
+                                                                           "name":  "Search",
+                                                                           "in":  "query",
+                                                                           "schema":  {
+                                                                                          "type":  "string"
+                                                                                      }
+                                                                       },
+                                                                       {
+                                                                           "name":  "SortField",
+                                                                           "in":  "query",
+                                                                           "schema":  {
+                                                                                          "$ref":  "#/components/schemas/ProjectSortFieldDto"
+                                                                                      }
+                                                                       },
+                                                                       {
+                                                                           "name":  "SortDirection",
+                                                                           "in":  "query",
+                                                                           "schema":  {
+                                                                                          "$ref":  "#/components/schemas/SortDirection"
+                                                                                      }
+                                                                       },
+                                                                       {
+                                                                           "name":  "PageNumber",
+                                                                           "in":  "query",
+                                                                           "schema":  {
+                                                                                          "type":  "integer",
+                                                                                          "format":  "int32"
+                                                                                      }
+                                                                       },
+                                                                       {
+                                                                           "name":  "PageSize",
+                                                                           "in":  "query",
+                                                                           "schema":  {
+                                                                                          "type":  "integer",
+                                                                                          "format":  "int32"
+                                                                                      }
+                                                                       }
+                                                                   ],
+                                                    "responses":  {
+                                                                      "200":  {
+                                                                                  "description":  "OK"
+                                                                              }
+                                                                  }
+                                                },
+                                        "post":  {
+                                                     "tags":  [
+                                                                  "Projects"
+                                                              ],
+                                                     "summary":  "Creates a new project. The owner is set to the authenticated caller.",
+                                                     "requestBody":  {
+                                                                         "description":  "Project creation input.",
+                                                                         "content":  {
+                                                                                         "application/json":  {
+                                                                                                                  "schema":  {
+                                                                                                                                 "$ref":  "#/components/schemas/CreateProjectRequestDto"
+                                                                                                                             }
+                                                                                                              },
+                                                                                         "text/json":  {
+                                                                                                           "schema":  {
+                                                                                                                          "$ref":  "#/components/schemas/CreateProjectRequestDto"
+                                                                                                                      }
+                                                                                                       },
+                                                                                         "application/*+json":  {
+                                                                                                                    "schema":  {
+                                                                                                                                   "$ref":  "#/components/schemas/CreateProjectRequestDto"
+                                                                                                                               }
+                                                                                                                }
+                                                                                     }
+                                                                     },
+                                                     "responses":  {
+                                                                       "200":  {
+                                                                                   "description":  "OK"
+                                                                               }
+                                                                   }
+                                                 }
+                                    },
+                  "/api/projects/{id}":  {
+                                             "get":  {
+                                                         "tags":  [
+                                                                      "Projects"
+                                                                  ],
+                                                         "summary":  "Retrieves a single project by id.",
+                                                         "parameters":  [
+                                                                            {
+                                                                                "name":  "id",
+                                                                                "in":  "path",
+                                                                                "description":  "Project identifier.",
+                                                                                "required":  true,
+                                                                                "schema":  {
+                                                                                               "type":  "string",
+                                                                                               "format":  "uuid"
+                                                                                           }
+                                                                            }
+                                                                        ],
+                                                         "responses":  {
+                                                                           "200":  {
+                                                                                       "description":  "OK"
+                                                                                   }
+                                                                       }
+                                                     },
+                                             "put":  {
+                                                         "tags":  [
+                                                                      "Projects"
+                                                                  ],
+                                                         "summary":  "Updates an existing project. Only the name and description are mutable.",
+                                                         "parameters":  [
+                                                                            {
+                                                                                "name":  "id",
+                                                                                "in":  "path",
+                                                                                "description":  "Project identifier.",
+                                                                                "required":  true,
+                                                                                "schema":  {
+                                                                                               "type":  "string",
+                                                                                               "format":  "uuid"
+                                                                                           }
+                                                                            }
+                                                                        ],
+                                                         "requestBody":  {
+                                                                             "description":  "Update input.",
+                                                                             "content":  {
+                                                                                             "application/json":  {
+                                                                                                                      "schema":  {
+                                                                                                                                     "$ref":  "#/components/schemas/UpdateProjectRequestDto"
+                                                                                                                                 }
+                                                                                                                  },
+                                                                                             "text/json":  {
+                                                                                                               "schema":  {
+                                                                                                                              "$ref":  "#/components/schemas/UpdateProjectRequestDto"
+                                                                                                                          }
+                                                                                                           },
+                                                                                             "application/*+json":  {
+                                                                                                                        "schema":  {
+                                                                                                                                       "$ref":  "#/components/schemas/UpdateProjectRequestDto"
+                                                                                                                                   }
+                                                                                                                    }
+                                                                                         }
+                                                                         },
+                                                         "responses":  {
+                                                                           "200":  {
+                                                                                       "description":  "OK"
+                                                                                   }
+                                                                       }
+                                                     },
+                                             "delete":  {
+                                                            "tags":  [
+                                                                         "Projects"
+                                                                     ],
+                                                            "summary":  "Soft-deletes a project. The project and its tasks are hidden from normal queries.",
+                                                            "parameters":  [
+                                                                               {
+                                                                                   "name":  "id",
+                                                                                   "in":  "path",
+                                                                                   "description":  "Project identifier.",
+                                                                                   "required":  true,
+                                                                                   "schema":  {
+                                                                                                  "type":  "string",
+                                                                                                  "format":  "uuid"
+                                                                                              }
+                                                                               }
+                                                                           ],
+                                                            "responses":  {
+                                                                              "200":  {
+                                                                                          "description":  "OK"
+                                                                                      }
+                                                                          }
+                                                        }
+                                         },
+                  "/api/projects/{projectId}/tasks":  {
+                                                          "post":  {
+                                                                       "tags":  [
+                                                                                    "Tasks"
+                                                                                ],
+                                                                       "summary":  "Creates a new task inside the specified project.",
+                                                                       "parameters":  [
+                                                                                          {
+                                                                                              "name":  "projectId",
+                                                                                              "in":  "path",
+                                                                                              "description":  "Parent project identifier.",
+                                                                                              "required":  true,
+                                                                                              "schema":  {
+                                                                                                             "type":  "string",
+                                                                                                             "format":  "uuid"
+                                                                                                         }
+                                                                                          }
+                                                                                      ],
+                                                                       "requestBody":  {
+                                                                                           "description":  "Task creation input.",
+                                                                                           "content":  {
+                                                                                                           "application/json":  {
+                                                                                                                                    "schema":  {
+                                                                                                                                                   "$ref":  "#/components/schemas/CreateTaskRequestDto"
+                                                                                                                                               }
+                                                                                                                                },
+                                                                                                           "text/json":  {
+                                                                                                                             "schema":  {
+                                                                                                                                            "$ref":  "#/components/schemas/CreateTaskRequestDto"
+                                                                                                                                        }
+                                                                                                                         },
+                                                                                                           "application/*+json":  {
+                                                                                                                                      "schema":  {
+                                                                                                                                                     "$ref":  "#/components/schemas/CreateTaskRequestDto"
+                                                                                                                                                 }
+                                                                                                                                  }
+                                                                                                       }
+                                                                                       },
+                                                                       "responses":  {
+                                                                                         "200":  {
+                                                                                                     "description":  "OK"
+                                                                                                 }
+                                                                                     }
+                                                                   },
+                                                          "get":  {
+                                                                      "tags":  [
+                                                                                   "Tasks"
+                                                                               ],
+                                                                      "summary":  "Lists tasks for a specific project, with optional search, filtering, sorting, and pagination.",
+                                                                      "parameters":  [
+                                                                                         {
+                                                                                             "name":  "projectId",
+                                                                                             "in":  "path",
+                                                                                             "description":  "Parent project identifier.",
+                                                                                             "required":  true,
+                                                                                             "schema":  {
+                                                                                                            "type":  "string",
+                                                                                                            "format":  "uuid"
+                                                                                                        }
+                                                                                         }
+                                                                                     ],
+                                                                      "responses":  {
+                                                                                        "200":  {
+                                                                                                    "description":  "OK"
+                                                                                                }
+                                                                                    }
+                                                                  }
+                                                      },
+                  "/api/tasks":  {
+                                     "get":  {
+                                                 "tags":  [
+                                                              "Tasks"
+                                                          ],
+                                                 "summary":  "Lists tasks visible to the current user across all projects, with optional search, filtering, sorting, and pagination.",
+                                                 "parameters":  [
+                                                                    {
+                                                                        "name":  "Search",
+                                                                        "in":  "query",
+                                                                        "schema":  {
+                                                                                       "type":  "string"
+                                                                                   }
+                                                                    },
+                                                                    {
+                                                                        "name":  "Status",
+                                                                        "in":  "query",
+                                                                        "schema":  {
+                                                                                       "$ref":  "#/components/schemas/TaskItemStatus"
+                                                                                   }
+                                                                    },
+                                                                    {
+                                                                        "name":  "Priority",
+                                                                        "in":  "query",
+                                                                        "schema":  {
+                                                                                       "$ref":  "#/components/schemas/TaskItemPriority"
+                                                                                   }
+                                                                    },
+                                                                    {
+                                                                        "name":  "AssignedToUserId",
+                                                                        "in":  "query",
+                                                                        "schema":  {
+                                                                                       "type":  "string",
+                                                                                       "format":  "uuid"
+                                                                                   }
+                                                                    },
+                                                                    {
+                                                                        "name":  "DueDate",
+                                                                        "in":  "query",
+                                                                        "schema":  {
+                                                                                       "type":  "string",
+                                                                                       "format":  "date-time"
+                                                                                   }
+                                                                    },
+                                                                    {
+                                                                        "name":  "SortField",
+                                                                        "in":  "query",
+                                                                        "schema":  {
+                                                                                       "$ref":  "#/components/schemas/TaskSortField"
+                                                                                   }
+                                                                    },
+                                                                    {
+                                                                        "name":  "SortDirection",
+                                                                        "in":  "query",
+                                                                        "schema":  {
+                                                                                       "$ref":  "#/components/schemas/SortDirection"
+                                                                                   }
+                                                                    },
+                                                                    {
+                                                                        "name":  "PageNumber",
+                                                                        "in":  "query",
+                                                                        "schema":  {
+                                                                                       "type":  "integer",
+                                                                                       "format":  "int32"
+                                                                                   }
+                                                                    },
+                                                                    {
+                                                                        "name":  "PageSize",
+                                                                        "in":  "query",
+                                                                        "schema":  {
+                                                                                       "type":  "integer",
+                                                                                       "format":  "int32"
+                                                                                   }
+                                                                    }
+                                                                ],
+                                                 "responses":  {
+                                                                   "200":  {
+                                                                               "description":  "OK"
+                                                                           }
+                                                               }
+                                             }
+                                 },
+                  "/api/tasks/{id}":  {
+                                          "get":  {
+                                                      "tags":  [
+                                                                   "Tasks"
+                                                               ],
+                                                      "summary":  "Retrieves a single task by id.",
+                                                      "parameters":  [
+                                                                         {
+                                                                             "name":  "id",
+                                                                             "in":  "path",
+                                                                             "description":  "Task identifier.",
+                                                                             "required":  true,
+                                                                             "schema":  {
+                                                                                            "type":  "string",
+                                                                                            "format":  "uuid"
+                                                                                        }
+                                                                         }
+                                                                     ],
+                                                      "responses":  {
+                                                                        "200":  {
+                                                                                    "description":  "OK"
+                                                                                }
+                                                                    }
+                                                  },
+                                          "put":  {
+                                                      "tags":  [
+                                                                   "Tasks"
+                                                               ],
+                                                      "summary":  "Updates an existing task\u0027s details.",
+                                                      "parameters":  [
+                                                                         {
+                                                                             "name":  "id",
+                                                                             "in":  "path",
+                                                                             "description":  "Task identifier.",
+                                                                             "required":  true,
+                                                                             "schema":  {
+                                                                                            "type":  "string",
+                                                                                            "format":  "uuid"
+                                                                                        }
+                                                                         }
+                                                                     ],
+                                                      "requestBody":  {
+                                                                          "description":  "Update input.",
+                                                                          "content":  {
+                                                                                          "application/json":  {
+                                                                                                                   "schema":  {
+                                                                                                                                  "$ref":  "#/components/schemas/UpdateTaskRequestDto"
+                                                                                                                              }
+                                                                                                               },
+                                                                                          "text/json":  {
+                                                                                                            "schema":  {
+                                                                                                                           "$ref":  "#/components/schemas/UpdateTaskRequestDto"
+                                                                                                                       }
+                                                                                                        },
+                                                                                          "application/*+json":  {
+                                                                                                                     "schema":  {
+                                                                                                                                    "$ref":  "#/components/schemas/UpdateTaskRequestDto"
+                                                                                                                                }
+                                                                                                                 }
+                                                                                      }
+                                                                      },
+                                                      "responses":  {
+                                                                        "200":  {
+                                                                                    "description":  "OK"
+                                                                                }
+                                                                    }
+                                                  },
+                                          "delete":  {
+                                                         "tags":  [
+                                                                      "Tasks"
+                                                                  ],
+                                                         "summary":  "Soft-deletes a task. The task is hidden from normal queries.",
+                                                         "parameters":  [
+                                                                            {
+                                                                                "name":  "id",
+                                                                                "in":  "path",
+                                                                                "description":  "Task identifier.",
+                                                                                "required":  true,
+                                                                                "schema":  {
+                                                                                               "type":  "string",
+                                                                                               "format":  "uuid"
+                                                                                           }
+                                                                            }
+                                                                        ],
+                                                         "responses":  {
+                                                                           "200":  {
+                                                                                       "description":  "OK"
+                                                                                   }
+                                                                       }
+                                                     }
+                                      },
+                  "/api/tasks/{id}/assignment":  {
+                                                     "put":  {
+                                                                 "tags":  [
+                                                                              "Tasks"
+                                                                          ],
+                                                                 "summary":  "Assigns a task to a user. Pass `null` to clear the assignment.",
+                                                                 "parameters":  [
+                                                                                    {
+                                                                                        "name":  "id",
+                                                                                        "in":  "path",
+                                                                                        "description":  "Task identifier.",
+                                                                                        "required":  true,
+                                                                                        "schema":  {
+                                                                                                       "type":  "string",
+                                                                                                       "format":  "uuid"
+                                                                                                   }
+                                                                                    }
+                                                                                ],
+                                                                 "requestBody":  {
+                                                                                     "description":  "Assignee input.",
+                                                                                     "content":  {
+                                                                                                     "application/json":  {
+                                                                                                                              "schema":  {
+                                                                                                                                             "$ref":  "#/components/schemas/AssignTaskRequestDto"
+                                                                                                                                         }
+                                                                                                                          },
+                                                                                                     "text/json":  {
+                                                                                                                       "schema":  {
+                                                                                                                                      "$ref":  "#/components/schemas/AssignTaskRequestDto"
+                                                                                                                                  }
+                                                                                                                   },
+                                                                                                     "application/*+json":  {
+                                                                                                                                "schema":  {
+                                                                                                                                               "$ref":  "#/components/schemas/AssignTaskRequestDto"
+                                                                                                                                           }
+                                                                                                                            }
+                                                                                                 }
+                                                                                 },
+                                                                 "responses":  {
+                                                                                   "200":  {
+                                                                                               "description":  "OK"
+                                                                                           }
+                                                                               }
+                                                             }
+                                                 },
+                  "/api/tasks/{id}/status":  {
+                                                 "put":  {
+                                                             "tags":  [
+                                                                          "Tasks"
+                                                                      ],
+                                                             "summary":  "Changes a task\u0027s status. A Team Member may only change status on tasks assigned to them.",
+                                                             "parameters":  [
+                                                                                {
+                                                                                    "name":  "id",
+                                                                                    "in":  "path",
+                                                                                    "description":  "Task identifier.",
+                                                                                    "required":  true,
+                                                                                    "schema":  {
+                                                                                                   "type":  "string",
+                                                                                                   "format":  "uuid"
+                                                                                               }
+                                                                                }
+                                                                            ],
+                                                             "requestBody":  {
+                                                                                 "description":  "New status.",
+                                                                                 "content":  {
+                                                                                                 "application/json":  {
+                                                                                                                          "schema":  {
+                                                                                                                                         "$ref":  "#/components/schemas/UpdateTaskStatusRequestDto"
+                                                                                                                                     }
+                                                                                                                      },
+                                                                                                 "text/json":  {
+                                                                                                                   "schema":  {
+                                                                                                                                  "$ref":  "#/components/schemas/UpdateTaskStatusRequestDto"
+                                                                                                                              }
+                                                                                                               },
+                                                                                                 "application/*+json":  {
+                                                                                                                            "schema":  {
+                                                                                                                                           "$ref":  "#/components/schemas/UpdateTaskStatusRequestDto"
+                                                                                                                                       }
+                                                                                                                        }
+                                                                                             }
+                                                                             },
+                                                             "responses":  {
+                                                                               "200":  {
+                                                                                           "description":  "OK"
+                                                                                       }
+                                                                           }
+                                                         }
+                                             },
+                  "/api/tasks/improve-description":  {
+                                                         "post":  {
+                                                                      "tags":  [
+                                                                                   "Tasks"
+                                                                               ],
+                                                                      "summary":  "Improves a task description using the configured AI provider.\r\nReturns an improved description without modifying the task record.",
+                                                                      "requestBody":  {
+                                                                                          "description":  "Raw description to improve.",
+                                                                                          "content":  {
+                                                                                                          "application/json":  {
+                                                                                                                                   "schema":  {
+                                                                                                                                                  "$ref":  "#/components/schemas/ImproveTaskDescriptionRequest"
+                                                                                                                                              }
+                                                                                                                               },
+                                                                                                          "text/json":  {
+                                                                                                                            "schema":  {
+                                                                                                                                           "$ref":  "#/components/schemas/ImproveTaskDescriptionRequest"
+                                                                                                                                       }
+                                                                                                                        },
+                                                                                                          "application/*+json":  {
+                                                                                                                                     "schema":  {
+                                                                                                                                                    "$ref":  "#/components/schemas/ImproveTaskDescriptionRequest"
+                                                                                                                                                }
+                                                                                                                                 }
+                                                                                                      }
+                                                                                      },
+                                                                      "responses":  {
+                                                                                        "200":  {
+                                                                                                    "description":  "OK"
+                                                                                                }
+                                                                                    }
+                                                                  }
+                                                     },
+                  "/api/users/lookup":  {
+                                            "get":  {
+                                                        "tags":  [
+                                                                     "Users"
+                                                                 ],
+                                                        "summary":  "Returns a lightweight directory of users for assignment dropdowns.",
+                                                        "responses":  {
+                                                                          "200":  {
+                                                                                      "description":  "OK"
+                                                                                  }
+                                                                      }
+                                                    }
+                                        }
+              },
+    "components":  {
+                       "schemas":  {
+                                       "AssignTaskRequestDto":  {
+                                                                    "type":  "object",
+                                                                    "properties":  {
+                                                                                       "assignedToUserId":  {
+                                                                                                                "type":  "string",
+                                                                                                                "format":  "uuid",
+                                                                                                                "nullable":  true
+                                                                                                            }
+                                                                                   },
+                                                                    "additionalProperties":  false
+                                                                },
+                                       "CreateProjectRequestDto":  {
+                                                                       "type":  "object",
+                                                                       "properties":  {
+                                                                                          "name":  {
+                                                                                                       "type":  "string",
+                                                                                                       "nullable":  true
+                                                                                                   },
+                                                                                          "description":  {
+                                                                                                              "type":  "string",
+                                                                                                              "nullable":  true
+                                                                                                          }
+                                                                                      },
+                                                                       "additionalProperties":  false
+                                                                   },
+                                       "CreateTaskRequestDto":  {
+                                                                    "type":  "object",
+                                                                    "properties":  {
+                                                                                       "title":  {
+                                                                                                     "type":  "string",
+                                                                                                     "nullable":  true
+                                                                                                 },
+                                                                                       "description":  {
+                                                                                                           "type":  "string",
+                                                                                                           "nullable":  true
+                                                                                                       },
+                                                                                       "status":  {
+                                                                                                      "$ref":  "#/components/schemas/TaskItemStatus"
+                                                                                                  },
+                                                                                       "priority":  {
+                                                                                                        "$ref":  "#/components/schemas/TaskItemPriority"
+                                                                                                    },
+                                                                                       "dueDate":  {
+                                                                                                       "type":  "string",
+                                                                                                       "format":  "date-time",
+                                                                                                       "nullable":  true
+                                                                                                   }
+                                                                                   },
+                                                                    "additionalProperties":  false
+                                                                },
+                                       "ImproveTaskDescriptionRequest":  {
+                                                                             "type":  "object",
+                                                                             "properties":  {
+                                                                                                "description":  {
+                                                                                                                    "type":  "string",
+                                                                                                                    "nullable":  true
+                                                                                                                }
+                                                                                            },
+                                                                             "additionalProperties":  false
+                                                                         },
+                                       "LoginRequestDto":  {
+                                                               "type":  "object",
+                                                               "properties":  {
+                                                                                  "email":  {
+                                                                                                "type":  "string",
+                                                                                                "nullable":  true
+                                                                                            },
+                                                                                  "password":  {
+                                                                                                   "type":  "string",
+                                                                                                   "nullable":  true
+                                                                                               }
+                                                                              },
+                                                               "additionalProperties":  false
+                                                           },
+                                       "LogoutRequestDto":  {
+                                                                "type":  "object",
+                                                                "properties":  {
+                                                                                   "refreshToken":  {
+                                                                                                        "type":  "string",
+                                                                                                        "nullable":  true
+                                                                                                    }
+                                                                               },
+                                                                "additionalProperties":  false
+                                                            },
+                                       "ProjectSortFieldDto":  {
+                                                                   "enum":  [
+                                                                                0,
+                                                                                1,
+                                                                                2
+                                                                            ],
+                                                                   "type":  "integer",
+                                                                   "format":  "int32"
+                                                               },
+                                       "RefreshRequestDto":  {
+                                                                 "type":  "object",
+                                                                 "properties":  {
+                                                                                    "refreshToken":  {
+                                                                                                         "type":  "string",
+                                                                                                         "nullable":  true
+                                                                                                     }
+                                                                                },
+                                                                 "additionalProperties":  false
+                                                             },
+                                       "RegisterRequestDto":  {
+                                                                  "type":  "object",
+                                                                  "properties":  {
+                                                                                     "email":  {
+                                                                                                   "type":  "string",
+                                                                                                   "nullable":  true
+                                                                                               },
+                                                                                     "password":  {
+                                                                                                      "type":  "string",
+                                                                                                      "nullable":  true
+                                                                                                  },
+                                                                                     "fullName":  {
+                                                                                                      "type":  "string",
+                                                                                                      "nullable":  true
+                                                                                                  }
+                                                                                 },
+                                                                  "additionalProperties":  false
+                                                              },
+                                       "SortDirection":  {
+                                                             "enum":  [
+                                                                          0,
+                                                                          1
+                                                                      ],
+                                                             "type":  "integer",
+                                                             "format":  "int32"
+                                                         },
+                                       "TaskItemPriority":  {
+                                                                "enum":  [
+                                                                             0,
+                                                                             1,
+                                                                             2,
+                                                                             3
+                                                                         ],
+                                                                "type":  "integer",
+                                                                "format":  "int32"
+                                                            },
+                                       "TaskItemStatus":  {
+                                                              "enum":  [
+                                                                           0,
+                                                                           1,
+                                                                           2,
+                                                                           3
+                                                                       ],
+                                                              "type":  "integer",
+                                                              "format":  "int32"
+                                                          },
+                                       "TaskSortField":  {
+                                                             "enum":  [
+                                                                          0,
+                                                                          1,
+                                                                          2,
+                                                                          3,
+                                                                          4
+                                                                      ],
+                                                             "type":  "integer",
+                                                             "format":  "int32"
+                                                         },
+                                       "UpdateProjectRequestDto":  {
+                                                                       "type":  "object",
+                                                                       "properties":  {
+                                                                                          "name":  {
+                                                                                                       "type":  "string",
+                                                                                                       "nullable":  true
+                                                                                                   },
+                                                                                          "description":  {
+                                                                                                              "type":  "string",
+                                                                                                              "nullable":  true
+                                                                                                          }
+                                                                                      },
+                                                                       "additionalProperties":  false
+                                                                   },
+                                       "UpdateTaskRequestDto":  {
+                                                                    "type":  "object",
+                                                                    "properties":  {
+                                                                                       "title":  {
+                                                                                                     "type":  "string",
+                                                                                                     "nullable":  true
+                                                                                                 },
+                                                                                       "description":  {
+                                                                                                           "type":  "string",
+                                                                                                           "nullable":  true
+                                                                                                       },
+                                                                                       "status":  {
+                                                                                                      "$ref":  "#/components/schemas/TaskItemStatus"
+                                                                                                  },
+                                                                                       "priority":  {
+                                                                                                        "$ref":  "#/components/schemas/TaskItemPriority"
+                                                                                                    },
+                                                                                       "dueDate":  {
+                                                                                                       "type":  "string",
+                                                                                                       "format":  "date-time",
+                                                                                                       "nullable":  true
+                                                                                                   }
+                                                                                   },
+                                                                    "additionalProperties":  false
+                                                                },
+                                       "UpdateTaskStatusRequestDto":  {
+                                                                          "type":  "object",
+                                                                          "properties":  {
+                                                                                             "status":  {
+                                                                                                            "$ref":  "#/components/schemas/TaskItemStatus"
+                                                                                                        }
+                                                                                         },
+                                                                          "additionalProperties":  false
+                                                                      }
+                                   },
+                       "securitySchemes":  {
+                                               "Bearer":  {
+                                                              "type":  "http",
+                                                              "description":  "Enter the JWT access token (without the \u0027Bearer \u0027 prefix).",
+                                                              "scheme":  "bearer",
+                                                              "bearerFormat":  "JWT"
+                                                          }
+                                           }
+                   },
+    "security":  [
+                     {
+                         "Bearer":  [
+
+                                    ]
+                     }
+                 ],
+    "tags":  [
+                 {
+                     "name":  "Ai"
+                 },
+                 {
+                     "name":  "Auth"
+                 },
+                 {
+                     "name":  "Dashboard"
+                 },
+                 {
+                     "name":  "Projects"
+                 },
+                 {
+                     "name":  "Tasks"
+                 },
+                 {
+                     "name":  "Users"
+                 }
+             ]
+}

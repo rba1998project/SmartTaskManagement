@@ -274,6 +274,8 @@ Refresh tokens are persisted as SHA-256 hashes, rotated on every use, and revoca
 | `GET /swagger` | Swagger UI (Development only). |
 | `GET /swagger/v1/swagger.json` | OpenAPI document (Development only). |
 
+A static export of the OpenAPI document is also available at `docs/swagger-v1.json` for tooling.
+
 ### Cross-cutting behavior
 - **Consistent responses:** every response uses the `ApiResponse` / `ApiResponse<T>` envelope
   (`success`, `message`, `data`, `errors`).
