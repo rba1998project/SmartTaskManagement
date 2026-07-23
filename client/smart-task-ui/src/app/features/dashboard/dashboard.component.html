@@ -1,6 +1,6 @@
 @if (loading()) {
-  <div class="dashboard-grid">
-    @for (i of [1,2,3,4,5,6,7]; track $index) {
+  <div class="stat-grid">
+    @for (i of [1,2,3,4]; track $index) {
       <mat-card class="stat-card">
         <mat-card-content>
           <div class="stat-skeleton">
@@ -17,7 +17,7 @@
     <button mat-raised-button color="primary" (click)="load()">Retry</button>
   </div>
 } @else if (data()) {
-  <div class="dashboard-grid">
+  <div class="stat-grid">
     <mat-card class="stat-card clickable" (click)="goToProjects()">
       <mat-card-content>
         <div class="stat-value">{{ data()!.totalProjects }}</div>
@@ -32,27 +32,6 @@
       </mat-card-content>
     </mat-card>
 
-    <mat-card class="stat-card clickable" (click)="goToTasksByStatus('ToDo')">
-      <mat-card-content>
-        <div class="stat-value">{{ getStatusValue(data()!.tasksByStatus, 0) }}</div>
-        <div class="stat-label">To Do</div>
-      </mat-card-content>
-    </mat-card>
-
-    <mat-card class="stat-card clickable" (click)="goToTasksByStatus('InProgress')">
-      <mat-card-content>
-        <div class="stat-value">{{ getStatusValue(data()!.tasksByStatus, 1) }}</div>
-        <div class="stat-label">In Progress</div>
-      </mat-card-content>
-    </mat-card>
-
-    <mat-card class="stat-card clickable" (click)="goToTasksByStatus('Completed')">
-      <mat-card-content>
-        <div class="stat-value">{{ getStatusValue(data()!.tasksByStatus, 2) }}</div>
-        <div class="stat-label">Completed</div>
-      </mat-card-content>
-    </mat-card>
-
     <mat-card class="stat-card clickable" (click)="goToTasks()">
       <mat-card-content>
         <div class="stat-value">{{ data()!.pendingTasks }}</div>
@@ -64,6 +43,40 @@
       <mat-card-content>
         <div class="stat-value">{{ data()!.upcomingDueTasks }}</div>
         <div class="stat-label">Upcoming Due</div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <div class="charts-row">
+    <mat-card class="chart-card">
+      <mat-card-header>
+        <mat-card-title>Tasks by Status</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <canvas baseChart
+          [type]="'pie'"
+          [labels]="statusLabels()"
+          [datasets]="[{ data: statusValues(), backgroundColor: statusColors() }]"
+          [options]="statusPieOptions"
+          [legend]="true"
+          (chartClick)="statusChartClick($event)">
+        </canvas>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="chart-card">
+      <mat-card-header>
+        <mat-card-title>Tasks by Priority</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <canvas baseChart
+          [type]="'pie'"
+          [labels]="priorityLabels()"
+          [datasets]="[{ data: priorityValues(), backgroundColor: priorityColors() }]"
+          [options]="priorityPieOptions"
+          [legend]="true"
+          (chartClick)="priorityChartClick($event)">
+        </canvas>
       </mat-card-content>
     </mat-card>
   </div>

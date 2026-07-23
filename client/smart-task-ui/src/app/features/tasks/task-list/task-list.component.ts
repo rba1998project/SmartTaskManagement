@@ -89,6 +89,10 @@ export class TaskListComponent implements OnInit {
     { value: TaskItemPriority.Critical, label: TASK_PRIORITY_LABELS[TaskItemPriority.Critical] },
   ];
 
+  private readonly priorityLabelMap: Record<string, TaskItemPriority> = Object.fromEntries(
+    Object.entries(TASK_PRIORITY_LABELS).map(([key, label]) => [label.toLowerCase(), +key as TaskItemPriority])
+  );
+
   canMutate(): boolean {
     return this.authService.hasAnyRole([UserRole.Admin, UserRole.ProjectManager]);
   }
@@ -97,6 +101,12 @@ export class TaskListComponent implements OnInit {
     const query = this.route.snapshot.queryParams;
     if (query['status']) {
       this.status.set(query['status'] as TaskItemStatus);
+    }
+    if (query['priority']) {
+      const mapped = this.priorityLabelMap[query['priority'].toLowerCase()];
+      if (mapped !== undefined) {
+        this.priority.set(mapped);
+      }
     }
     this.load();
   }

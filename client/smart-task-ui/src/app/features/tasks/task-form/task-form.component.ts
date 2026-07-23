@@ -240,14 +240,14 @@ export class TaskFormComponent implements OnInit {
             const newAssignee = payload.assignedToUserId || undefined;
             if (newAssignee !== this.originalAssignedToUserId) {
               this.tasksService.assign(this.taskId!, newAssignee).pipe(this.untilDestroyed).subscribe({
-                next: () => this.router.navigate(['/tasks', this.taskId]),
+                next: () => this.router.navigate(['/tasks']),
                 error: () => {
                   this.notificationService.showError('Task updated but assignment failed');
-                  this.router.navigate(['/tasks', this.taskId]);
+                  this.router.navigate(['/tasks']);
                 }
               });
             } else {
-              this.router.navigate(['/tasks', this.taskId]);
+              this.router.navigate(['/tasks']);
             }
           } else {
             this.notificationService.showError(result.message || 'Update failed');

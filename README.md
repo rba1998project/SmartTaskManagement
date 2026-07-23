@@ -334,6 +334,29 @@ The Angular frontend lives in `client/smart-task-ui/` and follows these conventi
 - **AI integration:** the task form includes an AI enhance button. When the AI backend is not
   configured, the button remains visible but disabled, with a tooltip indicating that the
   feature is unavailable. When enabled, the button actively improves task descriptions.
+- **Dashboard charts:** the dashboard renders two interactive pie charts. Clicking a slice filters the task list by that status or priority.
+- **Login UX:** the email and password fields rely on the browser's native autocomplete.
+
+## Troubleshooting
+
+### Frontend dependency / build issues
+
+If `npm install` or `npm run build` fails after pulling recent changes (for example, after
+Chart.js / ng2-charts was added for the dashboard pie charts), try:
+
+```bash
+cd client/smart-task-ui
+Remove-Item -Recurse -Force node_modules,dist
+npm install
+npm run build
+```
+
+If you see an error like `connect ETIMEDOUT` for Google Fonts during build, retry the build
+once or twice; it is usually a transient network issue.
+
+If `ng build` warns that the bundle exceeds the budget, that is expected after adding
+`ng2-charts` + `chart.js`. Production builds still succeed; the warning does not block the
+app.
 
 ## Commands
 
