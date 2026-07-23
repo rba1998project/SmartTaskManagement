@@ -330,14 +330,6 @@ The Angular frontend lives in `client/smart-task-ui/` and follows these conventi
 - **Angular Material + CDK** — `MatTable`, `MatPaginator`, `MatSort`, `MatDialog`, `MatSnackBar`, `BreakpointObserver`.
 - **Signal-based state** — `signal()`, `computed()`, and reactive forms.
 - **RxJS cleanup** — `takeUntilDestroyed()` from `@angular/core/rxjs-interop` on all subscriptions.
-- **Frontend Architecture**
-
-The Angular frontend lives in `client/smart-task-ui/` and follows these conventions:
-
-- **Standalone components** — no NgModules.
-- **Angular Material + CDK** — `MatTable`, `MatPaginator`, `MatSort`, `MatDialog`, `MatSnackBar`, `BreakpointObserver`.
-- **Signal-based state** — `signal()`, `computed()`, and reactive forms.
-- **RxJS cleanup** — `takeUntilDestroyed()` from `@angular/core/rxjs-interop` on all subscriptions.
 - **Route structure:**
   - `/login`, `/register` — auth pages
   - `/dashboard` — aggregate stats (recent projects/tasks are loaded client-side)
@@ -398,6 +390,6 @@ dotnet ef database update                       --project SmartTaskManagement.In
 # Frontend
 cd client/smart-task-ui
 npm install
-npm start                                       # dev server with proxy to API
+npm start                                       # starts the Angular development server. The frontend communicates directly with the API configured in environment.ts.
 npm run build                                   # production build
 ```
