@@ -60,6 +60,7 @@ export const routes: Routes = [
         ]
       },
       { path: 'account', data: { title: 'Account' }, loadComponent: () => import('./features/account/profile/profile.component').then(m => m.ProfileComponent) },
+      { path: 'users', canActivate: [roleGuard], data: { title: 'User Management', roles: [UserRole.Admin] }, loadComponent: () => import('./features/user-management/user-management.component').then(m => m.UserManagementComponent) },
       { path: '403', data: { title: 'Forbidden' }, loadComponent: () => import('./error/403/forbidden.component').then(m => m.ForbiddenComponent) },
       { path: '404', data: { title: 'Not Found' }, loadComponent: () => import('./error/404/not-found.component').then(m => m.NotFoundComponent) },
       { path: '**', redirectTo: '404' },

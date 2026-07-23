@@ -18,24 +18,29 @@ public static class Permissions
     public const string TasksUpdate = "tasks.update";
     public const string TasksDelete = "tasks.delete";
     public const string TasksAssign = "tasks.assign";
+    public const string UsersManage = "users.manage";
 
     // All permission keys, for registering one authorization policy per permission.
     public static readonly IReadOnlyList<string> AllPermissions = new[]
     {
         ProjectsCreate, ProjectsUpdate, ProjectsDelete,
-        TasksCreate, TasksUpdate, TasksDelete, TasksAssign
+        TasksCreate, TasksUpdate, TasksDelete, TasksAssign,
+        UsersManage
     };
 
     /// <summary>
-    /// Default permissions granted to each role at seeding. Admin and Project Manager get every
-    /// feature permission (a Project Manager is then narrowed to its own projects by the ownership
-    /// check inside the services). Team Member gets none — it reaches only the open endpoints.
+    /// Default permissions granted to each role at seeding. Admin gets every permission.
+    /// Project Manager gets project/task permissions only. Team Member gets none — it reaches only the open endpoints.
     /// </summary>
     public static readonly IReadOnlyDictionary<string, IReadOnlyList<string>> DefaultRolePermissions =
         new Dictionary<string, IReadOnlyList<string>>
         {
             [RoleNames.Admin] = AllPermissions,
-            [RoleNames.ProjectManager] = AllPermissions,
+            [RoleNames.ProjectManager] = new[]
+            {
+                ProjectsCreate, ProjectsUpdate, ProjectsDelete,
+                TasksCreate, TasksUpdate, TasksDelete, TasksAssign
+            },
             [RoleNames.TeamMember] = Array.Empty<string>()
         };
 }

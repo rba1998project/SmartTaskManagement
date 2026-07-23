@@ -52,6 +52,12 @@
           <i class="fa-solid fa-circle-check nav-icon"></i>
           <span class="nav-text">Tasks</span>
         </a>
+        @if (isAdmin()) {
+          <a routerLink="/users" routerLinkActive="active" class="nav-item" (click)="isMobile() && sidenav.close()">
+            <i class="fa-solid fa-users nav-icon"></i>
+            <span class="nav-text">User Management</span>
+          </a>
+        }
         <a routerLink="/account" routerLinkActive="active" class="nav-item" (click)="isMobile() && sidenav.close()">
           <i class="fa-solid fa-user nav-icon"></i>
           <span class="nav-text">My Account</span>

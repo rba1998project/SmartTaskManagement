@@ -56,4 +56,7 @@ export class ShellComponent implements OnInit {
     this.router.navigate(['/login']);
   }
 
+  isAdmin(): boolean {
+    return this.authService.hasRole(UserRole.Admin);
+  }
 }

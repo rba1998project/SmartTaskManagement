@@ -41,6 +41,17 @@ public interface IIdentityService
     Task<IReadOnlyList<UserLookupDto>> GetUserLookupAsync(CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Returns all users with their current role assignments.
+    /// </summary>
+    Task<IReadOnlyList<UserManagementDto>> GetAllUsersAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Updates the role assigned to the specified user.
+    /// Passing <paramref name="roleName"/> as <c>null</c> or empty removes all roles.
+    /// </summary>
+    Task<Result> UpdateUserRoleAsync(Guid userId, string? roleName, CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Returns the role names assigned to the user (empty if none).
     /// </summary>
     Task<IReadOnlyList<string>> GetRolesAsync(Guid userId, CancellationToken cancellationToken = default);

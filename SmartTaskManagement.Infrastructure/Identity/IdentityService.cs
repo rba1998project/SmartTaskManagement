@@ -97,6 +97,53 @@ public sealed class IdentityService : IIdentityService
         return roles.ToList();
     }
 
+    public async Task<IReadOnlyList<UserManagementDto>> GetAllUsersAsync(CancellationToken cancellationToken = default)
+    {
+        var users = await _userManager.Users
+            .AsNoTracking()
+            .OrderBy(u => u.Email)
+            .ToListAsync(cancellationToken);
+
+        var result = new List<UserManagementDto>();
+        foreach (var user in users)
+        {
+            var roles = await _userManager.GetRolesAsync(user);
+            var role = roles.FirstOrDefault();
+            result.Add(new UserManagementDto(user.Id, user.Email ?? string.Empty, user.FullName, role ?? string.Empty));
+        }
+
+        return result;
+    }
+
+    public async Task<Result> UpdateUserRoleAsync(Guid userId, string? roleName, CancellationToken cancellationToken = default)
+    {
+        var user = await _userManager.FindByIdAsync(userId.ToString());
+        if (user is null)
+            return Result.Failure("User not found.");
+
+        var currentRoles = await _userManager.GetRolesAsync(user);
+        var requested = new[] { roleName }.Where(r => !string.IsNullOrWhiteSpace(r)).ToArray()!;
+
+        var rolesToRemove = currentRoles.Except(requested, StringComparer.OrdinalIgnoreCase).Cast<string>().ToList();
+        var rolesToAdd = requested.Except(currentRoles, StringComparer.OrdinalIgnoreCase).Cast<string>().ToList();
+
+        if (rolesToRemove.Count > 0)
+        {
+            var removeResult = await _userManager.RemoveFromRolesAsync(user, rolesToRemove);
+            if (!removeResult.Succeeded)
+                return Result.Failure(removeResult.Errors.Select(e => e.Description));
+        }
+
+        if (rolesToAdd.Count > 0)
+        {
+            var addResult = await _userManager.AddToRolesAsync(user, rolesToAdd);
+            if (!addResult.Succeeded)
+                return Result.Failure(addResult.Errors.Select(e => e.Description));
+        }
+
+        return Result.Success();
+    }
+
     public async Task<IReadOnlyList<string>> GetPermissionsAsync(Guid userId, CancellationToken cancellationToken = default)
     {
         var user = await _userManager.FindByIdAsync(userId.ToString());

@@ -1,0 +1,52 @@
+.user-management-container {
+  padding: var(--space-5);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-5);
+}
+
+.header h1 {
+  font-size: var(--text-h2);
+  font-weight: var(--text-weight-medium);
+  letter-spacing: var(--text-letter-spacing);
+  margin: 0;
+}
+
+.table-wrapper {
+  position: relative;
+  overflow: auto;
+}
+
+.loading-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.7);
+  z-index: 1;
+}
+
+.email-text {
+  font-weight: 500;
+}
+
+.role-select {
+  min-width: 180px;
+}
+
+.error-state,
+.empty-state {
+  text-align: center;
+  padding: var(--space-8) var(--space-4);
+  color: var(--app-text-secondary);
+}
+
+.error-state p {
+  color: var(--app-text-error);
+  margin-bottom: var(--space-4);
+}

@@ -52,12 +52,12 @@ SmartTaskManagement/
 │  └─ Program.cs                        # composition root
 └─ client/smart-task-ui/                # Angular 21+ frontend
    └─ src/app/
-      ├─ app.config.ts
-      ├─ app.routes.ts
-      ├─ core/                           # auth, guards, interceptors, services, models
-      ├─ layouts/shell/                  # sidenav, toolbar, shell
-      ├─ features/                       # dashboard, projects, tasks, auth, account
-      └─ shared/                         # components, constants, pipes
+       ├─ app.config.ts
+       ├─ app.routes.ts
+       ├─ core/                           # auth, guards, interceptors, services, models
+       ├─ layouts/shell/                  # sidenav, toolbar, shell
+       ├─ features/                       # dashboard, projects, tasks, auth, account, user-management
+       └─ shared/                         # components, constants, pipes
 ```
 
 **Dependency direction:** `API → Application → Domain` and `Infrastructure → Application/Domain`.
@@ -129,12 +129,12 @@ only on tasks assigned to them) is enforced in the service layer, not in the tok
 
 | Role | Feature permissions | Notes |
 |------|--------------------|-------|
-| Admin | all | Full access to every project and task. |
-| Project Manager | all | Ownership narrows create/update/delete to their own projects/tasks. |
+| Admin | all | Full access to every project, task, and user management. |
+| Project Manager | projects.*, tasks.* | Can manage projects and tasks. Ownership narrows create/update/delete to their own projects/tasks. Cannot manage users. |
 | Team Member | none | Reads assigned work and changes status on tasks assigned to them. |
 
 Permissions in use: `projects.create`, `projects.update`, `projects.delete`, `tasks.create`,
-`tasks.update`, `tasks.delete`, `tasks.assign`. Listing, viewing, and task status changes are
+`tasks.update`, `tasks.delete`, `tasks.assign`, `users.manage`. Listing, viewing, and task status changes are
 open to any authenticated user (with visibility/ownership rules applied in the services).
 
 ## API Overview
@@ -230,6 +230,8 @@ Refresh tokens are persisted as SHA-256 hashes, rotated on every use, and revoca
 | Endpoint | Permission | Description |
 |----------|-----------|-------------|
 | `GET /api/users/lookup` | `tasks.assign` | Returns a lightweight user directory (`id`, `fullName`, `email`) for UI dropdowns. |
+| `GET /api/users` | `users.manage` | Returns all users with their current role assignments. |
+| `PUT /api/users/{id}/role` | `users.manage` | Replaces the role assigned to the specified user. Pass `null` or empty string to remove all roles. |
 
 ### Dashboard
 | Endpoint | Permission | Description |
@@ -326,6 +328,7 @@ The Angular frontend lives in `client/smart-task-ui/` and follows these conventi
   - `/tasks/:id` — task detail
   - `/tasks/:id/edit` — edit task (Admin / Project Manager only)
   - `/account/profile` — current user profile
+  - `/users` — user management (Admin only)
   - `/403`, `/404` — error pages
 - **Guards:** `authGuard` redirects unauthenticated users to `/login`; `roleGuard` restricts
   create/edit routes to Admin and Project Manager; `unsavedChangesGuard` confirms before
@@ -336,6 +339,7 @@ The Angular frontend lives in `client/smart-task-ui/` and follows these conventi
   feature is unavailable. When enabled, the button actively improves task descriptions.
 - **Dashboard charts:** the dashboard renders two interactive pie charts. Clicking a slice filters the task list by that status or priority.
 - **Login UX:** the email and password fields rely on the browser's native autocomplete.
+- **User Management:** Admin-only page for viewing all users and assigning roles. Uses a Material table with per-row role selectors.
 
 ## Troubleshooting
 

@@ -37,4 +37,29 @@ public sealed class UsersController : ControllerBase
         var users = await _identityService.GetUserLookupAsync(cancellationToken);
         return Ok(ApiResponse.Ok(users));
     }
+
+    /// <summary>
+    /// Returns all users with their current role assignments.
+    /// </summary>
+    [HttpGet]
+    [Authorize(Policy = Permissions.UsersManage)]
+    public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
+    {
+        var users = await _identityService.GetAllUsersAsync(cancellationToken);
+        return Ok(ApiResponse.Ok(users));
+    }
+
+    /// <summary>
+    /// Replaces the role assigned to the specified user.
+    /// </summary>
+    [HttpPut("{id:guid}/role")]
+    [Authorize(Policy = Permissions.UsersManage)]
+    public async Task<IActionResult> UpdateRole(Guid id, [FromBody] UpdateUserRoleRequest request, CancellationToken cancellationToken)
+    {
+        var result = await _identityService.UpdateUserRoleAsync(id, request?.RoleName, cancellationToken);
+        if (!result.Succeeded)
+            return result.ToErrorResponse("Role update failed.");
+
+        return Ok(ApiResponse.Ok<object?>(null));
+    }
 }

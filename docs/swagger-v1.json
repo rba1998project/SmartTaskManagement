@@ -714,7 +714,63 @@
                                                                                   }
                                                                       }
                                                     }
-                                        }
+                                        },
+                  "/api/users":  {
+                                     "get":  {
+                                                 "tags":  [
+                                                              "Users"
+                                                          ],
+                                                 "summary":  "Returns all users with their current role assignments.",
+                                                 "responses":  {
+                                                                   "200":  {
+                                                                               "description":  "OK"
+                                                                           }
+                                                               }
+                                             }
+                                 },
+                  "/api/users/{id}/role":  {
+                                               "put":  {
+                                                           "tags":  [
+                                                                        "Users"
+                                                                    ],
+                                                           "summary":  "Replaces the role assigned to the specified user.",
+                                                           "parameters":  [
+                                                                              {
+                                                                                  "name":  "id",
+                                                                                  "in":  "path",
+                                                                                  "required":  true,
+                                                                                  "schema":  {
+                                                                                                 "type":  "string",
+                                                                                                 "format":  "uuid"
+                                                                                             }
+                                                                              }
+                                                                          ],
+                                                           "requestBody":  {
+                                                                               "content":  {
+                                                                                               "application/json":  {
+                                                                                                                        "schema":  {
+                                                                                                                                       "$ref":  "#/components/schemas/UpdateUserRoleRequest"
+                                                                                                                                   }
+                                                                                                                    },
+                                                                                               "text/json":  {
+                                                                                                                 "schema":  {
+                                                                                                                                "$ref":  "#/components/schemas/UpdateUserRoleRequest"
+                                                                                                                            }
+                                                                                                             },
+                                                                                               "application/*+json":  {
+                                                                                                                          "schema":  {
+                                                                                                                                         "$ref":  "#/components/schemas/UpdateUserRoleRequest"
+                                                                                                                                     }
+                                                                                                                      }
+                                                                                           }
+                                                                           },
+                                                           "responses":  {
+                                                                             "200":  {
+                                                                                         "description":  "OK"
+                                                                                     }
+                                                                         }
+                                                       }
+                                           }
               },
     "components":  {
                        "schemas":  {
@@ -925,7 +981,17 @@
                                                                                                         }
                                                                                          },
                                                                           "additionalProperties":  false
-                                                                      }
+                                                                      },
+                                       "UpdateUserRoleRequest":  {
+                                                                     "type":  "object",
+                                                                     "properties":  {
+                                                                                        "roleName":  {
+                                                                                                         "type":  "string",
+                                                                                                         "nullable":  true
+                                                                                                     }
+                                                                                    },
+                                                                     "additionalProperties":  false
+                                                                 }
                                    },
                        "securitySchemes":  {
                                                "Bearer":  {
