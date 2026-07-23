@@ -8,32 +8,32 @@ import { UserRole } from './core/models/enums';
 // Public auth routes (login/register) are siblings of the protected shell.
 // The shell acts as a layout wrapper for all authenticated feature routes.
 export const routes: Routes = [
-  { path: 'login', loadComponent: () => import('./features/auth/login/login.component').then(m => m.LoginComponent) },
-  { path: 'register', loadComponent: () => import('./features/auth/register/register.component').then(m => m.RegisterComponent) },
+  { path: 'login', data: { title: 'Sign In' }, loadComponent: () => import('./features/auth/login/login.component').then(m => m.LoginComponent) },
+  { path: 'register', data: { title: 'Create Account' }, loadComponent: () => import('./features/auth/register/register.component').then(m => m.RegisterComponent) },
   {
     path: '',
-    canActivate: [authGuard], // Redirects to /login when unauthenticated; attempts silent refresh if refresh token exists.
+    canActivate: [authGuard],
     loadComponent: () => import('./layouts/shell/shell.component').then(m => m.ShellComponent),
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
-      { path: 'dashboard', loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent) },
+      { path: 'dashboard', data: { title: 'Dashboard' }, loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent) },
       {
         path: 'projects',
         children: [
-          { path: '', loadComponent: () => import('./features/projects/project-list/project-list.component').then(m => m.ProjectListComponent) },
+          { path: '', data: { title: 'Projects' }, loadComponent: () => import('./features/projects/project-list/project-list.component').then(m => m.ProjectListComponent) },
           {
             path: 'create',
-            canActivate: [roleGuard], // Restricts to Admin/ProjectManager.
-            canDeactivate: [unsavedChangesGuard], // Confirms before leaving dirty forms.
-            data: { roles: [UserRole.Admin, UserRole.ProjectManager] },
+            canActivate: [roleGuard],
+            canDeactivate: [unsavedChangesGuard],
+            data: { title: 'Create Project', roles: [UserRole.Admin, UserRole.ProjectManager] },
             loadComponent: () => import('./features/projects/project-form/project-form.component').then(m => m.ProjectFormComponent)
           },
-          { path: ':id', loadComponent: () => import('./features/projects/project-detail/project-detail.component').then(m => m.ProjectDetailComponent) },
+          { path: ':id', data: { title: 'Project Details' }, loadComponent: () => import('./features/projects/project-detail/project-detail.component').then(m => m.ProjectDetailComponent) },
           {
             path: ':id/edit',
             canActivate: [roleGuard],
             canDeactivate: [unsavedChangesGuard],
-            data: { roles: [UserRole.Admin, UserRole.ProjectManager] },
+            data: { title: 'Edit Project', roles: [UserRole.Admin, UserRole.ProjectManager] },
             loadComponent: () => import('./features/projects/project-form/project-form.component').then(m => m.ProjectFormComponent)
           },
         ]
@@ -41,27 +41,27 @@ export const routes: Routes = [
       {
         path: 'tasks',
         children: [
-          { path: '', loadComponent: () => import('./features/tasks/task-list/task-list.component').then(m => m.TaskListComponent) },
+          { path: '', data: { title: 'Tasks' }, loadComponent: () => import('./features/tasks/task-list/task-list.component').then(m => m.TaskListComponent) },
           {
             path: 'create',
             canActivate: [roleGuard],
             canDeactivate: [unsavedChangesGuard],
-            data: { roles: [UserRole.Admin, UserRole.ProjectManager] },
+            data: { title: 'Create Task', roles: [UserRole.Admin, UserRole.ProjectManager] },
             loadComponent: () => import('./features/tasks/task-form/task-form.component').then(m => m.TaskFormComponent)
           },
-          { path: ':id', loadComponent: () => import('./features/tasks/task-detail/task-detail.component').then(m => m.TaskDetailComponent) },
+          { path: ':id', data: { title: 'Task Details' }, loadComponent: () => import('./features/tasks/task-detail/task-detail.component').then(m => m.TaskDetailComponent) },
           {
             path: ':id/edit',
             canActivate: [roleGuard],
             canDeactivate: [unsavedChangesGuard],
-            data: { roles: [UserRole.Admin, UserRole.ProjectManager] },
+            data: { title: 'Edit Task', roles: [UserRole.Admin, UserRole.ProjectManager] },
             loadComponent: () => import('./features/tasks/task-form/task-form.component').then(m => m.TaskFormComponent)
           },
         ]
       },
-      { path: 'account', loadComponent: () => import('./features/account/profile/profile.component').then(m => m.ProfileComponent) },
-      { path: '403', loadComponent: () => import('./error/403/forbidden.component').then(m => m.ForbiddenComponent) },
-      { path: '404', loadComponent: () => import('./error/404/not-found.component').then(m => m.NotFoundComponent) },
+      { path: 'account', data: { title: 'Account' }, loadComponent: () => import('./features/account/profile/profile.component').then(m => m.ProfileComponent) },
+      { path: '403', data: { title: 'Forbidden' }, loadComponent: () => import('./error/403/forbidden.component').then(m => m.ForbiddenComponent) },
+      { path: '404', data: { title: 'Not Found' }, loadComponent: () => import('./error/404/not-found.component').then(m => m.NotFoundComponent) },
       { path: '**', redirectTo: '404' },
     ]
   },

@@ -1,6 +1,7 @@
-import { Component, inject, signal, OnInit, DestroyRef } from '@angular/core';
+import { Component, inject, signal, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { OperatorFunction } from 'rxjs';
+import { timer, Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -20,7 +21,7 @@ import { passwordValidator, confirmPasswordValidator } from '../../../core/valid
   templateUrl: './register.component.html',
   styleUrl: './register.component.css'
 })
-export class RegisterComponent implements OnInit {
+export class RegisterComponent {
   private untilDestroyed: OperatorFunction<any, any> = takeUntilDestroyed(inject(DestroyRef));
   private fb = inject(FormBuilder);
   private router = inject(Router);
@@ -36,13 +37,6 @@ export class RegisterComponent implements OnInit {
 
   loading = signal(false);
 
-  ngOnInit(): void {
-    const savedEmail = localStorage.getItem('savedEmail');
-    if (savedEmail) {
-      this.form.patchValue({ email: savedEmail });
-    }
-  }
-
   submit(): void {
     if (this.form.invalid || this.loading()) return;
 
@@ -57,8 +51,11 @@ export class RegisterComponent implements OnInit {
     this.loading.set(true);
     this.authService.register(this.form.value).pipe(this.untilDestroyed).subscribe({
       next: () => {
+        this.loading.set(false);
         this.notificationService.showSuccess('Registration successful! Please sign in.');
-        this.router.navigate(['/login']);
+        timer(1500).pipe(this.untilDestroyed).subscribe(() => {
+          this.router.navigate(['/login']);
+        });
       },
       error: (err: Error) => {
         this.notificationService.showError(err.message || 'Registration failed.');

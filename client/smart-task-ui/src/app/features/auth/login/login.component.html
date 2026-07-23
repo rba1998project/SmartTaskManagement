@@ -9,7 +9,7 @@
       <form [formGroup]="form" (ngSubmit)="submit()">
         <mat-form-field appearance="fill" class="full-width">
           <mat-label>Email</mat-label>
-          <input matInput formControlName="email" type="email" autocomplete="email" />
+          <input matInput formControlName="email" name="email" type="email" autocomplete="username" />
           @if (form.get('email')?.hasError('required') && form.get('email')?.touched) {
             <mat-error>Email is required</mat-error>
           }
@@ -20,7 +20,7 @@
 
         <mat-form-field appearance="fill" class="full-width">
           <mat-label>Password</mat-label>
-          <input matInput formControlName="password" type="password" autocomplete="current-password" />
+          <input matInput formControlName="password" name="password" type="password" autocomplete="current-password" />
           @if (form.get('password')?.hasError('required') && form.get('password')?.touched) {
             <mat-error>Password is required</mat-error>
           }

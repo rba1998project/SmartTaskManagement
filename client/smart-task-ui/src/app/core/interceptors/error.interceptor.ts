@@ -5,6 +5,8 @@ import { NotificationService } from '../services/notification.service';
 import { throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
+const excludePaths = ['/api/auth/login', '/api/auth/register', '/api/auth/refresh', '/api/ai/status'];
+
 function sanitizeErrorMessage(message: string | undefined): string {
   if (!message) return 'An unexpected error occurred.';
   return message.replace(/https?:\/\/[^\s]+/g, '[hidden]').trim() || 'An unexpected error occurred.';
@@ -14,6 +16,8 @@ function sanitizeErrorMessage(message: string | undefined): string {
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   const router = inject(Router);
   const notificationService = inject(NotificationService);
+
+  const isAuthEndpoint = excludePaths.some(path => req.urlWithParams.includes(path) || req.url.includes(path));
 
   return next(req).pipe(
     catchError((error) => {
@@ -26,7 +30,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
         } else {
           notificationService.showError('Invalid request. Please check your input.');
         }
-      } else if (error.status === 401) {
+      } else if (error.status === 401 && !isAuthEndpoint) {
         notificationService.showError('Session expired. Please log in again.');
       } else if (error.status === 403) {
         notificationService.showError('You do not have permission to perform this action.');

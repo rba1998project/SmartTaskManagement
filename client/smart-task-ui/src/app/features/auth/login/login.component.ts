@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit, DestroyRef } from '@angular/core';
+import { Component, inject, signal, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { OperatorFunction } from 'rxjs';
 import { CommonModule } from '@angular/common';
@@ -12,8 +12,6 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AuthService } from '../../../core/auth/auth.service';
 import { NotificationService } from '../../../core/services/notification.service';
 
-const SAVED_EMAIL_KEY = 'savedEmail';
-
 @Component({
   selector: 'app-login',
   standalone: true,
@@ -21,7 +19,7 @@ const SAVED_EMAIL_KEY = 'savedEmail';
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent {
   private untilDestroyed: OperatorFunction<any, any> = takeUntilDestroyed(inject(DestroyRef));
   private fb = inject(FormBuilder);
   private router = inject(Router);
@@ -35,23 +33,12 @@ export class LoginComponent implements OnInit {
 
   loading = signal(false);
 
-  ngOnInit(): void {
-    const savedEmail = localStorage.getItem(SAVED_EMAIL_KEY);
-    if (savedEmail) {
-      this.form.patchValue({ email: savedEmail });
-    }
-  }
-
   submit(): void {
     if (this.form.invalid || this.loading()) return;
 
     this.loading.set(true);
     this.authService.login(this.form.value).pipe(this.untilDestroyed).subscribe({
       next: () => {
-        const email = this.form.value.email;
-        if (email) {
-          localStorage.setItem(SAVED_EMAIL_KEY, email);
-        }
         this.notificationService.showSuccess('Welcome back!');
         this.router.navigate(['/dashboard']);
       },
