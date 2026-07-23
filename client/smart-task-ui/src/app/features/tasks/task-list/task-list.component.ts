@@ -1,6 +1,7 @@
 import { Component, inject, signal, OnInit, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { OperatorFunction } from 'rxjs';
+import { OperatorFunction, Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
@@ -97,6 +98,8 @@ export class TaskListComponent implements OnInit {
     return this.authService.hasAnyRole([UserRole.Admin, UserRole.ProjectManager]);
   }
 
+  private readonly searchSubject = new Subject<string>();
+
   ngOnInit(): void {
     const query = this.route.snapshot.queryParams;
     if (query['status']) {
@@ -108,6 +111,17 @@ export class TaskListComponent implements OnInit {
         this.priority.set(mapped);
       }
     }
+
+    this.searchSubject.pipe(
+      debounceTime(300),
+      distinctUntilChanged(),
+      this.untilDestroyed
+    ).subscribe((value) => {
+      this.search.set(value);
+      this.pageNumber.set(1);
+      this.load();
+    });
+
     this.load();
   }
 
@@ -144,9 +158,7 @@ export class TaskListComponent implements OnInit {
   }
 
   onSearch(value: string): void {
-    this.search.set(value);
-    this.pageNumber.set(1);
-    this.load();
+    this.searchSubject.next(value);
   }
 
   // Reset filters and reload

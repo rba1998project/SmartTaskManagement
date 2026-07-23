@@ -39,7 +39,9 @@ export class LoginComponent {
     this.loading.set(true);
     this.authService.login(this.form.value).pipe(this.untilDestroyed).subscribe({
       next: () => {
-        this.notificationService.showSuccess('Welcome back!');
+        const user = this.authService.currentUser();
+        const name = user?.fullName || user?.email || '';
+        this.notificationService.showSuccess(`Welcome back, ${name}!`);
         this.router.navigate(['/dashboard']);
       },
       error: (err: Error) => {

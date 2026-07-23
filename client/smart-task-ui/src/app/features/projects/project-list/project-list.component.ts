@@ -1,6 +1,7 @@
 import { Component, inject, signal, OnInit, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { OperatorFunction } from 'rxjs';
+import { OperatorFunction, Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
@@ -66,7 +67,19 @@ export class ProjectListComponent implements OnInit {
     return this.authService.hasAnyRole([UserRole.Admin, UserRole.ProjectManager]);
   }
 
+  private readonly searchSubject = new Subject<string>();
+
   ngOnInit(): void {
+    this.searchSubject.pipe(
+      debounceTime(300),
+      distinctUntilChanged(),
+      this.untilDestroyed
+    ).subscribe((value) => {
+      this.search.set(value);
+      this.pageNumber.set(1);
+      this.load();
+    });
+
     this.load();
   }
 
@@ -101,9 +114,7 @@ export class ProjectListComponent implements OnInit {
   }
 
   onSearch(value: string): void {
-    this.search.set(value);
-    this.pageNumber.set(1);
-    this.load();
+    this.searchSubject.next(value);
   }
 
   onSort(sort: { active: string; direction: string }): void {
