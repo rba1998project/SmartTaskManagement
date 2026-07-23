@@ -702,18 +702,18 @@
                                                                                     }
                                                                   }
                                                      },
-                  "/api/users/lookup":  {
+                  "/api/users/assignees":  {
                                             "get":  {
-                                                        "tags":  [
-                                                                     "Users"
-                                                                 ],
-                                                        "summary":  "Returns a lightweight directory of users for assignment dropdowns.",
-                                                        "responses":  {
-                                                                          "200":  {
-                                                                                      "description":  "OK"
-                                                                                  }
+                                                "tags":  [
+                                                             "Users"
+                                                         ],
+                                                "summary":  "Returns users eligible to be assigned to tasks (Team Members only).",
+                                                "responses":  {
+                                                              "200":  {
+                                                                          "description":  "OK"
                                                                       }
-                                                    }
+                                                          }
+                                            }
                                         },
                   "/api/users":  {
                                      "get":  {

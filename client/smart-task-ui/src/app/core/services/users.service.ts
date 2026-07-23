@@ -9,7 +9,7 @@ export class UsersService {
   private api = inject(ApiService);
 
   list() {
-    return this.api.get<UserLookupResponse[]>('/api/users/lookup');
+    return this.api.get<UserLookupResponse[]>('/api/users/assignees');
   }
 
   listAll() {

@@ -243,7 +243,7 @@ Refresh tokens are persisted as SHA-256 hashes, rotated on every use, and revoca
 ### Users — `api/users`
 | Endpoint | Permission | Description |
 |----------|-----------|-------------|
-| `GET /api/users/lookup` | `tasks.assign` | Returns a lightweight user directory (`id`, `fullName`, `email`) for UI dropdowns. |
+| `GET /api/users/assignees` | `tasks.assign` | Returns users eligible to be assigned to tasks (Team Members only). |
 | `GET /api/users` | `users.manage` | Returns all users with their current role assignments. |
 | `PUT /api/users/{id}/role` | `users.manage` | Replaces the role assigned to the specified user. Pass `null` or empty string to remove all roles. |
 

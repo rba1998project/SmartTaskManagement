@@ -35,10 +35,11 @@ public interface IIdentityService
     Task<IReadOnlyList<AuthUser>> FindByIdsAsync(IEnumerable<Guid> userIds, CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Returns a lightweight list of users for directory/selection UIs.
+    /// Returns users eligible to be assigned to tasks.
     /// Returns only id, full name and email; excludes sensitive Identity fields.
+    /// Limited to users in the Team Member role.
     /// </summary>
-    Task<IReadOnlyList<UserLookupDto>> GetUserLookupAsync(CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<UserLookupDto>> GetAssigneesAsync(CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Returns all users with their current role assignments.

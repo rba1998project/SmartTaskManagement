@@ -8,8 +8,8 @@ using SmartTaskManagement.Application.Users.Dtos;
 namespace SmartTaskManagement.API.Controllers;
 
 /// <summary>
-/// Lightweight user directory endpoint for UI dropdowns and lookup flows.
-/// Returns only non-sensitive fields; gated to users with task-assign permission.
+/// Users endpoint. Includes an assignee lookup for task assignment dropdowns
+/// and admin-only user management endpoints.
 /// </summary>
 // Returns only non-sensitive fields; gated to users with task-assign permission.
 [ApiController]
@@ -26,15 +26,15 @@ public sealed class UsersController : ControllerBase
     }
 
     /// <summary>
-    /// Returns a lightweight directory of users for assignment dropdowns.
+    /// Returns users eligible to be assigned to tasks (Team Members only).
     /// </summary>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>List of <see cref="UserLookupDto"/>.</returns>
-    [HttpGet("lookup")]
+    [HttpGet("assignees")]
     [Authorize(Policy = Permissions.TasksAssign)]
-    public async Task<IActionResult> Lookup(CancellationToken cancellationToken)
+    public async Task<IActionResult> GetAssignees(CancellationToken cancellationToken)
     {
-        var users = await _identityService.GetUserLookupAsync(cancellationToken);
+        var users = await _identityService.GetAssigneesAsync(cancellationToken);
         return Ok(ApiResponse.Ok(users));
     }
 

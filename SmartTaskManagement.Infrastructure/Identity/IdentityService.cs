@@ -75,16 +75,13 @@ public sealed class IdentityService : IIdentityService
         return users.Select(ToAuthUser).ToArray();
     }
 
-    public async Task<IReadOnlyList<UserLookupDto>> GetUserLookupAsync(CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyList<UserLookupDto>> GetAssigneesAsync(CancellationToken cancellationToken = default)
     {
-        var users = await _userManager.Users
-            .AsNoTracking()
-            .OrderBy(u => u.FullName)
-            .ThenBy(u => u.Email)
-            .Select(u => new UserLookupDto(u.Id, u.FullName ?? string.Empty, u.Email ?? string.Empty))
-            .ToListAsync(cancellationToken);
+        var users = await _userManager.GetUsersInRoleAsync(RoleNames.TeamMember);
 
-        return users;
+        return users
+            .Select(u => new UserLookupDto(u.Id, u.FullName ?? string.Empty, u.Email ?? string.Empty))
+            .ToList();
     }
 
     public async Task<IReadOnlyList<string>> GetRolesAsync(Guid userId, CancellationToken cancellationToken = default)
