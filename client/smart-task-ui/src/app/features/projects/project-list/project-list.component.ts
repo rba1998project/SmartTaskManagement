@@ -61,7 +61,10 @@ export class ProjectListComponent implements OnInit {
   readonly totalCount = signal(0);
   readonly totalPages = signal(0);
 
-  displayedColumns: string[] = ['Name', 'Description', 'CreatedAt', 'CreatedByUserName', 'actions'];
+  get displayedColumns(): string[] {
+    const base = ['Name', 'Description', 'CreatedAt', 'CreatedByUserName', 'actions'];
+    return this.canMutate() ? base : base.filter(column => column !== 'actions');
+  }
 
   canMutate(): boolean {
     return this.authService.hasAnyRole([UserRole.Admin, UserRole.ProjectManager]);

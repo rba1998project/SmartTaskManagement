@@ -226,7 +226,9 @@ export class TaskFormComponent implements OnInit {
       description: value.description || '',
       status: Number(value.status),
       priority: Number(value.priority),
-      dueDate: value.dueDate ? new Date(value.dueDate).toISOString() : undefined,
+      dueDate: value.dueDate
+        ? new Date(Date.UTC(value.dueDate.getFullYear(), value.dueDate.getMonth(), value.dueDate.getDate(), 12)).toISOString()
+        : undefined,
       projectId: value.projectId,
       assignedToUserId: value.assignedToUserId || undefined,
     };

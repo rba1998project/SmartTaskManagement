@@ -72,7 +72,10 @@ export class TaskListComponent implements OnInit {
   readonly totalCount = signal(0);
   readonly totalPages = signal(0);
 
-  displayedColumns: string[] = ['title', 'projectId', 'status', 'priority', 'dueDate', 'assignedToUserId', 'actions'];
+  get displayedColumns(): string[] {
+    const base = ['title', 'projectId', 'status', 'priority', 'dueDate', 'assignedToUserId', 'actions'];
+    return this.canMutate() ? base : base.filter(column => column !== 'actions');
+  }
 
   readonly statusOptions = [
     { value: undefined as TaskItemStatus | undefined, label: 'All' },
