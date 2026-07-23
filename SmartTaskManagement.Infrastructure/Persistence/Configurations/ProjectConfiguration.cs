@@ -30,5 +30,7 @@ public class ProjectConfiguration : IEntityTypeConfiguration<Project>
 
         // Ownership lookups ("projects owned by this user") filter on CreatedByUserId.
         builder.HasIndex(p => p.CreatedByUserId);
+
+        builder.HasQueryFilter(p => !p.IsDeleted);
     }
 }

@@ -3,6 +3,7 @@ using SmartTaskManagement.Application.Authorization;
 using SmartTaskManagement.Application.Common;
 using SmartTaskManagement.Application.Projects.Dtos;
 using SmartTaskManagement.Domain.Entities;
+using SmartTaskManagement.Domain.Enums;
 
 namespace SmartTaskManagement.Application.Projects;
 
@@ -17,12 +18,14 @@ namespace SmartTaskManagement.Application.Projects;
 public sealed class ProjectService
 {
     private readonly IProjectRepository _projects;
+    private readonly ITaskRepository _tasks;
     private readonly ICurrentUserService _currentUser;
     private readonly IIdentityService _identity;
 
-    public ProjectService(IProjectRepository projects, ICurrentUserService currentUser, IIdentityService identity)
+    public ProjectService(IProjectRepository projects, ITaskRepository tasks, ICurrentUserService currentUser, IIdentityService identity)
     {
         _projects = projects;
+        _tasks = tasks;
         _currentUser = currentUser;
         _identity = identity;
     }
@@ -62,7 +65,17 @@ public sealed class ProjectService
         if (!CanModify(project))
             return Result.Failure(ErrorType.Forbidden, "You do not have permission to delete this project.");
 
-        await _projects.RemoveAsync(project, cancellationToken);
+        if (_currentUser.UserId is not { } userId)
+            return Result.Failure(ErrorType.Forbidden, "Not authenticated.");
+
+        var tasks = await _tasks.ListByProjectAsync(project.Id, cancellationToken: cancellationToken);
+
+        foreach (var task in tasks)
+            task.MarkDeleted(DateTime.UtcNow, userId);
+
+        project.MarkDeleted(DateTime.UtcNow, userId);
+
+        await _projects.PersistSoftDeleteAsync(project, tasks, cancellationToken);
         return Result.Success();
     }
 

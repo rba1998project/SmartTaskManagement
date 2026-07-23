@@ -90,7 +90,11 @@ public sealed class TaskService
         if (project is null || !CanManageProjectTasks(project))
             return Result.Failure(ErrorType.Forbidden, "You do not have permission to delete this task.");
 
-        await _tasks.RemoveAsync(task, cancellationToken);
+        if (_currentUser.UserId is not { } userId)
+            return Result.Failure(ErrorType.Forbidden, "Not authenticated.");
+
+        task.MarkDeleted(DateTime.UtcNow, userId);
+        await _tasks.UpdateAsync(task, cancellationToken);
         return Result.Success();
     }
 

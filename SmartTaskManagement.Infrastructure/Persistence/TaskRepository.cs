@@ -168,9 +168,8 @@ public sealed class TaskRepository : ITaskRepository
         await _dbContext.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task RemoveAsync(TaskItem task, CancellationToken cancellationToken = default)
+    public Task RemoveAsync(TaskItem task, CancellationToken cancellationToken = default)
     {
-        _dbContext.Tasks.Remove(task);
-        await _dbContext.SaveChangesAsync(cancellationToken);
+        throw new NotSupportedException("Hard delete is no longer supported.");
     }
 }

@@ -36,6 +36,12 @@ public class TaskItem
 
     public DateTime UpdatedAt { get; private set; }
 
+    public bool IsDeleted { get; private set; }
+
+    public DateTime? DeletedAt { get; private set; }
+
+    public Guid? DeletedByUserId { get; private set; }
+
     // EF Core materialization constructor.
     private TaskItem() { }
 
@@ -110,4 +116,14 @@ public class TaskItem
     // Empty/whitespace descriptions collapse to null so "absent" has one representation.
     private static string? NormalizeDescription(string? description) =>
         string.IsNullOrWhiteSpace(description) ? null : description.Trim();
+
+    public void MarkDeleted(DateTime deletedAt, Guid deletedByUserId)
+    {
+        if (IsDeleted)
+            return;
+
+        IsDeleted = true;
+        DeletedAt = deletedAt;
+        DeletedByUserId = deletedByUserId;
+    }
 }

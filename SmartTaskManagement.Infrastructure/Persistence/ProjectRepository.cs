@@ -105,9 +105,14 @@ public sealed class ProjectRepository : IProjectRepository
         await _dbContext.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task RemoveAsync(Project project, CancellationToken cancellationToken = default)
+    public Task RemoveAsync(Project project, CancellationToken cancellationToken = default)
     {
-        _dbContext.Projects.Remove(project);
+        throw new NotSupportedException("Hard delete is no longer supported.");
+    }
+
+    public async Task PersistSoftDeleteAsync(Project project, IEnumerable<TaskItem> tasks, CancellationToken cancellationToken = default)
+    {
+        _dbContext.Tasks.UpdateRange(tasks);
         await _dbContext.SaveChangesAsync(cancellationToken);
     }
 }

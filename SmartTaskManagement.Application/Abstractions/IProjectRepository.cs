@@ -51,6 +51,6 @@ public interface IProjectRepository
     /// <summary>Persists changes to an existing tracked project.</summary>
     Task UpdateAsync(Project project, CancellationToken cancellationToken = default);
 
-    /// <summary>Removes and persists deletion of the project.</summary>
-    Task RemoveAsync(Project project, CancellationToken cancellationToken = default);
+    /// <summary>Persists a soft-deleted project and its tasks atomically.</summary>
+    Task PersistSoftDeleteAsync(Project project, IEnumerable<TaskItem> tasks, CancellationToken cancellationToken = default);
 }

@@ -68,7 +68,4 @@ public interface ITaskRepository
 
     /// <summary>Persists changes to an existing tracked task.</summary>
     Task UpdateAsync(TaskItem task, CancellationToken cancellationToken = default);
-
-    /// <summary>Removes and persists deletion of the task.</summary>
-    Task RemoveAsync(TaskItem task, CancellationToken cancellationToken = default);
 }

@@ -54,5 +54,7 @@ public class TaskConfiguration : IEntityTypeConfiguration<TaskItem>
 
         // A Team Member's "my tasks" lookups filter on AssignedToUserId.
         builder.HasIndex(t => t.AssignedToUserId);
+
+        builder.HasQueryFilter(t => !t.IsDeleted);
     }
 }
