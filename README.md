@@ -289,7 +289,7 @@ Refresh tokens are persisted as SHA-256 hashes, rotated on every use, and revoca
   (default `http://localhost:4200`).
 - **Rate limiting:** fixed-window global limiter, 100 requests/minute per client IP (429 on
   rejection).
-- **HTTPS:** HTTPS redirection is enabled. For production, ensure TLS termination at your reverse proxy or app server.
+- **HTTPS:** HTTPS redirection and HSTS are enabled for production deployments. For production, ensure TLS termination at your reverse proxy or app server.
 
 ## Database & Migrations
 

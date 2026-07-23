@@ -47,6 +47,11 @@ public static class ApiServiceCollectionExtensions
             app.UseSwaggerUI();
         }
 
+        if (!app.Environment.IsDevelopment())
+        {
+            app.UseHsts();
+        }
+
         // Enforce HTTPS redirection to ensure secure communication between the client and server.
         app.UseHttpsRedirection();
 
