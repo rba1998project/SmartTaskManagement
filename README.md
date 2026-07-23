@@ -129,16 +129,30 @@ Inner layers never reference outer layers.
    - HTTP: `http://localhost:5193`
    - HTTPS: `https://localhost:7277`
    - Swagger UI: `https://localhost:7277/swagger` (Development only)
-   - On startup the app seeds the three roles and (if configured) a default admin user.
+    - On startup the app seeds the three roles and, if `Seed:AdminPassword` is configured,
+      a default admin user. If `Seed:EnableDemoUsers` is also enabled, demo users are seeded too.
 
 5. **Run the Angular frontend** (in a separate terminal)
-   ```bash
-   cd client/smart-task-ui
-   npm install
-   npm start
-   ```
-   - The frontend calls the API directly at `https://localhost:7277` (configured in `environment.ts`).
-   - Default login: `admin@smarttask.local` / the password set in User Secrets.
+    ```bash
+    cd client/smart-task-ui
+    npm install
+    npm start
+    ```
+    - If `npm start` fails in your environment, you can run `ng serve` directly instead.
+    - The frontend calls the API directly at `https://localhost:7277` (configured in `environment.ts`).
+    - Default login: `admin@smarttask.local` / the password set in User Secrets.
+
+ 6. **Demo users** (optional)
+    When `Seed:EnableDemoUsers` is `true` and `Seed:AdminPassword` is configured,
+    the API seeds the following demo accounts on startup with the same password:
+    - `demo.PM1@smarttask.local` — Project Manager
+    - `demo.PM2@smarttask.local` — Project Manager
+    - `demo.TM1@smarttask.local` — Team Member
+    - `demo.TM2@smarttask.local` — Team Member
+    - `demo.TM3@smarttask.local` — Team Member
+
+    > Note: `appsettings.Development.json` already sets `Seed:EnableDemoUsers` to `true`,
+    > so demo users are available automatically in Development.
 
 ## Roles & Permissions
 
