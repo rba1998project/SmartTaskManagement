@@ -163,3 +163,16 @@ select:focus-visible {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Chrome/Safari autofill background fix */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px white inset !important;
+  -webkit-text-fill-color: inherit !important;
+  caret-color: inherit !important;
+}
+
+.mdc-text-field--filled {
+  background-color: transparent !important;
+}
