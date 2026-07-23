@@ -16,6 +16,6 @@ public sealed class LoginRequestDtoValidator : AbstractValidator<LoginRequestDto
             .EmailAddress().WithMessage("A valid email is required.");
 
         RuleFor(x => x.Password)
-            .NotEmpty().WithMessage("Password is required.");
+            .NotEmpty().WithMessage("Invalid email or password.");
     }
 }

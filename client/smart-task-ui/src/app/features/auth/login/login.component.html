@@ -24,9 +24,6 @@
           @if (form.get('password')?.hasError('required') && form.get('password')?.touched) {
             <mat-error>Password is required</mat-error>
           }
-          @if (form.get('password')?.hasError('minlength') && form.get('password')?.touched) {
-            <mat-error>Password must be at least 8 characters</mat-error>
-          }
         </mat-form-field>
 
         <button mat-raised-button color="primary" type="submit" class="full-width" [disabled]="form.invalid || loading()">
