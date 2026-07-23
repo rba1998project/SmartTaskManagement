@@ -14,6 +14,7 @@ namespace SmartTaskManagement.API.Controllers;
 /// ownership enforced inside <see cref="ProjectService"/>.
 /// </summary>
 // The controller stays thin: it delegates to the service and maps the returned Result onto HTTP.
+[Authorize]
 [ApiController]
 [Route("api/projects")]
 public sealed class ProjectsController : ControllerBase

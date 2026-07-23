@@ -1,7 +1,7 @@
 <div class="register-container">
   <mat-card class="register-card">
     <mat-card-header>
-      <mat-card-title>Create Account</mat-card-title>
+      <mat-card-title>Register</mat-card-title>
       <mat-card-subtitle>Join Smart Task Management</mat-card-subtitle>
     </mat-card-header>
 
@@ -17,7 +17,7 @@
 
         <mat-form-field appearance="fill" class="full-width">
           <mat-label>Email</mat-label>
-          <input matInput formControlName="email" type="email" autocomplete="email" />
+          <input matInput formControlName="email" type="email" name="email" autocomplete="email" />
           @if (form.get('email')?.hasError('required') && form.get('email')?.touched) {
             <mat-error>Email is required</mat-error>
           }

@@ -32,6 +32,7 @@ SmartTaskManagement/
 │  │                                    #   IJwtTokenGenerator, IRefreshTokenService, ICurrentUserService
 │  ├─ Authentication/                   # auth DTOs, validators, AuthService
 │  ├─ Authorization/                    # RoleNames, permissions
+│  ├─ Users/                            # user lookup DTOs, user management DTOs, validators
 │  ├─ Projects/                         # DTOs, validators, ProjectService
 │  ├─ Tasks/                            # DTOs, validators, TaskService
 │  ├─ Dashboard/                        # DashboardService, DashboardResponse
@@ -44,6 +45,7 @@ SmartTaskManagement/
 │  ├─ Migrations/
 │  └─ DependencyInjection.cs            # AddInfrastructure(IConfiguration)
 ├─ SmartTaskManagement.API/             # ASP.NET Core host → Application/Infrastructure
+│  ├─ Authentication/                   # CurrentUserService
 │  ├─ Controllers/                      # AuthController, ProjectsController, TasksController, DashboardController, AiController, UsersController
 │  ├─ Common/                           # ApiResponse envelope, Result→ActionResult mapping
 │  ├─ Extensions/                       # focused DI/pipeline composition
@@ -51,13 +53,16 @@ SmartTaskManagement/
 │  ├─ Middleware/ExceptionHandlingMiddleware.cs
 │  └─ Program.cs                        # composition root
 └─ client/smart-task-ui/                # Angular 21+ frontend
-   └─ src/app/
+    └─ src/app/
        ├─ app.config.ts
        ├─ app.routes.ts
+       ├─ app.ts
+       ├─ app.html
        ├─ core/                           # auth, guards, interceptors, services, models
        ├─ layouts/shell/                  # sidenav, toolbar, shell
        ├─ features/                       # dashboard, projects, tasks, auth, account, user-management
-       └─ shared/                         # components, constants, pipes
+       ├─ error/                          # 403, 404 page components
+       └─ shared/                         # components, constants
 ```
 
 **Dependency direction:** `API → Application → Domain` and `Infrastructure → Application/Domain`.
@@ -77,8 +82,9 @@ Inner layers never reference outer layers.
    dotnet build
    ```
 
-2. **Configure secrets** (via User Secrets — never committed). The connection string, the JWT
-   signing key, the seeded admin password, and the AI API key all live here:
+2. **Configure secrets** (never committed). For local development you can use .NET User Secrets;
+   for production use environment variables. The connection string, the JWT signing key, the seeded
+   admin password, and the AI API key all live here:
    ```bash
    dotnet user-secrets set "ConnectionStrings:SmartTaskConnection" "Server=(localdb)\MSSQLLocalDB;Database=SmartTaskManagementDb;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True" --project SmartTaskManagement.API
 
@@ -96,6 +102,10 @@ Inner layers never reference outer layers.
    > colliding with an unrelated machine-level environment variable. `appsettings.json`
    > intentionally holds no secrets — only non-secret config (`Jwt` issuer/audience/lifetimes,
    > `Cors`, `Serilog`, `Seed:AdminEmail`, `Ai` provider/model/timeout/header).
+   >
+   > **Production:** set these values as environment variables on the host instead of User Secrets.
+   > ASP.NET Core reads `ConnectionStrings:SmartTaskConnection`, `Jwt:SigningKey`,
+   > `Seed:AdminPassword`, and `Ai:ApiKey` from the environment automatically.
 
 3. **Apply migrations** (creates `SmartTaskManagementDb`):
    ```bash
@@ -150,7 +160,7 @@ All responses use the `ApiResponse` / `ApiResponse<T>` envelope. Send the JWT as
 | `POST /api/auth/register` | anonymous | Create a user with the default `TeamMember` role (no tokens returned). |
 | `POST /api/auth/login` | anonymous | Verify credentials; return access token + refresh token. |
 | `POST /api/auth/refresh` | anonymous | Rotate the refresh token; return a new token pair. |
-| `POST /api/auth/logout` | authenticated | Revoke the presented refresh token. |
+| `POST /api/auth/logout` | anonymous | Revoke the supplied refresh token so it can no longer be exchanged. |
 
 Refresh tokens are persisted as SHA-256 hashes, rotated on every use, and revocable on logout.
 
@@ -163,7 +173,9 @@ Refresh tokens are persisted as SHA-256 hashes, rotated on every use, and revoca
 | `PUT /api/projects/{id}` | `projects.update` | Update a project (ownership enforced). |
 | `DELETE /api/projects/{id}` | `projects.delete` | Soft-delete a project; cascades soft deletion to its tasks. |
 
-**List query parameters:** `search` (keyword), `sortField` (`Name`, `CreatedAt`, `UpdatedAt`), `sortDirection` (`Asc`, `Desc`), `pageNumber`, `pageSize`.
+**List query parameters:** `search` (keyword), `status` (enum), `priority` (enum), `dueDate` (date only),
+`assignedToUserId` (guid), `sortField` (`Title`, `DueDate`, `Priority`, `Status`, `CreatedAt`),
+`sortDirection` (`Asc`, `Desc`), `pageNumber`, `pageSize`.
 
 **List response shape:**
 ```json
@@ -318,9 +330,17 @@ The Angular frontend lives in `client/smart-task-ui/` and follows these conventi
 - **Angular Material + CDK** — `MatTable`, `MatPaginator`, `MatSort`, `MatDialog`, `MatSnackBar`, `BreakpointObserver`.
 - **Signal-based state** — `signal()`, `computed()`, and reactive forms.
 - **RxJS cleanup** — `takeUntilDestroyed()` from `@angular/core/rxjs-interop` on all subscriptions.
+- **Frontend Architecture**
+
+The Angular frontend lives in `client/smart-task-ui/` and follows these conventions:
+
+- **Standalone components** — no NgModules.
+- **Angular Material + CDK** — `MatTable`, `MatPaginator`, `MatSort`, `MatDialog`, `MatSnackBar`, `BreakpointObserver`.
+- **Signal-based state** — `signal()`, `computed()`, and reactive forms.
+- **RxJS cleanup** — `takeUntilDestroyed()` from `@angular/core/rxjs-interop` on all subscriptions.
 - **Route structure:**
   - `/login`, `/register` — auth pages
-  - `/dashboard` — stats and recent projects/tasks
+  - `/dashboard` — aggregate stats (recent projects/tasks are loaded client-side)
   - `/projects` — project list with search/sort/pagination
   - `/projects/create` — create project (Admin / Project Manager only)
   - `/projects/:id` — project detail
@@ -329,7 +349,7 @@ The Angular frontend lives in `client/smart-task-ui/` and follows these conventi
   - `/tasks/create` — create task (Admin / Project Manager only)
   - `/tasks/:id` — task detail
   - `/tasks/:id/edit` — edit task (Admin / Project Manager only)
-  - `/account/profile` — current user profile
+  - `/account` — current user profile
   - `/users` — user management (Admin only)
   - `/403`, `/404` — error pages
 - **Guards:** `authGuard` redirects unauthenticated users to `/login`; `roleGuard` restricts
