@@ -66,7 +66,7 @@ export class TaskFormComponent implements OnInit {
     title: ['', [Validators.required, Validators.maxLength(200)]],
     description: ['', [Validators.maxLength(2000)]],
     status: [TaskItemStatus.ToDo, Validators.required],
-    priority: [TaskItemStatus.ToDo, Validators.required],
+    priority: [TaskItemPriority.Low, Validators.required],
     dueDate: [null as string | null],
     projectId: ['', Validators.required],
     assignedToUserId: [''],
