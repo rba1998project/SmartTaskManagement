@@ -5,9 +5,13 @@
     <div class="search">
       <mat-form-field appearance="fill">
         <mat-label>Search projects</mat-label>
-        <input matInput (input)="onSearch($any($event.target).value)" placeholder="Name or description..." />
+        <input matInput [value]="search()" (input)="onSearch($any($event.target).value)" placeholder="Name or description..." />
       </mat-form-field>
     </div>
+    <button mat-stroked-button class="reset-button" (click)="resetFilters()">
+      <mat-icon>refresh</mat-icon>
+      Reset
+    </button>
     @if (canMutate()) {
       <button mat-raised-button color="primary" (click)="goToCreate()">
         <mat-icon>add</mat-icon>

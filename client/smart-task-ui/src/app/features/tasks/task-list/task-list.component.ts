@@ -175,11 +175,21 @@ export class TaskListComponent implements OnInit {
     this.load();
   }
 
+  resetFilters(): void {
+    this.search.set('');
+    this.status.set(undefined);
+    this.priority.set(undefined);
+    this.sortField.set('CreatedAt');
+    this.sortDirection.set('Desc');
+    this.pageNumber.set(1);
+    this.load();
+  }
+
   // Map matSort event to service query params
   onSort(sort: { active: string; direction: string }): void {
     if (!sort.active || !sort.direction) return;
     this.sortField.set(sort.active as TaskQueryRequest['sortField']);
-    this.sortDirection.set(sort.direction as 'Asc' | 'Desc');
+    this.sortDirection.set(sort.direction === 'asc' ? 'Asc' : 'Desc');
     this.pageNumber.set(1);
     this.load();
   }

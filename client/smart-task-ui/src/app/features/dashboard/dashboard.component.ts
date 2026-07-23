@@ -115,6 +115,7 @@ export class DashboardComponent {
     const colors: string[] = [];
     const entries = Object.entries(d.tasksByStatus);
     entries.forEach(([key, value]) => {
+      if (value <= 0) return;
       const numKey = Number(key);
       const label = TASK_STATUS_LABELS[numKey as TaskItemStatus] ?? String(key);
       labels.push(label);
@@ -133,6 +134,7 @@ export class DashboardComponent {
     const colors: string[] = [];
     const entries = Object.entries(d.tasksByPriority);
     entries.forEach(([key, value]) => {
+      if (value <= 0) return;
       const numKey = Number(key);
       const label = TASK_PRIORITY_LABELS[numKey as TaskItemPriority] ?? String(key);
       labels.push(label);

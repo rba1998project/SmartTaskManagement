@@ -20,12 +20,44 @@
   align-items: flex-end;
 }
 
-.loading {
+.filters ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+  display: none !important;
+}
+
+.reset-button {
+  height: 56px;
+  min-width: 88px;
+  background-color: #F3F4F6;
+  color: #374151;
+  border: 1.25px solid #D1D5DB;
+  font-weight: 500;
+  letter-spacing: 0.25px;
+  transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.reset-button:hover {
+  background-color: #E5E7EB;
+  border-color: #9CA3AF;
+  color: #374151;
+}
+
+.reset-button:focus-visible {
+  outline: 2px solid #374151;
+  outline-offset: 2px;
+}
+
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: var(--space-8);
-  min-height: 300px;
+  background: rgba(255, 255, 255, 0.7);
+  z-index: 1;
+  border-radius: 8px;
 }
 
 .error-state {
@@ -76,6 +108,7 @@
 }
 
 .table-wrapper {
+  position: relative;
   overflow-x: auto;
   border-radius: 8px;
 }

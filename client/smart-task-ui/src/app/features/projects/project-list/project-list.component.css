@@ -5,7 +5,7 @@
 .toolbar {
   display: flex;
   gap: var(--space-4);
-  align-items: center;
+  align-items: flex-end;
   margin-bottom: var(--space-3);
 }
 
@@ -16,6 +16,33 @@
 
 .search mat-form-field {
   width: 100%;
+  margin-bottom: 0;
+}
+
+.search ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+  display: none !important;
+}
+
+.reset-button {
+  height: 56px;
+  min-width: 88px;
+  background-color: #F3F4F6;
+  color: #374151;
+  border: 1.25px solid #D1D5DB;
+  font-weight: 500;
+  letter-spacing: 0.25px;
+  transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.reset-button:hover {
+  background-color: #E5E7EB;
+  border-color: #9CA3AF;
+  color: #374151;
+}
+
+.reset-button:focus-visible {
+  outline: 2px solid #374151;
+  outline-offset: 2px;
 }
 
 .loading {

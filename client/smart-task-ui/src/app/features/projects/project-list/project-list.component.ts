@@ -131,6 +131,14 @@ export class ProjectListComponent implements OnInit {
     this.load();
   }
 
+  resetFilters(): void {
+    this.search.set('');
+    this.sortField.set('CreatedAt');
+    this.sortDirection.set('Desc');
+    this.pageNumber.set(1);
+    this.load();
+  }
+
   goToCreate(): void {
     this.router.navigate(['/projects/create']);
   }
