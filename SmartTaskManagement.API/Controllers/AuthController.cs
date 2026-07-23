@@ -43,7 +43,7 @@ public sealed class AuthController : ControllerBase
         if (!result.Succeeded)
             return result.ToErrorResponse("Registration failed.");
 
-        return Ok(ApiResponse.Ok<object?>(null, "Registration successful."));
+        return Ok(ApiResponse.Ok<object?>(new { }, "Registration successful."));
     }
 
     /// <summary>

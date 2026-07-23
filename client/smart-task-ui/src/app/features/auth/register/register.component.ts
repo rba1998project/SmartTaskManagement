@@ -52,10 +52,9 @@ export class RegisterComponent {
     this.authService.register(this.form.value).pipe(this.untilDestroyed).subscribe({
       next: () => {
         this.loading.set(false);
+        this.form.reset();
         this.notificationService.showSuccess('Registration successful! Please sign in.');
-        timer(1500).pipe(this.untilDestroyed).subscribe(() => {
-          this.router.navigate(['/login']);
-        });
+        setTimeout(() => this.router.navigate(['/login']), 1500);
       },
       error: (err: Error) => {
         this.notificationService.showError(err.message || 'Registration failed.');

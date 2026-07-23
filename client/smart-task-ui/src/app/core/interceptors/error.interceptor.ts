@@ -47,7 +47,11 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
         notificationService.showError('An unexpected error occurred.');
       }
 
-      const sanitized = { ...error, message: sanitizeErrorMessage(error.message) };
+      const apiMessage = isAuthEndpoint
+        ? (error.error?.errors?.[0] || error.error?.message || error.message)
+        : error.message;
+
+      const sanitized = { ...error, message: sanitizeErrorMessage(apiMessage) };
       return throwError(() => sanitized);
     })
   );
