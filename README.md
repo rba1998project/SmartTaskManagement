@@ -1,9 +1,19 @@
 # Smart Task Management System
 
-A role-based task and project management system built with ASP.NET Core 9 and Angular 21+.
-It includes JWT authentication with refresh tokens, permission-based authorization, project
-and task management with search/filtering/sorting/pagination, a dashboard with aggregate
-statistics, soft delete, and an AI-powered task description improver.
+Smart Task Management System is a full-stack task and project management application built with ASP.NET Core 9 and Angular 21+. It enables teams to manage projects, assign and track tasks, and control access through role-based permissions.
+
+## Features
+
+- JWT Authentication with Refresh Tokens
+- Role-Based Access Control (Admin, Project Manager, Team Member)
+- Permission-Based Authorization
+- Project Management
+- Task Management
+- User Management
+- Search, Filtering, Sorting & Pagination
+- Dashboard Reporting & Statistics
+- AI-Assisted Task Description Improvement
+- Soft Delete
 
 ## Technology Stack
 
@@ -354,6 +364,13 @@ The Angular frontend lives in `client/smart-task-ui/` and follows these conventi
 - **Dashboard charts:** the dashboard renders two interactive pie charts. Clicking a slice filters the task list by that status or priority.
 - **Login UX:** the email and password fields rely on the browser's native autocomplete.
 - **User Management:** Admin-only page for viewing all users and assigning roles. Uses a Material table with per-row role selectors.
+
+## Known Limitations
+
+- Automated unit and integration tests are not included.
+- The current service design is tightly coupled in some areas, making isolated unit testing more challenging.
+- Email verification and password reset functionality are not implemented.
+- Only one role can be assigned to a user at a time through the user management interface.
 
 ## Troubleshooting
 
