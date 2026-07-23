@@ -1,13 +1,9 @@
 # Smart Task Management System
 
-A role-based task and project management system built as a 4-day interview assignment.
-Backend: ASP.NET Core 9 (Clean Architecture) with EF Core 9 and SQL Server.
-Frontend: Angular 21+ with Angular Material.
-
-> **Status:** Backend and Angular frontend are both implemented. Authentication (JWT +
-> rotating refresh tokens), project management, task management, permission-based (RBAC)
-> authorization, search/filtering/sorting/pagination, dashboard, AI task-description
-> improver, and responsive UI are all working. See `PLAN.md`.
+A role-based task and project management system built with ASP.NET Core 9 and Angular 21+.
+It includes JWT authentication with refresh tokens, permission-based authorization, project
+and task management with search/filtering/sorting/pagination, a dashboard with aggregate
+statistics, soft delete, and an AI-powered task description improver.
 
 ## Technology Stack
 
@@ -28,8 +24,6 @@ Frontend: Angular 21+ with Angular Material.
 ```
 SmartTaskManagement/
 ├─ SmartTaskManagement.sln
-├─ CLAUDE.md                        # project instructions / constraints
-├─ PLAN.md                          # living implementation plan
 ├─ README.md
 ├─ SmartTaskManagement.Domain/          # entities, enums (depends on nothing)
 │  └─ Entities/                         # RefreshToken, Project, TaskItem, status/priority enums
@@ -50,7 +44,7 @@ SmartTaskManagement/
 │  ├─ Migrations/
 │  └─ DependencyInjection.cs            # AddInfrastructure(IConfiguration)
 ├─ SmartTaskManagement.API/             # ASP.NET Core host → Application/Infrastructure
-│  ├─ Controllers/                      # AuthController, ProjectsController, TasksController, DashboardController, AiController
+│  ├─ Controllers/                      # AuthController, ProjectsController, TasksController, DashboardController, AiController, UsersController
 │  ├─ Common/                           # ApiResponse envelope, Result→ActionResult mapping
 │  ├─ Extensions/                       # focused DI/pipeline composition
 │  ├─ Filters/ValidationActionFilter.cs # model validation → consistent error envelope
@@ -164,18 +158,46 @@ Refresh tokens are persisted as SHA-256 hashes, rotated on every use, and revoca
 | `GET /api/projects/{id}` | authenticated | Project details. |
 | `POST /api/projects` | `projects.create` | Create a project. |
 | `PUT /api/projects/{id}` | `projects.update` | Update a project (ownership enforced). |
-| `DELETE /api/projects/{id}` | `projects.delete` | Delete a project; cascades to its tasks. |
+| `DELETE /api/projects/{id}` | `projects.delete` | Soft-delete a project; cascades soft deletion to its tasks. |
 
 **List query parameters:** `search` (keyword), `sortField` (`Name`, `CreatedAt`, `UpdatedAt`), `sortDirection` (`Asc`, `Desc`), `pageNumber`, `pageSize`.
+
+**List response shape:**
+```json
+{
+  "success": true,
+  "data": {
+    "items": [ /* ProjectResponse[] */ ],
+    "totalCount": 10,
+    "pageNumber": 1,
+    "pageSize": 20,
+    "totalPages": 1
+  }
+}
+```
+
+**ProjectResponse:**
+```json
+{
+  "id": "00000000-0000-0000-0000-000000000000",
+  "name": "Project name",
+  "description": "Optional description",
+  "createdByUserId": "00000000-0000-0000-0000-000000000000",
+  "createdByUserName": "Admin User",
+  "createdAt": "2026-07-23T00:00:00Z",
+  "updatedAt": "2026-07-23T00:00:00Z"
+}
+```
 
 ### Tasks
 | Endpoint | Permission | Description |
 |----------|-----------|-------------|
-| `POST /api/projects/{projectId}/tasks` | `tasks.create` | Create a task in a project. |
-| `GET /api/projects/{projectId}/tasks` | authenticated | List a project's tasks with search, filtering, sorting, and pagination. |
+| `GET /api/tasks` | authenticated | Global task list with search, filtering, sorting, and pagination. |
+| `GET /api/projects/{projectId}/tasks` | authenticated | List a single project's tasks with search, filtering, sorting, and pagination. |
 | `GET /api/tasks/{id}` | authenticated | Task details. |
+| `POST /api/projects/{projectId}/tasks` | `tasks.create` | Create a task in a project. |
 | `PUT /api/tasks/{id}` | `tasks.update` | Update task details. |
-| `DELETE /api/tasks/{id}` | `tasks.delete` | Delete a task. |
+| `DELETE /api/tasks/{id}` | `tasks.delete` | Soft-delete a task. |
 | `PUT /api/tasks/{id}/assignment` | `tasks.assign` | Assign the task to a user. |
 | `PUT /api/tasks/{id}/status` | authenticated | Change status (Team Member: only own assigned tasks). |
 | `POST /api/tasks/improve-description` | authenticated | Improve a task description using the AI provider. |
@@ -183,18 +205,66 @@ Refresh tokens are persisted as SHA-256 hashes, rotated on every use, and revoca
 **Task status:** `ToDo`, `InProgress`, `Completed`, `Cancelled`.
 **Task priority:** `Low`, `Medium`, `High`, `Critical`.
 
-**List query parameters:** `search` (keyword), `status`, `priority`, `dueDate` (on or before), `sortField` (`Title`, `CreatedAt`, `DueDate`, `Priority`, `Status`), `sortDirection` (`Asc`, `Desc`), `pageNumber`, `pageSize`.
+**Task list response shape:** same `PagedResult<T>` envelope as projects.
+
+**TaskResponse:**
+```json
+{
+  "id": "00000000-0000-0000-0000-000000000000",
+  "projectId": "00000000-0000-0000-0000-000000000000",
+  "projectName": "Project name",
+  "title": "Task title",
+  "description": "Optional description",
+  "status": "ToDo",
+  "priority": "High",
+  "dueDate": "2026-07-23T00:00:00Z",
+  "assignedToUserId": "00000000-0000-0000-0000-000000000000",
+  "assignedToUserName": "Admin User",
+  "createdAt": "2026-07-23T00:00:00Z",
+  "updatedAt": "2026-07-23T00:00:00Z"
+}
+```
+
+### Users — `api/users`
+| Endpoint | Permission | Description |
+|----------|-----------|-------------|
+| `GET /api/users/lookup` | `tasks.assign` | Returns a lightweight user directory (`id`, `fullName`, `email`) for UI dropdowns. |
 
 ### Dashboard
 | Endpoint | Permission | Description |
 |----------|-----------|-------------|
-| `GET /api/dashboard` | authenticated | Basic statistics: total projects, total tasks, tasks by status, tasks by priority, upcoming due tasks. |
+| `GET /api/dashboard` | authenticated | Basic statistics: total projects, total tasks, tasks by status, tasks by priority, completed vs pending, upcoming due tasks. |
+
+**DashboardResponse:**
+```json
+{
+  "totalProjects": 5,
+  "totalTasks": 42,
+  "tasksByStatus": { "ToDo": 10, "InProgress": 20, "Completed": 10, "Cancelled": 2 },
+  "tasksByPriority": { "Low": 5, "Medium": 20, "High": 12, "Critical": 5 },
+  "completedTasks": 10,
+  "pendingTasks": 30,
+  "upcomingDueTasks": 8
+}
+```
 
 ### AI
 | Endpoint | Permission | Description |
 |----------|-----------|-------------|
 | `GET /api/ai/status` | anonymous | Returns whether the AI description improver is configured (`enabled`). |
-| `POST /api/tasks/improve-description` | authenticated | Returns an improved task description (plain text). Requires `Ai:ApiKey` in User Secrets. |
+| `POST /api/tasks/improve-description` | authenticated | Improve a task description. Requires `Ai:ApiKey` in User Secrets. |
+
+**AI improve request:**
+```json
+{ "description": "Fix bug." }
+```
+
+**AI improve response:**
+```json
+{
+  "improvedDescription": "Investigate, reproduce, and resolve the reported defect while adding regression coverage."
+}
+```
 
 ### Operational
 | Endpoint | Description |
@@ -212,6 +282,8 @@ Refresh tokens are persisted as SHA-256 hashes, rotated on every use, and revoca
   error envelope (no stack traces leaked; details shown only in Development).
 - **Authentication/authorization:** JWT bearer with permission-based policies; ownership and
   visibility rules enforced in the service layer.
+- **Soft delete:** projects and tasks use soft delete. Deleted rows are excluded automatically
+  from all read queries via EF Core `HasQueryFilter`.
 - **Logging:** Serilog request logging to console and a rolling daily file (`logs/log-*.txt`).
 - **CORS:** named policy `AngularDevClient`, restricted to origins in `Cors:AllowedOrigins`
   (default `http://localhost:4200`).
@@ -229,6 +301,7 @@ Applied migrations:
 | `AddIdentityAndRefreshTokens` | ASP.NET Core Identity tables + `RefreshTokens`. |
 | `AddProjects` | `Projects` table. |
 | `AddTasks` | `Tasks` table with `Project → Task` cascade delete. |
+| `AddSoftDelete` | `Projects.IsDeleted`, `Projects.DeletedAt`, `Projects.DeletedByUserId`, same for `Tasks`. |
 
 ## Frontend Architecture
 
@@ -242,16 +315,22 @@ The Angular frontend lives in `client/smart-task-ui/` and follows these conventi
   - `/login`, `/register` — auth pages
   - `/dashboard` — stats and recent projects/tasks
   - `/projects` — project list with search/sort/pagination
-  - `/projects/create` — create project
+  - `/projects/create` — create project (Admin / Project Manager only)
   - `/projects/:id` — project detail
-  - `/projects/:id/edit` — edit project
+  - `/projects/:id/edit` — edit project (Admin / Project Manager only)
   - `/tasks` — task list with search/status/priority filters, sort/pagination
-  - `/tasks/create` — create task
+  - `/tasks/create` — create task (Admin / Project Manager only)
   - `/tasks/:id` — task detail
-  - `/tasks/:id/edit` — edit task
+  - `/tasks/:id/edit` — edit task (Admin / Project Manager only)
   - `/account/profile` — current user profile
-- **Guards:** `authGuard` redirects unauthenticated users to `/login`; `roleGuard` restricts by role.
+  - `/403`, `/404` — error pages
+- **Guards:** `authGuard` redirects unauthenticated users to `/login`; `roleGuard` restricts
+  create/edit routes to Admin and Project Manager; `unsavedChangesGuard` confirms before
+  leaving dirty forms.
 - **Interceptors:** `authInterceptor` attaches JWT and handles refresh; `errorInterceptor` sanitizes error messages and maps HTTP status codes to user-friendly toasts.
+- **AI integration:** the task form includes an AI enhance button. When the AI backend is not
+  configured, the button remains visible but disabled, with a tooltip indicating that the
+  feature is unavailable. When enabled, the button actively improves task descriptions.
 
 ## Commands
 
