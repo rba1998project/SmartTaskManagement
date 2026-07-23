@@ -26,7 +26,10 @@ public class TaskConfiguration : IEntityTypeConfiguration<TaskItem>
             .HasMaxLength(DescriptionMaxLength);
 
         // Store enums as their string names so the column stays readable and stable if new
-        // members are inserted (ordinal values would shift).
+        // members are inserted (ordinal values would shift). IMPORTANT: this conversion only
+        // affects the database column. The API serializes these enums as numeric values by
+        // default (System.Text.Json), matching the frontend's numeric TypeScript enums. Do NOT
+        // add JsonStringEnumConverter without also changing the frontend to string enums.
         builder.Property(t => t.Status)
             .IsRequired()
             .HasConversion<string>()

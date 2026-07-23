@@ -18,6 +18,10 @@ export enum TaskItemPriority {
   Critical = 3
 }
 
+// NOTE: These enums use numeric values. The backend API contract expects these exact numeric
+// values in both directions (requests and responses). Do NOT change the numbers or switch to
+// string enums without also updating the backend serialization and EF Core configuration.
+
 export const SortDirection = {
   Asc: 'Asc',
   Desc: 'Desc',
