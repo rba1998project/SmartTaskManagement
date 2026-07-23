@@ -31,7 +31,7 @@ public sealed class ApplicationDbContextFactory : IDesignTimeDbContextFactory<Ap
                 "Set it in API User Secrets under 'ConnectionStrings:SmartTaskConnection'.");
 
         var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-            .UseSqlServer(connectionString)
+            .UseSqlServer(connectionString, sqlOptions => sqlOptions.EnableRetryOnFailure())
             .Options;
 
         return new ApplicationDbContext(options);

@@ -24,7 +24,7 @@ public static class DependencyInjection
                 "Connection string 'SmartTaskConnection' was not found.");
 
         services.AddDbContext<ApplicationDbContext>(options =>
-            options.UseSqlServer(connectionString));
+            options.UseSqlServer(connectionString, sqlOptions => sqlOptions.EnableRetryOnFailure()));
 
         // Register Identity services with the DI container, using ApplicationUser and ApplicationRole.
         services.AddIdentityCore<ApplicationUser>()
