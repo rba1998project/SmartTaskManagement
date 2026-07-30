@@ -39,10 +39,10 @@
       </mat-card-content>
     </mat-card>
 
-    <mat-card class="stat-card clickable" (click)="goToUpcomingDue()">
+    <mat-card class="stat-card clickable" (click)="goToPastDue()">
       <mat-card-content>
-        <div class="stat-value">{{ data()!.upcomingDueTasks }}</div>
-        <div class="stat-label">Upcoming Due</div>
+        <div class="stat-value">{{ data()!.pastDueTasks }}</div>
+        <div class="stat-label">Past Due</div>
       </mat-card-content>
     </mat-card>
   </div>

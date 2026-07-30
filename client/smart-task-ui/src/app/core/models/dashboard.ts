@@ -7,5 +7,5 @@ export interface DashboardResponse {
   tasksByPriority: Record<TaskItemPriority, number>;
   completedTasks: number;
   pendingTasks: number;
-  upcomingDueTasks: number;
+  pastDueTasks: number;
 }

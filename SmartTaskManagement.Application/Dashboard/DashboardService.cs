@@ -45,7 +45,7 @@ public sealed class DashboardService
         var tasksByPriority = await _tasks.CountByPriorityAsync(assignedToUserId, projectOwnerUserId, cancellationToken);
 
         //derived metrics
-        var upcomingDueTasks = await _tasks.CountAsync(
+        var pastDueTasks = await _tasks.CountAsync(
             t => t.DueDate.HasValue && t.DueDate <= DateTime.UtcNow && (t.Status == TaskItemStatus.ToDo || t.Status == TaskItemStatus.InProgress),
             assignedToUserId, projectOwnerUserId, cancellationToken);
 
@@ -61,7 +61,7 @@ public sealed class DashboardService
             TasksByPriority = tasksByPriority,
             CompletedTasks = completedTasks,
             PendingTasks = pendingTasks,
-            UpcomingDueTasks = upcomingDueTasks
+            PastDueTasks = pastDueTasks
         };
 
         return Result<DashboardResponse>.Success(response);

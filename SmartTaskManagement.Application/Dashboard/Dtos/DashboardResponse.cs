@@ -16,5 +16,5 @@ public sealed class DashboardResponse
 
     public int PendingTasks { get; init; }
 
-    public int UpcomingDueTasks { get; init; }
+    public int PastDueTasks { get; init; }
 }

@@ -243,7 +243,7 @@ export class DashboardComponent {
     this.router.navigate(['/tasks'], { queryParams: { status } });
   }
 
-  goToUpcomingDue(): void {
+  goToPastDue(): void {
     const today = new Date().toISOString().split('T')[0];
     this.router.navigate(['/tasks'], { queryParams: { dueDate: today } });
   }

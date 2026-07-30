@@ -274,7 +274,7 @@ Refresh tokens are persisted as SHA-256 hashes, rotated on every use, and revoca
 ### Dashboard
 | Endpoint | Permission | Description |
 |----------|-----------|-------------|
-| `GET /api/dashboard` | authenticated | Basic statistics: total projects, total tasks, tasks by status, tasks by priority, completed vs pending, upcoming due tasks. |
+| `GET /api/dashboard` | authenticated | Basic statistics: total projects, total tasks, tasks by status, tasks by priority, completed vs pending, past due tasks. |
 
 **DashboardResponse:**
 ```json
@@ -285,7 +285,7 @@ Refresh tokens are persisted as SHA-256 hashes, rotated on every use, and revoca
   "tasksByPriority": { "Low": 5, "Medium": 20, "High": 12, "Critical": 5 },
   "completedTasks": 10,
   "pendingTasks": 30,
-  "upcomingDueTasks": 8
+  "pastDueTasks": 8
 }
 ```
 
