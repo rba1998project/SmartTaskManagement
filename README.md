@@ -184,7 +184,7 @@ All responses use the `ApiResponse` / `ApiResponse<T>` envelope. Send the JWT as
 | `POST /api/auth/register` | anonymous | Create a user with the default `TeamMember` role (no tokens returned). |
 | `POST /api/auth/login` | anonymous | Verify credentials; return access token + refresh token. |
 | `POST /api/auth/refresh` | anonymous | Rotate the refresh token; return a new token pair. |
-| `POST /api/auth/logout` | anonymous | Revoke the supplied refresh token so it can no longer be exchanged. |
+| `POST /api/auth/logout` | authenticated | Revoke the supplied refresh token so it can no longer be exchanged. |
 
 Refresh tokens are persisted as SHA-256 hashes, rotated on every use, and revocable on logout.
 
