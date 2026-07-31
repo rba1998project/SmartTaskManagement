@@ -1,4 +1,4 @@
-import { ApplicationConfig, importProvidersFrom, provideBrowserGlobalErrorListeners, provideZonelessChangeDetection, provideAppInitializer, inject } from '@angular/core';
+import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZonelessChangeDetection, provideAppInitializer, inject } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 
@@ -6,10 +6,6 @@ import { routes } from './app.routes';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
 import { errorInterceptor } from './core/interceptors/error.interceptor';
 import { AiAvailabilityService } from './core/services/ai.service';
-import { MatDialogModule } from '@angular/material/dialog';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core';
 
 // Application bootstrap configuration.
 export const appConfig: ApplicationConfig = {
@@ -18,12 +14,6 @@ export const appConfig: ApplicationConfig = {
     provideZonelessChangeDetection(),
     provideRouter(routes),
     provideHttpClient(withInterceptors([authInterceptor, errorInterceptor])),
-    importProvidersFrom([
-      MatDialogModule,
-      MatSnackBarModule,
-      MatDatepickerModule,
-      MatNativeDateModule,
-    ]),
     provideAppInitializer(() => {
       const aiService = inject(AiAvailabilityService);
       aiService.checkStatus();
