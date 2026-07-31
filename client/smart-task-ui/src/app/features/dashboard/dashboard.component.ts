@@ -8,7 +8,9 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatButtonModule } from '@angular/material/button';
 import { RouterModule } from '@angular/router';
 import { Router } from '@angular/router';
-import { BaseChartDirective } from 'ng2-charts';
+import { BaseChartDirective, provideCharts } from 'ng2-charts';
+import { ArcElement, Legend, PieController, Tooltip } from 'chart.js';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { DashboardService } from '../../core/services/dashboard.service';
 import { ProjectsService } from '../../core/services/projects.service';
 import { TasksService } from '../../core/services/tasks.service';
@@ -26,6 +28,11 @@ const PRIORITY_COLORS = ['#005C5E', '#EF5400', '#88114F', '#450000'];
   selector: 'app-dashboard',
   standalone: true,
   imports: [CommonModule, MatCardModule, MatListModule, MatProgressSpinnerModule, MatButtonModule, RouterModule, BaseChartDirective],
+  providers: [
+    provideCharts({
+      registerables: [PieController, ArcElement, Tooltip, Legend, ChartDataLabels],
+    }),
+  ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })
