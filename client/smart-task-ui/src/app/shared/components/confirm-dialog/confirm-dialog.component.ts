@@ -23,6 +23,10 @@ export class ConfirmDialogComponent {
   title = this.data.title;
   message = this.data.message;
 
+  constructor() {
+    this.dialogRef.addPanelClass('confirm-dialog-panel');
+  }
+
   confirm(): void {
     this.dialogRef.close(true);
   }

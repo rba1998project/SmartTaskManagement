@@ -2,7 +2,7 @@
   width: 100%;
 }
 
-.profile-card ::ng-deep .mat-mdc-card-content {
+.profile-card mat-card-content {
   padding: var(--space-5);
 }
 
@@ -13,7 +13,7 @@
   gap: var(--space-3);
 }
 
-.profile-header ::ng-deep .mat-mdc-card-title {
+.profile-header mat-card-title {
   font-size: var(--text-h3);
   font-weight: var(--text-weight-medium);
   letter-spacing: var(--text-letter-spacing);

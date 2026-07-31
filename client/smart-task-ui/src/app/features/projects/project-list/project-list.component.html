@@ -3,7 +3,7 @@
 <div class="project-list-container">
   <div class="toolbar">
     <div class="search">
-      <mat-form-field appearance="fill">
+      <mat-form-field appearance="fill" subscriptSizing="dynamic">
         <mat-label>Search projects</mat-label>
         <input matInput [value]="search()" (input)="onSearch($any($event.target).value)" placeholder="Name or description..." />
       </mat-form-field>

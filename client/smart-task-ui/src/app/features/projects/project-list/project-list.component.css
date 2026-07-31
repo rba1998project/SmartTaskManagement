@@ -19,10 +19,6 @@
   margin-bottom: 0;
 }
 
-.search ::ng-deep .mat-mdc-form-field-subscript-wrapper {
-  display: none !important;
-}
-
 .reset-button {
   height: 56px;
   min-width: 88px;
@@ -120,12 +116,12 @@
   border-radius: 8px;
 }
 
-.table-wrapper ::ng-deep .mat-mdc-table {
+.table-wrapper table[mat-table] {
   border-radius: 8px;
   overflow: hidden;
 }
 
-.table-wrapper ::ng-deep .mat-mdc-header-cell {
+.table-wrapper th[mat-header-cell] {
   font-weight: var(--text-weight-medium);
   font-size: var(--text-caption);
   letter-spacing: var(--text-letter-spacing);
@@ -133,7 +129,7 @@
   padding: var(--space-3) var(--space-4);
 }
 
-.table-wrapper ::ng-deep .mat-mdc-cell {
+.table-wrapper td[mat-cell] {
   padding: var(--space-3) var(--space-4);
 }
 

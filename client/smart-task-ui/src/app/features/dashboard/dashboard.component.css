@@ -23,7 +23,7 @@
   cursor: pointer;
 }
 
-.stat-card ::ng-deep .mat-mdc-card-content {
+.stat-card mat-card-content {
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -94,16 +94,16 @@
   min-height: 320px;
 }
 
-.chart-card ::ng-deep .mat-mdc-card-header {
+.chart-card mat-card-header {
   padding: var(--space-4) var(--space-5) 0;
 }
 
-.chart-card ::ng-deep .mat-mdc-card-content {
+.chart-card mat-card-content {
   padding: var(--space-3) var(--space-5) var(--space-5);
   height: 280px;
 }
 
-.chart-card ::ng-deep canvas {
+.chart-card canvas {
   max-height: 260px;
 }
 
@@ -131,15 +131,15 @@
   background-color: #fffaf5;
 }
 
-.recent-card ::ng-deep .mat-mdc-card-header {
+.recent-card mat-card-header {
   padding: var(--space-4) var(--space-5) 0;
 }
 
-.recent-card ::ng-deep .mat-mdc-card-content {
+.recent-card mat-card-content {
   padding: var(--space-3) var(--space-5) var(--space-5);
 }
 
-.recent-card ::ng-deep .mat-mdc-card-title {
+.recent-card mat-card-title {
   font-size: var(--text-h3);
   font-weight: var(--text-weight-medium);
   letter-spacing: var(--text-letter-spacing);
@@ -157,7 +157,7 @@
   opacity: 0.75;
 }
 
-.recent-card ::ng-deep .mat-mdc-list-item {
+.recent-card [mat-list-item] {
   background-color: #ffffff;
   border: 1px solid rgba(0, 0, 0, 0.06);
   border-radius: 8px;
@@ -166,12 +166,12 @@
   transition: box-shadow 0.2s ease, background-color 0.2s ease;
 }
 
-.recent-card ::ng-deep .mat-mdc-list-item:hover {
+.recent-card [mat-list-item]:hover {
   background-color: #ffffff;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
-.recent-card ::ng-deep .mat-mdc-list-item:last-child {
+.recent-card [mat-list-item]:last-child {
   margin-bottom: 0;
 }
 

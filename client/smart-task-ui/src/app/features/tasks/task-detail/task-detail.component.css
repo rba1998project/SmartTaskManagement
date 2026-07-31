@@ -59,7 +59,7 @@
   margin-bottom: var(--space-5);
 }
 
-.detail-card ::ng-deep .mat-mdc-card-content {
+.detail-card mat-card-content {
   padding: var(--space-5);
 }
 

@@ -176,3 +176,7 @@ input:-webkit-autofill:focus {
 .mdc-text-field--filled {
   background-color: transparent !important;
 }
+
+.confirm-dialog-panel {
+  --mat-dialog-container-shape: 16px;
+}

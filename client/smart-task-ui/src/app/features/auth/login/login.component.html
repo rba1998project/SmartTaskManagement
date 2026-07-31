@@ -7,7 +7,7 @@
 
     <mat-card-content>
       <form [formGroup]="form" (ngSubmit)="submit()">
-        <mat-form-field appearance="fill" class="full-width">
+        <mat-form-field appearance="fill" class="full-width" [hideRequiredMarker]="true">
           <mat-label>Email</mat-label>
           <input matInput formControlName="email" name="email" type="email" autocomplete="username" />
           @if (form.get('email')?.hasError('required') && form.get('email')?.touched) {
@@ -18,7 +18,7 @@
           }
         </mat-form-field>
 
-        <mat-form-field appearance="fill" class="full-width">
+        <mat-form-field appearance="fill" class="full-width" [hideRequiredMarker]="true">
           <mat-label>Password</mat-label>
           <input matInput formControlName="password" name="password" type="password" autocomplete="current-password" />
           @if (form.get('password')?.hasError('required') && form.get('password')?.touched) {
