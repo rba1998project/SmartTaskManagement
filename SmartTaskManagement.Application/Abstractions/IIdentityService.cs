@@ -1,6 +1,5 @@
 using SmartTaskManagement.Application.Authentication.Models;
 using SmartTaskManagement.Application.Common;
-using SmartTaskManagement.Application.Users.Dtos;
 
 namespace SmartTaskManagement.Application.Abstractions;
 
@@ -33,18 +32,6 @@ public interface IIdentityService
     /// Used for batch display-name lookups to avoid N+1 queries.
     /// </summary>
     Task<IReadOnlyList<AuthUser>> FindByIdsAsync(IEnumerable<Guid> userIds, CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// Returns users eligible to be assigned to tasks.
-    /// Returns only id, full name and email; excludes sensitive Identity fields.
-    /// Limited to users in the Team Member role.
-    /// </summary>
-    Task<IReadOnlyList<UserLookupDto>> GetAssigneesAsync(CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// Returns all users with their current role assignments.
-    /// </summary>
-    Task<IReadOnlyList<UserManagementDto>> GetAllUsersAsync(CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Updates the role assigned to the specified user.

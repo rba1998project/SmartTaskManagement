@@ -56,10 +56,16 @@
 
         <mat-form-field appearance="fill" class="full-width">
           <mat-label>Project</mat-label>
-          <input matInput formControlName="projectId" [matAutocomplete]="projectAuto" [readonly]="isTeamMember() && isEdit || isEdit" />
-          <mat-autocomplete #projectAuto="matAutocomplete" [displayWith]="displayProject">
+          <input matInput [formControl]="projectSearch" [matAutocomplete]="projectAuto" [readonly]="isTeamMember() && isEdit || isEdit" />
+          <mat-autocomplete #projectAuto="matAutocomplete" [displayWith]="displayProject" (optionSelected)="selectProject($event)">
             @for (project of filteredProjects(); track project.id) {
-              <mat-option [value]="project.id">{{ project.name }}</mat-option>
+              <mat-option [value]="project">{{ project.name }}</mat-option>
+            }
+            @if (projectHasMore() && !projectsLoading()) {
+              <mat-option class="load-more-option" (click)="$event.stopPropagation(); loadMoreProjects()">Load more projects</mat-option>
+            }
+            @if (!projectsLoading() && filteredProjects().length === 0) {
+              <mat-option disabled>No projects found</mat-option>
             }
           </mat-autocomplete>
           @if (form.get('projectId')?.hasError('required') && form.get('projectId')?.touched) {
@@ -69,12 +75,21 @@
 
         <mat-form-field appearance="fill" class="full-width">
           <mat-label>Assign To</mat-label>
-          <input matInput formControlName="assignedToUserId" [matAutocomplete]="userAuto" [readonly]="isTeamMember() && isEdit" placeholder="Search by name or email..." />
-          <mat-autocomplete #userAuto="matAutocomplete" [displayWith]="displayUser">
+          <input matInput [formControl]="assigneeSearch" [matAutocomplete]="userAuto" [readonly]="isTeamMember() && isEdit" placeholder="Search by name or email..." />
+          <mat-autocomplete #userAuto="matAutocomplete" [displayWith]="displayUser" (optionSelected)="selectUser($event)">
             @for (user of filteredUsers(); track user.id) {
-              <mat-option [value]="user.id">{{ user.fullName || user.email }}</mat-option>
+              <mat-option [value]="user">{{ user.fullName || user.email }}</mat-option>
+            }
+            @if (assigneeHasMore() && !usersLoading()) {
+              <mat-option class="load-more-option" (click)="$event.stopPropagation(); loadMoreUsers()">Load more assignees</mat-option>
+            }
+            @if (!usersLoading() && filteredUsers().length === 0) {
+              <mat-option disabled>No assignees found</mat-option>
             }
           </mat-autocomplete>
+          @if (form.get('assignedToUserId')?.hasError('required') && form.get('assignedToUserId')?.touched) {
+            <mat-error>Assignee is required</mat-error>
+          }
         </mat-form-field>
 
         <div class="form-actions">

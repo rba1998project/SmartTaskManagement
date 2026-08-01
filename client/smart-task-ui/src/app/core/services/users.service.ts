@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { ApiService } from './api.service';
 import { UserLookupResponse } from '../models/user';
+import { PagedResult } from '../models/enums';
 import { UserManagementResponse, UpdateUserRoleRequest } from '../models/user-management';
 import { ApiResponse } from '../models/api-response';
 
@@ -8,8 +9,12 @@ import { ApiResponse } from '../models/api-response';
 export class UsersService {
   private api = inject(ApiService);
 
-  list() {
-    return this.api.get<UserLookupResponse[]>('/api/users/assignees');
+  list(params: { search?: string; pageNumber: number; pageSize: number }) {
+    return this.api.get<PagedResult<UserLookupResponse>>('/api/users/assignees', {
+      search: params.search,
+      pageNumber: params.pageNumber,
+      pageSize: params.pageSize,
+    });
   }
 
   listAll() {

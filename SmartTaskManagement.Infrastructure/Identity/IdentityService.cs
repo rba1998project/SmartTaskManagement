@@ -4,7 +4,6 @@ using SmartTaskManagement.Application.Abstractions;
 using SmartTaskManagement.Application.Authentication.Models;
 using SmartTaskManagement.Application.Authorization;
 using SmartTaskManagement.Application.Common;
-using SmartTaskManagement.Application.Users.Dtos;
 
 namespace SmartTaskManagement.Infrastructure.Identity;
 
@@ -75,15 +74,6 @@ public sealed class IdentityService : IIdentityService
         return users.Select(ToAuthUser).ToArray();
     }
 
-    public async Task<IReadOnlyList<UserLookupDto>> GetAssigneesAsync(CancellationToken cancellationToken = default)
-    {
-        var users = await _userManager.GetUsersInRoleAsync(RoleNames.TeamMember);
-
-        return users
-            .Select(u => new UserLookupDto(u.Id, u.FullName ?? string.Empty, u.Email ?? string.Empty))
-            .ToList();
-    }
-
     public async Task<IReadOnlyList<string>> GetRolesAsync(Guid userId, CancellationToken cancellationToken = default)
     {
         var user = await _userManager.FindByIdAsync(userId.ToString());
@@ -92,24 +82,6 @@ public sealed class IdentityService : IIdentityService
 
         var roles = await _userManager.GetRolesAsync(user);
         return roles.ToList();
-    }
-
-    public async Task<IReadOnlyList<UserManagementDto>> GetAllUsersAsync(CancellationToken cancellationToken = default)
-    {
-        var users = await _userManager.Users
-            .AsNoTracking()
-            .OrderBy(u => u.Email)
-            .ToListAsync(cancellationToken);
-
-        var result = new List<UserManagementDto>();
-        foreach (var user in users)
-        {
-            var roles = await _userManager.GetRolesAsync(user);
-            var role = roles.FirstOrDefault();
-            result.Add(new UserManagementDto(user.Id, user.Email ?? string.Empty, user.FullName, role ?? string.Empty));
-        }
-
-        return result;
     }
 
     public async Task<Result> UpdateUserRoleAsync(Guid userId, string? roleName, CancellationToken cancellationToken = default)

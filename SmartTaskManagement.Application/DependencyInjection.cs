@@ -4,6 +4,7 @@ using SmartTaskManagement.Application.Authentication;
 using SmartTaskManagement.Application.Dashboard;
 using SmartTaskManagement.Application.Projects;
 using SmartTaskManagement.Application.Tasks;
+using SmartTaskManagement.Application.Users;
 
 namespace SmartTaskManagement.Application;
 
@@ -19,6 +20,7 @@ public static class DependencyInjection
         services.AddScoped<ProjectService>();
         services.AddScoped<TaskService>();
         services.AddScoped<DashboardService>();
+        services.AddScoped<UserService>();
         services.AddValidatorsFromAssembly(typeof(DependencyInjection).Assembly);
 
         return services;

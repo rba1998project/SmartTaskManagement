@@ -61,8 +61,7 @@ public sealed class ProjectRepository : IProjectRepository
         {
             var search = request.Search.Trim();
             query = query.Where(p =>
-                EF.Functions.Like(p.Name, $"%{search}%") ||
-                EF.Functions.Like(p.Description!, $"%{search}%"));
+                EF.Functions.Like(p.Name, $"{search}%"));
         }
 
         var totalCount = await query.CountAsync(cancellationToken);

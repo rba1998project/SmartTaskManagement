@@ -1,8 +1,8 @@
 import { Component, inject, signal, OnInit, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { OperatorFunction } from 'rxjs';
+import { OperatorFunction, Subject } from 'rxjs';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
@@ -13,6 +13,8 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
+import { debounceTime, distinctUntilChanged, finalize } from 'rxjs/operators';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { TasksService } from '../../../core/services/tasks.service';
 import { ProjectsService } from '../../../core/services/projects.service';
@@ -67,12 +69,15 @@ export class TaskFormComponent implements OnInit {
     priority: [TaskItemPriority.Low, Validators.required],
     dueDate: [null as string | null],
     projectId: ['', Validators.required],
-    assignedToUserId: [''],
+    assignedToUserId: ['', Validators.required],
   });
 
+  readonly projectSearch = new FormControl<string | ProjectResponse>('');
+  readonly assigneeSearch = new FormControl<string | UserLookupResponse>('');
+
   loading = signal(false);
-  isEdit = false;
-  taskId: string | null = null;
+  taskId: string | null = this.route.snapshot.paramMap.get('id');
+  isEdit = !!this.taskId && this.taskId !== 'create';
   originalAssignedToUserId: string | null | undefined;
 
   readonly projects = signal<ProjectResponse[]>([]);
@@ -81,6 +86,17 @@ export class TaskFormComponent implements OnInit {
   readonly users = signal<UserLookupResponse[]>([]);
   readonly usersLoading = signal(false);
   readonly filteredUsers = signal<UserLookupResponse[]>([]);
+  readonly projectHasMore = signal(false);
+  readonly assigneeHasMore = signal(false);
+
+  private projectSearchTerm = new Subject<string>();
+  private assigneeSearchTerm = new Subject<string>();
+  private projectPage = 1;
+  private assigneePage = 1;
+  private projectTerm = '';
+  private assigneeTerm = '';
+  private projectRequestVersion = 0;
+  private assigneeRequestVersion = 0;
 
   readonly statusOptions = [
     { value: TaskItemStatus.ToDo, label: TASK_STATUS_LABELS[TaskItemStatus.ToDo] },
@@ -105,84 +121,116 @@ export class TaskFormComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.taskId = this.route.snapshot.paramMap.get('id');
-    if (this.taskId && this.taskId !== 'create') {
-      this.isEdit = true;
+    if (this.isEdit && this.taskId) {
       this.loadTask(this.taskId);
     }
-    this.loadProjects();
-    this.loadUsers();
+    this.setupAutocompleteSearch();
+    this.loadProjects('');
+    this.loadUsers('');
   }
 
-  displayProject = (id: string): string => {
-    const project = this.projects().find(p => p.id === id);
-    return project ? project.name : '';
+  displayProject = (value: ProjectResponse | string | null): string => {
+    return typeof value === 'object' && value ? value.name : value || '';
   };
 
-  displayUser = (id: string): string => {
-    const user = this.users().find(u => u.id === id);
-    return user ? (user.fullName || user.email) : '';
+  displayUser = (value: UserLookupResponse | string | null): string => {
+    return typeof value === 'object' && value ? (value.fullName || value.email) : value || '';
   };
 
-  private refreshDisplay(): void {
-    if (!this.isEdit) return;
-    const projectId = this.form.get('projectId')!.value;
-    if (projectId) {
-      this.form.get('projectId')!.setValue(projectId, { emitEvent: false });
-    }
-    const userId = this.form.get('assignedToUserId')!.value;
-    if (userId) {
-      this.form.get('assignedToUserId')!.setValue(userId, { emitEvent: false });
-    }
+  private setupAutocompleteSearch(): void {
+    this.projectSearch.valueChanges.pipe(this.untilDestroyed).subscribe(value => {
+      if (typeof value === 'string') {
+        this.form.get('projectId')!.setValue('', { emitEvent: false });
+        this.projectSearchTerm.next(value);
+      }
+    });
+    this.assigneeSearch.valueChanges.pipe(this.untilDestroyed).subscribe(value => {
+      if (typeof value === 'string') {
+        this.form.get('assignedToUserId')!.setValue('', { emitEvent: false });
+        this.assigneeSearchTerm.next(value);
+      }
+    });
+    this.projectSearchTerm.pipe(debounceTime(300), distinctUntilChanged(), this.untilDestroyed)
+      .subscribe(term => this.loadProjects(term));
+    this.assigneeSearchTerm.pipe(debounceTime(300), distinctUntilChanged(), this.untilDestroyed)
+      .subscribe(term => this.loadUsers(term));
   }
 
-  loadProjects(): void {
+  loadProjects(term: string, page = 1): void {
+    const requestVersion = ++this.projectRequestVersion;
+    this.projectTerm = term;
+    this.projectPage = page;
     this.projectsLoading.set(true);
     this.projectsService.list({
+      search: term || undefined,
       sortField: 'Name',
       sortDirection: 'Asc',
-      pageNumber: 1,
-      pageSize: 100,
-    }).pipe(this.untilDestroyed).subscribe({
+      pageNumber: page,
+      pageSize: 20,
+    }).pipe(this.untilDestroyed, finalize(() => this.projectsLoading.set(false))).subscribe({
       next: (result) => {
-        this.projectsLoading.set(false);
+        if (requestVersion !== this.projectRequestVersion) return;
         if (result.success && result.data) {
-          this.projects.set(result.data.items);
-          this.filteredProjects.set(result.data.items);
+          const items = page === 1 ? result.data.items : [...this.projects(), ...result.data.items];
+          this.projects.set(items);
+          this.filteredProjects.set(items);
+          this.projectHasMore.set(result.data.pageNumber < result.data.totalPages);
         } else {
           this.projects.set([]);
           this.filteredProjects.set([]);
         }
-        this.refreshDisplay();
       },
       error: () => {
-        this.projectsLoading.set(false);
+        if (requestVersion !== this.projectRequestVersion) return;
         this.projects.set([]);
         this.filteredProjects.set([]);
       }
     });
   }
 
-  loadUsers(): void {
+  loadUsers(term: string, page = 1): void {
+    const requestVersion = ++this.assigneeRequestVersion;
+    this.assigneeTerm = term;
+    this.assigneePage = page;
     this.usersLoading.set(true);
-    this.usersService.list().pipe(this.untilDestroyed).subscribe({
+    this.usersService.list({ search: term || undefined, pageNumber: page, pageSize: 20 }).pipe(
+      this.untilDestroyed,
+      finalize(() => this.usersLoading.set(false)),
+    ).subscribe({
       next: (result) => {
-        this.usersLoading.set(false);
+        if (requestVersion !== this.assigneeRequestVersion) return;
         if (result.success && result.data) {
-          this.users.set(result.data);
-          this.filteredUsers.set(result.data);
+          const items = page === 1 ? result.data.items : [...this.users(), ...result.data.items];
+          this.users.set(items);
+          this.filteredUsers.set(items);
+          this.assigneeHasMore.set(result.data.pageNumber < result.data.totalPages);
         } else {
           this.users.set([]);
           this.filteredUsers.set([]);
         }
-        this.refreshDisplay();
       },
       error: () => {
-        this.usersLoading.set(false);
+        if (requestVersion !== this.assigneeRequestVersion) return;
         this.users.set([]);
         this.filteredUsers.set([]);
       }
     });
+  }
+
+  loadMoreProjects(): void {
+    if (!this.projectsLoading() && this.projectHasMore()) this.loadProjects(this.projectTerm, this.projectPage + 1);
+  }
+
+  loadMoreUsers(): void {
+    if (!this.usersLoading() && this.assigneeHasMore()) this.loadUsers(this.assigneeTerm, this.assigneePage + 1);
+  }
+
+  selectProject(event: MatAutocompleteSelectedEvent): void {
+    this.form.get('projectId')!.setValue((event.option.value as ProjectResponse).id);
+  }
+
+  selectUser(event: MatAutocompleteSelectedEvent): void {
+    this.form.get('assignedToUserId')!.setValue((event.option.value as UserLookupResponse).id);
   }
 
   loadTask(id: string): void {
@@ -200,6 +248,8 @@ export class TaskFormComponent implements OnInit {
             projectId: task.projectId,
             assignedToUserId: task.assignedToUserId || '',
           });
+          this.projectSearch.setValue(task.projectName, { emitEvent: false });
+          this.assigneeSearch.setValue(task.assignedToUserName || '', { emitEvent: false });
           this.originalAssignedToUserId = task.assignedToUserId || undefined;
         } else {
           this.notificationService.showError(result.message || 'Failed to load task');

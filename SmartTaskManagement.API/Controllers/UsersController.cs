@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SmartTaskManagement.API.Common;
-using SmartTaskManagement.Application.Abstractions;
 using SmartTaskManagement.Application.Authorization;
+using SmartTaskManagement.Application.Users;
 using SmartTaskManagement.Application.Users.Dtos;
 
 namespace SmartTaskManagement.API.Controllers;
@@ -16,25 +16,26 @@ namespace SmartTaskManagement.API.Controllers;
 [Route("api/users")]
 public sealed class UsersController : ControllerBase
 {
-    private readonly IIdentityService _identityService;
+    private readonly UserService _userService;
 
     /// <summary>Initializes a new instance of <see cref="UsersController"/>.</summary>
-    /// <param name="identityService">Identity lookup service.</param>
-    public UsersController(IIdentityService identityService)
+    /// <param name="userService">User-management application service.</param>
+    public UsersController(UserService userService)
     {
-        _identityService = identityService;
+        _userService = userService;
     }
 
     /// <summary>
     /// Returns users eligible to be assigned to tasks (Team Members only).
     /// </summary>
+    /// <param name="request">Search and paging parameters.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
-    /// <returns>List of <see cref="UserLookupDto"/>.</returns>
+    /// <returns>Paged list of <see cref="UserLookupDto"/>.</returns>
     [HttpGet("assignees")]
     [Authorize(Policy = Permissions.TasksAssign)]
-    public async Task<IActionResult> GetAssignees(CancellationToken cancellationToken)
+    public async Task<IActionResult> GetAssignees([FromQuery] AssigneeQueryRequestDto request, CancellationToken cancellationToken)
     {
-        var users = await _identityService.GetAssigneesAsync(cancellationToken);
+        var users = await _userService.GetAssigneesAsync(request, cancellationToken);
         return Ok(ApiResponse.Ok(users));
     }
 
@@ -45,7 +46,7 @@ public sealed class UsersController : ControllerBase
     [Authorize(Policy = Permissions.UsersManage)]
     public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
     {
-        var users = await _identityService.GetAllUsersAsync(cancellationToken);
+        var users = await _userService.GetAllAsync(cancellationToken);
         return Ok(ApiResponse.Ok(users));
     }
 
@@ -56,7 +57,7 @@ public sealed class UsersController : ControllerBase
     [Authorize(Policy = Permissions.UsersManage)]
     public async Task<IActionResult> UpdateRole(Guid id, [FromBody] UpdateUserRoleRequest request, CancellationToken cancellationToken)
     {
-        var result = await _identityService.UpdateUserRoleAsync(id, request?.RoleName, cancellationToken);
+        var result = await _userService.UpdateRoleAsync(id, request?.RoleName, cancellationToken);
         if (!result.Succeeded)
             return result.ToErrorResponse("Role update failed.");
 

@@ -44,6 +44,7 @@ public static class DependencyInjection
 
         services.AddScoped<IProjectRepository, ProjectRepository>();
         services.AddScoped<ITaskRepository, TaskRepository>();
+        services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IIdentityService, IdentityService>();
         services.AddScoped<IJwtTokenGenerator>(sp =>
             new JwtTokenGenerator(sp.GetRequiredService<IOptions<JwtOptions>>(), signingKey));
