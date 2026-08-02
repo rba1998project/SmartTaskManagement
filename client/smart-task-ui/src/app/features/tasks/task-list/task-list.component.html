@@ -10,7 +10,7 @@
 
       <mat-form-field appearance="fill" subscriptSizing="dynamic">
         <mat-label>Status</mat-label>
-        <mat-select [value]="status()" (selectionChange)="onStatusChange($event.value)">
+        <mat-select [value]="status() ?? ''" (selectionChange)="onStatusChange($event.value)">
           @for (option of statusOptions; track option.value) {
             <mat-option [value]="option.value">{{ option.label }}</mat-option>
           }
@@ -19,7 +19,7 @@
 
       <mat-form-field appearance="fill" subscriptSizing="dynamic">
         <mat-label>Priority</mat-label>
-        <mat-select [value]="priority()" (selectionChange)="onPriorityChange($event.value)">
+        <mat-select [value]="priority() ?? ''" (selectionChange)="onPriorityChange($event.value)">
           @for (option of priorityOptions; track option.value) {
             <mat-option [value]="option.value">{{ option.label }}</mat-option>
           }
@@ -105,7 +105,7 @@
           } @else if (isAssignedToMe(task)) {
             <mat-select [value]="task.status" (click)="$event.stopPropagation()" (selectionChange)="updateTaskStatus(task.id, $event.value)" class="status-select">
               @for (option of statusOptions; track option.value) {
-                @if (option.value !== undefined) {
+                @if (option.value !== '') {
                   <mat-option [value]="option.value">{{ option.label }}</mat-option>
                 }
               }

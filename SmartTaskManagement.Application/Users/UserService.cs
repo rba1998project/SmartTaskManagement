@@ -23,9 +23,10 @@ public sealed class UserService
         CancellationToken cancellationToken = default) =>
         _users.QueryAssigneesAsync(request, cancellationToken);
 
-    public Task<IReadOnlyList<UserManagementDto>> GetAllAsync(
+    public Task<PagedResult<UserListItemDto>> GetUsersAsync(
+        UserQueryRequestDto request,
         CancellationToken cancellationToken = default) =>
-        _users.GetAllAsync(cancellationToken);
+        _users.QueryUsersAsync(request, cancellationToken);
 
     public Task<Result> UpdateRoleAsync(
         Guid userId,

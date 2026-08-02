@@ -1,7 +1,7 @@
 import { Component, inject, signal, OnInit, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { OperatorFunction, Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, filter } from 'rxjs/operators';
 import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
@@ -70,15 +70,16 @@ export class ProjectListComponent implements OnInit {
     return this.authService.hasAnyRole([UserRole.Admin, UserRole.ProjectManager]);
   }
 
-  private readonly searchSubject = new Subject<string>();
+  private readonly searchSubject = new Subject<{ value: string; version: number }>();
+  private searchVersion = 0;
 
   ngOnInit(): void {
     this.searchSubject.pipe(
       debounceTime(300),
-      distinctUntilChanged(),
+      filter(({ version }) => version === this.searchVersion),
+      distinctUntilChanged((previous, current) => previous.value === current.value),
       this.untilDestroyed
-    ).subscribe((value) => {
-      this.search.set(value);
+    ).subscribe(() => {
       this.pageNumber.set(1);
       this.load();
     });
@@ -117,7 +118,9 @@ export class ProjectListComponent implements OnInit {
   }
 
   onSearch(value: string): void {
-    this.searchSubject.next(value);
+    this.search.set(value);
+    this.searchVersion++;
+    this.searchSubject.next({ value, version: this.searchVersion });
   }
 
   onSort(sort: { active: string; direction: string }): void {
@@ -135,6 +138,15 @@ export class ProjectListComponent implements OnInit {
   }
 
   resetFilters(): void {
+    const isAlreadyReset =
+      this.search() === '' &&
+      this.sortField() === 'CreatedAt' &&
+      this.sortDirection() === 'Desc' &&
+      this.pageNumber() === 1;
+
+    if (isAlreadyReset) return;
+
+    this.searchVersion++;
     this.search.set('');
     this.sortField.set('CreatedAt');
     this.sortDirection.set('Desc');

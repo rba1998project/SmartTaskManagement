@@ -70,7 +70,7 @@ SmartTaskManagement/
        ├─ app.html
        ├─ core/                           # auth, guards, interceptors, services, models
        ├─ layouts/shell/                  # sidenav, toolbar, shell
-       ├─ features/                       # dashboard, projects, tasks, auth, account, user-management
+       ├─ features/                       # dashboard, projects, tasks, auth, account, users
        ├─ error/                          # 403, 404 page components
        └─ shared/                         # components, constants
 ```

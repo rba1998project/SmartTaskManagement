@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { ApiService } from './api.service';
 import { UserLookupResponse } from '../models/user';
 import { PagedResult } from '../models/enums';
-import { UserManagementResponse, UpdateUserRoleRequest } from '../models/user-management';
+import { UserQuery, UserPage, UpdateUserRoleRequest } from '../models/users';
 import { ApiResponse } from '../models/api-response';
 
 @Injectable({ providedIn: 'root' })
@@ -17,8 +17,15 @@ export class UsersService {
     });
   }
 
-  listAll() {
-    return this.api.get<UserManagementResponse[]>('/api/users');
+  listUsers(params: UserQuery) {
+    return this.api.get<UserPage>('/api/users', {
+      search: params.search,
+      role: params.role,
+      sortField: params.sortField,
+      sortDirection: params.sortDirection,
+      pageNumber: params.pageNumber,
+      pageSize: params.pageSize,
+    });
   }
 
   updateRole(id: string, request: UpdateUserRoleRequest) {

@@ -19,7 +19,7 @@ public sealed class UsersController : ControllerBase
     private readonly UserService _userService;
 
     /// <summary>Initializes a new instance of <see cref="UsersController"/>.</summary>
-    /// <param name="userService">User-management application service.</param>
+    /// <param name="userService">User application service.</param>
     public UsersController(UserService userService)
     {
         _userService = userService;
@@ -40,13 +40,13 @@ public sealed class UsersController : ControllerBase
     }
 
     /// <summary>
-    /// Returns all users with their current role assignments.
+    /// Returns a filtered, sorted, paged list of users with their current role assignments.
     /// </summary>
     [HttpGet]
     [Authorize(Policy = Permissions.UsersManage)]
-    public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
+    public async Task<IActionResult> GetAll([FromQuery] UserQueryRequestDto request, CancellationToken cancellationToken)
     {
-        var users = await _userService.GetAllAsync(cancellationToken);
+        var users = await _userService.GetUsersAsync(request, cancellationToken);
         return Ok(ApiResponse.Ok(users));
     }
 

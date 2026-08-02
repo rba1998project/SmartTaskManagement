@@ -1,0 +1,100 @@
+.users-container {
+  padding: 0;
+}
+
+.toolbar {
+  display: flex;
+  gap: var(--space-4);
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.filters {
+  display: flex;
+  gap: var(--space-3);
+  flex: 1;
+  max-width: 900px;
+  flex-wrap: wrap;
+  align-items: flex-end;
+}
+
+.reset-button {
+  height: 56px;
+  min-width: 88px;
+  background-color: #F3F4F6;
+  color: #374151;
+  border: 1.25px solid #D1D5DB;
+  font-weight: 500;
+}
+
+.loading-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.7);
+  z-index: 1;
+  border-radius: 8px;
+}
+
+.table-wrapper {
+  position: relative;
+  overflow-x: auto;
+  border-radius: 8px;
+}
+
+.table-wrapper table[mat-table] {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.table-wrapper th[mat-header-cell] {
+  font-weight: var(--text-weight-medium);
+  font-size: var(--text-caption);
+  letter-spacing: var(--text-letter-spacing);
+  color: rgba(0, 0, 0, 0.6);
+  padding: var(--space-3) var(--space-4);
+}
+
+.table-wrapper td[mat-cell] {
+  padding: var(--space-3) var(--space-4);
+}
+
+.email-text {
+  font-weight: var(--text-weight-medium);
+}
+
+.role-select {
+  min-width: 180px;
+}
+
+.error-state,
+.empty-state {
+  text-align: center;
+  padding: var(--space-8) var(--space-4);
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--app-text-secondary);
+}
+
+.error-state p {
+  color: var(--app-text-error);
+  margin-bottom: var(--space-4);
+}
+
+@media (max-width: 768px) {
+  .toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filters {
+    max-width: none;
+  }
+}

@@ -1,7 +1,7 @@
 import { Component, inject, signal, OnInit, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { OperatorFunction, Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, filter } from 'rxjs/operators';
 import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
@@ -74,16 +74,16 @@ export class TaskListComponent implements OnInit {
 
   readonly displayedColumns = ['title', 'projectId', 'status', 'priority', 'dueDate', 'assignedToUserId', 'actions'];
 
-  readonly statusOptions = [
-    { value: undefined as TaskItemStatus | undefined, label: 'All' },
+  readonly statusOptions: ReadonlyArray<{ value: TaskItemStatus | ''; label: string }> = [
+    { value: '', label: 'All' },
     { value: TaskItemStatus.ToDo, label: TASK_STATUS_LABELS[TaskItemStatus.ToDo] },
     { value: TaskItemStatus.InProgress, label: TASK_STATUS_LABELS[TaskItemStatus.InProgress] },
     { value: TaskItemStatus.Completed, label: TASK_STATUS_LABELS[TaskItemStatus.Completed] },
     { value: TaskItemStatus.Cancelled, label: TASK_STATUS_LABELS[TaskItemStatus.Cancelled] },
   ];
 
-  readonly priorityOptions = [
-    { value: undefined as TaskItemPriority | undefined, label: 'All' },
+  readonly priorityOptions: ReadonlyArray<{ value: TaskItemPriority | ''; label: string }> = [
+    { value: '', label: 'All' },
     { value: TaskItemPriority.Low, label: TASK_PRIORITY_LABELS[TaskItemPriority.Low] },
     { value: TaskItemPriority.Medium, label: TASK_PRIORITY_LABELS[TaskItemPriority.Medium] },
     { value: TaskItemPriority.High, label: TASK_PRIORITY_LABELS[TaskItemPriority.High] },
@@ -111,7 +111,8 @@ export class TaskListComponent implements OnInit {
     });
   }
 
-  private readonly searchSubject = new Subject<string>();
+  private readonly searchSubject = new Subject<{ value: string; version: number }>();
+  private searchVersion = 0;
 
   ngOnInit(): void {
     const query = this.route.snapshot.queryParams;
@@ -127,10 +128,10 @@ export class TaskListComponent implements OnInit {
 
     this.searchSubject.pipe(
       debounceTime(300),
-      distinctUntilChanged(),
+      filter(({ version }) => version === this.searchVersion),
+      distinctUntilChanged((previous, current) => previous.value === current.value),
       this.untilDestroyed
-    ).subscribe((value) => {
-      this.search.set(value);
+    ).subscribe(() => {
       this.pageNumber.set(1);
       this.load();
     });
@@ -171,24 +172,37 @@ export class TaskListComponent implements OnInit {
   }
 
   onSearch(value: string): void {
-    this.searchSubject.next(value);
+    this.search.set(value);
+    this.searchVersion++;
+    this.searchSubject.next({ value, version: this.searchVersion });
   }
 
   // Reset filters and reload
-  onStatusChange(value: TaskItemStatus | undefined): void {
-    this.status.set(value);
+  onStatusChange(value: TaskItemStatus | ''): void {
+    this.status.set(value === '' ? undefined : value);
     this.pageNumber.set(1);
     this.load();
   }
 
   // Reset filters and reload
-  onPriorityChange(value: TaskItemPriority | undefined): void {
-    this.priority.set(value);
+  onPriorityChange(value: TaskItemPriority | ''): void {
+    this.priority.set(value === '' ? undefined : value);
     this.pageNumber.set(1);
     this.load();
   }
 
   resetFilters(): void {
+    const isAlreadyReset =
+      this.search() === '' &&
+      this.status() === undefined &&
+      this.priority() === undefined &&
+      this.sortField() === 'CreatedAt' &&
+      this.sortDirection() === 'Desc' &&
+      this.pageNumber() === 1;
+
+    if (isAlreadyReset) return;
+
+    this.searchVersion++;
     this.search.set('');
     this.status.set(undefined);
     this.priority.set(undefined);
