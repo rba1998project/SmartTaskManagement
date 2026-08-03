@@ -20,6 +20,7 @@ import { AuthService } from '../../../core/auth/auth.service';
 import { UserRole } from '../../../core/models/enums';
 import { TASK_STATUS_LABELS, TASK_STATUS_COLORS } from '../../../shared/constants/task-status.constants';
 import { TASK_PRIORITY_LABELS, TASK_PRIORITY_COLORS } from '../../../shared/constants/task-priority.constants';
+import { UtcDatePipe } from '../../../shared/pipes/utc-date.pipe';
 
 // Route: /projects/:id
 // Reads the project id from the route snapshot and loads the project.
@@ -36,6 +37,7 @@ import { TASK_PRIORITY_LABELS, TASK_PRIORITY_COLORS } from '../../../shared/cons
     MatDividerModule,
     MatChipsModule,
     MatTableModule,
+    UtcDatePipe,
   ],
   templateUrl: './project-detail.component.html',
   styleUrl: './project-detail.component.css'

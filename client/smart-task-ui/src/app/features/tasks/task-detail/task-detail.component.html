@@ -60,12 +60,12 @@
         <mat-divider></mat-divider>
         <div class="detail-row">
           <span class="label">Created</span>
-          <span class="value">{{ task()!.createdAt | date:'medium' }}</span>
+          <span class="value">{{ task()!.createdAt | utcDate | date:'medium' }}</span>
         </div>
         <mat-divider></mat-divider>
         <div class="detail-row">
           <span class="label">Last Updated</span>
-          <span class="value">{{ task()!.updatedAt | date:'medium' }}</span>
+          <span class="value">{{ task()!.updatedAt | utcDate | date:'medium' }}</span>
         </div>
       </mat-card-content>
     </mat-card>
@@ -106,7 +106,7 @@
                 </ng-container>
                 <ng-container matColumnDef="changedAt">
                   <th mat-header-cell *matHeaderCellDef>When</th>
-                  <td mat-cell *matCellDef="let change">{{ change.changedAt | date:'medium' }}</td>
+                  <td mat-cell *matCellDef="let change">{{ change.changedAt | utcDate | date:'medium' }}</td>
                 </ng-container>
                 <tr mat-header-row *matHeaderRowDef="historyDisplayedColumns"></tr>
                 <tr mat-row *matRowDef="let row; columns: historyDisplayedColumns"></tr>

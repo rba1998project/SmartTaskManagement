@@ -18,6 +18,7 @@ import { UserRole } from '../../../core/models/enums';
 import { TaskItemStatus, TaskItemPriority } from '../../../core/models/enums';
 import { TASK_STATUS_LABELS, TASK_STATUS_COLORS } from '../../../shared/constants/task-status.constants';
 import { TASK_PRIORITY_LABELS, TASK_PRIORITY_COLORS } from '../../../shared/constants/task-priority.constants';
+import { UtcDatePipe } from '../../../shared/pipes/utc-date.pipe';
 
 // Route: /tasks/:id
 // Reads task id from route snapshot and loads the task detail.
@@ -34,6 +35,7 @@ import { TASK_PRIORITY_LABELS, TASK_PRIORITY_COLORS } from '../../../shared/cons
     MatDividerModule,
     MatChipsModule,
     MatTableModule,
+    UtcDatePipe,
   ],
   templateUrl: './task-detail.component.html',
   styleUrl: './task-detail.component.css'

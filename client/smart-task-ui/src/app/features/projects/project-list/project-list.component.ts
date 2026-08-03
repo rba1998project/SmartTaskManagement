@@ -20,6 +20,7 @@ import { ProjectResponse, ProjectQueryRequest } from '../../../core/models/proje
 import { AuthService } from '../../../core/auth/auth.service';
 import { UserRole } from '../../../core/models/enums';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
+import { UtcDatePipe } from '../../../shared/pipes/utc-date.pipe';
 
 // Route: /projects
 // Loads paginated, sortable, and searchable project list.
@@ -37,6 +38,7 @@ import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialo
     MatIconModule,
     MatProgressSpinnerModule,
     RouterModule,
+    UtcDatePipe,
   ],
   templateUrl: './project-list.component.html',
   styleUrl: './project-list.component.css'

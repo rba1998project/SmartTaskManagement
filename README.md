@@ -9,6 +9,7 @@ Smart Task Management System is a full-stack task and project management applica
 - Permission-Based Authorization
 - Project Management
 - Task Management
+- Local-time timestamp display: UTC timestamps are stored by the backend and rendered in each user's browser timezone in the Angular frontend; calendar due dates remain date-only.
 - User Management
 - Search, Filtering, Sorting & Pagination
 - Dashboard Reporting & Statistics
@@ -358,6 +359,7 @@ The Angular frontend lives in `client/smart-task-ui/` and follows these conventi
 - **Angular Material + CDK** — `MatTable`, `MatPaginator`, `MatSort`, `MatDialog`, `MatSnackBar`, `BreakpointObserver`.
 - **Signal-based state** — `signal()`, `computed()`, and reactive forms.
 - **RxJS cleanup** — `takeUntilDestroyed()` from `@angular/core/rxjs-interop` on all subscriptions.
+- **Timezone-aware display** — API timestamps are normalized as UTC and rendered in the user's local timezone through the shared `UtcDatePipe`; due dates are displayed as calendar dates without timezone shifting.
 - **Route structure:**
   - `/login`, `/register` — auth pages
   - `/dashboard` — aggregate stats (recent projects/tasks are loaded client-side)

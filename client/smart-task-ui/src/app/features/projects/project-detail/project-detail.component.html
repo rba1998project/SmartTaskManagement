@@ -39,7 +39,7 @@
         <mat-divider></mat-divider>
         <div class="detail-row">
           <span class="label">Created</span>
-          <span class="value">{{ project()!.createdAt | date:'medium' }}</span>
+          <span class="value">{{ project()!.createdAt | utcDate | date:'medium' }}</span>
         </div>
       </mat-card-content>
     </mat-card>
