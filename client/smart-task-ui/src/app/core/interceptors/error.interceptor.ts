@@ -49,7 +49,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
 
       const apiMessage = isAuthEndpoint
         ? (error.error?.errors?.[0] || error.error?.message || error.message)
-        : error.message;
+        : (error.error?.message || error.message);
 
       const sanitized = { ...error, message: sanitizeErrorMessage(apiMessage) };
       return throwError(() => sanitized);
