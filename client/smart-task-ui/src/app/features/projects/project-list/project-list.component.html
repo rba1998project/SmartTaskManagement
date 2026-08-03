@@ -1,7 +1,20 @@
 <!-- Route: /projects -->
 <!-- Toolbar with search/filter, table with sort/pagination, and action buttons. -->
 <div class="project-list-container">
-  <div class="toolbar">
+  <header class="page-header">
+    <div class="page-header-copy">
+      <h1 class="page-title">Projects</h1>
+      <p class="page-subtitle">{{ totalCount() }} projects in your workspace.</p>
+    </div>
+    @if (canMutate()) {
+      <button mat-raised-button color="primary" (click)="goToCreate()">
+        <mat-icon>add</mat-icon>
+        New Project
+      </button>
+    }
+  </header>
+
+  <div class="toolbar filter-surface">
     <div class="search">
       <mat-form-field appearance="fill" subscriptSizing="dynamic">
         <mat-label>Search projects</mat-label>
@@ -12,12 +25,6 @@
       <mat-icon>refresh</mat-icon>
       Reset
     </button>
-    @if (canMutate()) {
-      <button mat-raised-button color="primary" (click)="goToCreate()">
-        <mat-icon>add</mat-icon>
-        New Project
-      </button>
-    }
   </div>
 
   @if (error()) {
@@ -30,7 +37,7 @@
       <p>No projects found. Create your first project to get started.</p>
     </div>
   } @else {
-    <div class="table-wrapper">
+    <div class="table-wrapper desktop-table">
       @if (loading()) {
         <div class="loading-overlay">
           <mat-spinner diameter="40"></mat-spinner>
@@ -46,7 +53,7 @@
 
       <ng-container matColumnDef="Description">
         <th mat-header-cell *matHeaderCellDef>Description</th>
-        <td mat-cell *matCellDef="let project">{{ project.description || 'No description' }}</td>
+        <td mat-cell *matCellDef="let project"><span class="description-cell">{{ project.description || 'No description' }}</span></td>
       </ng-container>
 
       <ng-container matColumnDef="CreatedAt">
@@ -76,6 +83,37 @@
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="goToDetail(row.id)" class="clickable-row"></tr>
     </table>
+    </div>
+
+    <div class="mobile-records" aria-label="Projects">
+      @for (project of projects(); track project.id) {
+        <article class="record-card">
+          <div class="record-card-header">
+            <a [routerLink]="['/projects', project.id]" class="record-title">{{ project.name }}</a>
+          </div>
+          <p class="record-description">{{ project.description || 'No description' }}</p>
+          <div class="record-meta">
+            <div class="record-meta-item">
+              <span class="record-meta-label">Created</span>
+              <span class="record-meta-value data-value">{{ project.createdAt | utcDate | date:'shortDate' }}</span>
+            </div>
+            <div class="record-meta-item">
+              <span class="record-meta-label">Created By</span>
+              <span class="record-meta-value">{{ project.createdByUserName || 'Unknown' }}</span>
+            </div>
+          </div>
+          @if (canMutate()) {
+            <div class="record-actions">
+              <button mat-icon-button type="button" (click)="goToEdit(project.id)" [attr.aria-label]="'Edit ' + project.name">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button type="button" color="warn" (click)="deleteProject(project)" [attr.aria-label]="'Delete ' + project.name">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          }
+        </article>
+      }
     </div>
 
     <mat-paginator

@@ -1,0 +1,225 @@
+:host {
+  display: block;
+  min-height: 100dvh;
+}
+
+.auth-layout {
+  display: grid;
+  grid-template-columns: minmax(360px, 42%) minmax(0, 58%);
+  min-height: 100dvh;
+  background: var(--app-bg);
+}
+
+.auth-brand {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 100dvh;
+  overflow: hidden;
+  padding: clamp(28px, 4vw, 64px);
+  background-color: #17332b;
+  background-image: linear-gradient(180deg, rgba(23, 51, 43, 0.12), rgba(23, 51, 43, 0.4)), url('/auth-workstream.webp');
+  background-position: center;
+  background-size: cover;
+  color: #f4f7f5;
+}
+
+.auth-brand-link {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: var(--space-3);
+  border-radius: var(--radius-control);
+  color: inherit;
+  font-weight: 700;
+}
+
+.auth-brand-mark {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  font-family: var(--font-data);
+  font-size: 0.76rem;
+  letter-spacing: 0.03em;
+}
+
+.auth-brand-name {
+  font-size: 1rem;
+  letter-spacing: -0.02em;
+}
+
+.auth-brand-copy {
+  max-width: 520px;
+  padding-bottom: clamp(18px, 4vh, 56px);
+}
+
+.auth-brand-copy h1 {
+  max-width: 12ch;
+  margin-bottom: var(--space-4);
+  color: #ffffff;
+  font-size: clamp(2.6rem, 5vw, 4.8rem);
+  line-height: 0.98;
+  letter-spacing: -0.055em;
+}
+
+.auth-brand-copy p {
+  max-width: 43ch;
+  margin: 0;
+  color: rgba(244, 247, 245, 0.78);
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+.auth-form-panel {
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  padding: clamp(24px, 6vw, 88px);
+}
+
+.auth-card {
+  width: min(100%, 460px);
+  border: 0;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.auth-card mat-card-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0 0 var(--space-5) !important;
+}
+
+.auth-card mat-card-title {
+  margin: 0 0 var(--space-2);
+  font-size: clamp(2rem, 4vw, 2.6rem) !important;
+  letter-spacing: -0.045em !important;
+}
+
+.auth-card mat-card-subtitle {
+  margin: 0;
+  color: var(--app-text-secondary);
+  font-size: 1rem;
+}
+
+.auth-card mat-card-content {
+  padding: 0 !important;
+}
+
+.auth-card mat-card-actions {
+  justify-content: flex-start;
+  padding: var(--space-5) 0 0;
+}
+
+.auth-card form {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.full-width {
+  width: 100%;
+}
+
+.auth-submit {
+  min-height: 48px;
+  margin-top: var(--space-2);
+}
+
+.auth-submit mat-spinner {
+  --mdc-circular-progress-active-indicator-color: currentColor;
+}
+
+.auth-switch-link {
+  margin: 0;
+  color: var(--app-text-secondary);
+  font-size: 0.92rem;
+}
+
+.auth-switch-link a {
+  color: var(--app-link);
+  font-weight: 700;
+}
+
+:host-context([data-theme='classic']) .auth-layout {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+}
+
+:host-context([data-theme='classic']) .auth-brand {
+  display: none;
+}
+
+:host-context([data-theme='classic']) .auth-form-panel {
+  width: 100%;
+  padding: 0;
+}
+
+:host-context([data-theme='classic']) .auth-card {
+  width: min(100%, 420px);
+  padding: var(--space-5);
+  border: 1px solid var(--app-border);
+  background: var(--app-surface) !important;
+  box-shadow: var(--shadow-panel) !important;
+}
+
+:host-context([data-theme='classic']) .auth-card mat-card-header {
+  align-items: center;
+  text-align: center;
+}
+
+:host-context([data-theme='classic']) .auth-card mat-card-actions {
+  justify-content: center;
+}
+
+@media (max-width: 900px) {
+  .auth-layout {
+    grid-template-columns: minmax(280px, 36%) minmax(0, 64%);
+  }
+
+  .auth-brand {
+    padding: var(--space-6);
+  }
+
+  .auth-brand-name {
+    display: none;
+  }
+}
+
+@media (max-width: 700px) {
+  .auth-layout {
+    display: block;
+    min-height: 100dvh;
+  }
+
+  .auth-brand {
+    min-height: 124px;
+    padding: var(--space-5);
+    background-position: center 68%;
+  }
+
+  .auth-brand-copy {
+    display: none;
+  }
+
+  .auth-brand-name {
+    display: inline;
+  }
+
+  .auth-form-panel {
+    display: block;
+    padding: var(--space-6) var(--space-5) var(--space-8);
+  }
+
+  .auth-card {
+    margin: 0 auto;
+  }
+}

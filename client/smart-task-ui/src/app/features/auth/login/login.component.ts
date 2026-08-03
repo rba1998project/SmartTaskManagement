@@ -17,7 +17,7 @@ import { NotificationService } from '../../../core/services/notification.service
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterModule, MatCardModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatProgressSpinnerModule],
   templateUrl: './login.component.html',
-  styleUrl: './login.component.css'
+  styleUrls: ['../auth-shared.css', './login.component.css']
 })
 export class LoginComponent {
   private untilDestroyed: OperatorFunction<any, any> = takeUntilDestroyed(inject(DestroyRef));

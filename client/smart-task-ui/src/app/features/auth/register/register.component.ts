@@ -19,7 +19,7 @@ import { passwordValidator, confirmPasswordValidator } from '../../../core/valid
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterModule, MatCardModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatProgressSpinnerModule],
   templateUrl: './register.component.html',
-  styleUrl: './register.component.css'
+  styleUrls: ['../auth-shared.css', './register.component.css']
 })
 export class RegisterComponent {
   private untilDestroyed: OperatorFunction<any, any> = takeUntilDestroyed(inject(DestroyRef));

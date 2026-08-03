@@ -1,140 +1,202 @@
-/* Shell layout styles */
-/* Theme note: colors are driven by Angular Material prebuilt theme for shells/toolbars. */
-/* Custom colors (e.g., avatar background) use CSS custom properties for theme readiness. */
-
 .shell-wrapper {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  min-height: 100dvh;
+  background: var(--app-bg);
 }
 
 .shell-toolbar {
   position: sticky;
   top: 0;
-  z-index: 10;
+  z-index: var(--z-sticky);
   min-height: 64px;
   padding: 0 var(--space-5);
   flex-shrink: 0;
+  background: var(--app-toolbar-bg);
+  color: var(--app-toolbar-text);
+  border-bottom: 1px solid var(--app-toolbar-border);
+  box-shadow: none;
 }
 
-.toolbar-title {
-  font-size: 1.25rem;
-  font-weight: 500;
-  letter-spacing: var(--text-letter-spacing);
+.menu-btn {
+  color: inherit;
 }
 
 .toolbar-title-link {
-  color: inherit;
-  text-decoration: none;
   display: inline-flex;
   align-items: center;
-  line-height: 1;
-  padding: var(--space-2) 0;
+  min-width: 0;
+  gap: var(--space-3);
   margin-left: var(--space-2);
-  border-radius: 4px;
-  transition: background-color 0.15s ease;
+  padding: var(--space-1);
+  border-radius: var(--radius-control);
+  color: inherit;
 }
 
-.toolbar-title-link:hover {
-  background-color: rgba(255, 255, 255, 0.12);
-  text-decoration: none;
+.brand-mark {
+  display: inline-grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  border-radius: 10px;
+  background: var(--app-brand-mark-bg);
+  color: var(--app-brand-mark-text);
+  font-family: var(--font-data);
+  font-size: 0.69rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
 }
 
-.menu-btn i {
-  font-size: 20px;
-  width: 20px;
-  text-align: center;
+.toolbar-title {
+  overflow: hidden;
+  color: inherit;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .spacer {
   flex: 1 1 auto;
 }
 
+.theme-toggle {
+  margin-right: var(--space-1);
+  color: inherit;
+}
+
 .user-avatar {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: #bdbdbd;
-  font-size: var(--text-caption);
-  font-weight: 700;
-  letter-spacing: var(--text-letter-spacing);
-  margin-right: var(--space-2);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: rgba(0, 0, 0, 0.87);
+  --mat-icon-button-state-layer-color: var(--app-accent);
+  display: inline-grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  margin-left: var(--space-1);
+  padding: 0;
+  border: 1px solid var(--app-avatar-border);
+  background: var(--app-avatar-bg);
+  color: var(--app-avatar-text);
   line-height: 1;
 }
 
 .user-initials {
+  display: block;
+  font-family: var(--font-data);
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
   user-select: none;
 }
 
 .shell-body {
   flex: 1;
-  overflow: hidden;
+  min-height: 0;
+  background: var(--app-bg);
 }
 
 .shell-sidenav {
-  width: 260px;
-  border-right: 1px solid var(--mat-sidenav-divider-color, rgba(0, 0, 0, 0.12));
+  width: 252px;
+  border-right: 1px solid var(--app-nav-border);
+  background: var(--app-nav-bg);
+  color: var(--app-nav-text);
 }
 
 .sidenav-nav {
-  padding: var(--space-2) 0;
+  display: grid;
+  gap: var(--space-1);
+  padding: var(--space-4) var(--space-3);
 }
 
 .nav-item {
+  position: relative;
   display: flex;
   align-items: center;
-  height: 48px;
-  padding: 0 var(--space-4) 0 var(--space-3);
-  margin: var(--space-1) var(--space-2);
-  border-radius: 8px;
-  color: inherit;
-  text-decoration: none;
+  min-height: 46px;
   gap: var(--space-3);
-  transition: background-color 0.15s ease;
-  cursor: pointer;
+  padding: 0 var(--space-4);
+  border-radius: var(--radius-control);
+  color: var(--app-nav-text);
+  transition: background-color 160ms ease, color 160ms ease, transform 160ms ease;
 }
 
 .nav-item:hover {
-  background-color: rgba(0, 0, 0, 0.04);
-  text-decoration: none;
+  background: var(--app-nav-hover);
+}
+
+.nav-item:active {
+  transform: translateY(1px);
 }
 
 .nav-item.active {
-  background-color: rgba(0, 0, 0, 0.08);
-  font-weight: var(--text-weight-medium);
+  background: var(--app-nav-active-bg);
+  color: var(--app-nav-active-text);
+  font-weight: 700;
+}
+
+.nav-item.active::before {
+  position: absolute;
+  top: 11px;
+  bottom: 11px;
+  left: 0;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: var(--app-accent);
+  content: '';
 }
 
 .nav-icon {
-  font-size: 20px;
-  width: 20px;
-  text-align: center;
-  flex-shrink: 0;
-  line-height: 1;
+  width: 22px;
+  height: 22px;
+  flex: 0 0 22px;
+  font-size: 22px;
 }
 
 .nav-text {
-  font-size: 0.95rem;
-  line-height: 1.25;
+  font-size: 0.94rem;
   white-space: nowrap;
 }
 
 .shell-content {
-  padding: var(--space-5);
   height: 100%;
   overflow: auto;
+  padding: var(--space-6);
+  background: var(--app-bg);
+}
+
+@media (max-width: 959px) {
+  .shell-sidenav {
+    box-shadow: var(--shadow-overlay);
+  }
 }
 
 @media (max-width: 599px) {
-  .shell-content {
-    padding: var(--space-4);
+  .shell-toolbar {
+    min-height: 56px;
+    padding: 0 var(--space-2);
   }
 
-  .shell-toolbar {
-    padding: 0 var(--space-3);
+  .toolbar-title-link {
+    gap: var(--space-2);
+    margin-left: 0;
+  }
+
+  .brand-mark {
+    width: 30px;
+    height: 30px;
+    flex-basis: 30px;
+    border-radius: 8px;
+  }
+
+  .toolbar-title {
+    max-width: 38vw;
+    font-size: 0.94rem;
+  }
+
+  .shell-content {
+    padding: var(--space-4);
   }
 }

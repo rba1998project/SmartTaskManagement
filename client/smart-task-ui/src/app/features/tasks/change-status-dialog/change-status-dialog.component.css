@@ -11,7 +11,7 @@
 }
 
 .readonly-field input {
-  color: rgba(0, 0, 0, 0.58);
+  color: var(--app-text-secondary);
 }
 
 .secondary-text {

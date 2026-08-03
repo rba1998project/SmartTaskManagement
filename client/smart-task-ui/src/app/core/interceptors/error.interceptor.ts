@@ -21,6 +21,10 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(req).pipe(
     catchError((error) => {
+      if (req.url.includes('/api/auth/logout')) {
+        return throwError(() => error);
+      }
+
       if (error.status === 0) {
         notificationService.showError('Network error. Please check your connection.');
       } else if (error.status === 400) {

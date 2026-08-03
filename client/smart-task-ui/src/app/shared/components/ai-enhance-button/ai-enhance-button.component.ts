@@ -22,6 +22,7 @@ import { ImproveDescriptionRequest } from '../../../core/models/task';
       (click)="enhance()"
       [disabled]="disabled() || loading()"
       [matTooltip]="disabled() ? 'AI description improvement is not configured.' : 'Enhance description with AI'"
+      [attr.aria-label]="disabled() ? 'AI description improvement is not configured' : 'Enhance description with AI'"
       class="ai-btn"
     >
       @if (loading()) {
@@ -32,11 +33,24 @@ import { ImproveDescriptionRequest } from '../../../core/models/task';
     </button>
   `,
   styles: [`
-    .ai-btn {
-      position: absolute;
-      right: 8px;
-      top: 8px;
+    :host {
+      display: inline-flex;
     }
+
+    .ai-btn {
+      --mat-icon-button-icon-color: var(--app-link);
+      --mat-icon-button-state-layer-color: var(--app-accent);
+      width: 32px;
+      height: 32px;
+      padding: 0;
+      background: color-mix(in srgb, var(--app-accent) 8%, var(--app-surface));
+      color: var(--app-link);
+    }
+
+    .ai-btn mat-spinner {
+      margin-inline: auto;
+    }
+
   `]
 })
 export class AiEnhanceButtonComponent {

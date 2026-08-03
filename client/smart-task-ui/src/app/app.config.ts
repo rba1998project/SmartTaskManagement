@@ -6,6 +6,7 @@ import { routes } from './app.routes';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
 import { errorInterceptor } from './core/interceptors/error.interceptor';
 import { AiAvailabilityService } from './core/services/ai.service';
+import { ThemeService } from './core/services/theme.service';
 
 // Application bootstrap configuration.
 export const appConfig: ApplicationConfig = {
@@ -14,6 +15,7 @@ export const appConfig: ApplicationConfig = {
     provideZonelessChangeDetection(),
     provideRouter(routes),
     provideHttpClient(withInterceptors([authInterceptor, errorInterceptor])),
+    provideAppInitializer(() => inject(ThemeService).initialize()),
     provideAppInitializer(() => {
       const aiService = inject(AiAvailabilityService);
       aiService.checkStatus();

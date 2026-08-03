@@ -1,6 +1,14 @@
 <!-- Route: /account -->
 <!-- Shows current user info and opens the self-service password change dialog. -->
 @if (currentUser(); as user) {
+  <div class="profile-page">
+    <header class="page-header">
+      <div>
+        <p class="page-eyebrow">Personal settings</p>
+        <h1>My Account</h1>
+        <p>Review your identity and manage account security.</p>
+      </div>
+    </header>
   <mat-card class="profile-card">
     <mat-card-header class="profile-header">
       <mat-card-title>My Account</mat-card-title>
@@ -34,4 +42,5 @@
       </div>
     </mat-card-content>
   </mat-card>
+  </div>
 }

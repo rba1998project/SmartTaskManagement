@@ -1,3 +1,8 @@
+.profile-page {
+  width: min(100%, 900px);
+  margin-inline: auto;
+}
+
 .profile-card {
   width: 100%;
 }
@@ -9,36 +14,35 @@
 .profile-header {
   display: flex;
   align-items: center;
-  padding: var(--space-4) var(--space-5) 0;
   gap: var(--space-3);
+  padding: var(--space-4) var(--space-5) 0;
 }
 
 .profile-header mat-card-title {
   font-size: var(--text-h3);
-  font-weight: var(--text-weight-medium);
-  letter-spacing: var(--text-letter-spacing);
+  font-weight: 650;
 }
 
-.profile-header .spacer {
+.spacer {
   flex: 1 1 auto;
 }
 
 .profile-field {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 160px minmax(0, 1fr);
   align-items: center;
-  padding: var(--space-3) 0;
+  padding: var(--space-4) 0;
   border-bottom: 1px solid var(--app-border-subtle);
 }
 
 .profile-field:last-child {
-  border-bottom: none;
+  border-bottom: 0;
 }
 
 .profile-field .label {
-  font-weight: var(--text-weight-medium);
   color: var(--app-text-secondary);
   font-size: var(--text-body);
+  font-weight: 650;
 }
 
 .profile-field .value {
@@ -46,28 +50,38 @@
 }
 
 .change-password-link {
-  color: #5e35b1;
-  font-weight: 600;
+  color: var(--app-link);
   cursor: pointer;
+  font-weight: 700;
   text-decoration: underline;
-  text-decoration-color: rgba(94, 53, 177, 0.35);
-  text-decoration-thickness: 1px;
+  text-decoration-color: color-mix(in srgb, var(--app-accent) 38%, transparent);
   text-underline-offset: 4px;
-  transition: color 150ms ease, text-decoration-color 150ms ease;
 }
 
 .change-password-link:hover {
-  color: #4527a0;
   text-decoration-color: currentColor;
 }
 
 .change-password-link:focus-visible {
-  outline: 2px solid rgba(103, 58, 183, 0.5);
+  outline: 3px solid var(--app-focus);
   outline-offset: 3px;
   border-radius: 2px;
 }
 
 .role-chips {
   display: flex;
+  flex-wrap: wrap;
   gap: var(--space-2);
+}
+
+@media (max-width: 600px) {
+  .profile-header {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .profile-field {
+    grid-template-columns: 1fr;
+    gap: var(--space-1);
+  }
 }

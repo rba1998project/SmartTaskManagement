@@ -19,11 +19,11 @@
           }
         </mat-form-field>
 
-        <mat-form-field appearance="fill" class="full-width">
+        <mat-form-field appearance="fill" class="full-width description-field">
           <mat-label>Description</mat-label>
           <textarea matInput formControlName="description" rows="4" maxlength="2000" [readonly]="isTeamMember() && isEdit"></textarea>
+          <app-ai-enhance-button class="description-ai-action" [description]="form.get('description')?.value" (enhanced)="form.get('description')?.setValue($event)"></app-ai-enhance-button>
           <mat-hint align="end" class="secondary-text">{{ form.get('description')?.value | textCounter: 2000 }}</mat-hint>
-          <app-ai-enhance-button [description]="form.get('description')?.value" (enhanced)="form.get('description')?.setValue($event)"></app-ai-enhance-button>
           @if (form.get('description')?.hasError('maxlength') && form.get('description')?.touched) {
             <mat-error>Description must be at most 2000 characters</mat-error>
           }
@@ -89,7 +89,7 @@
               <mat-option disabled>No assignees found</mat-option>
             }
           </mat-autocomplete>
-          <mat-hint class="secondary-text">Can be assigned later</mat-hint>
+          <mat-hint class="secondary-text">NB: Can be assigned later</mat-hint>
         </mat-form-field>
 
         <div class="form-actions">

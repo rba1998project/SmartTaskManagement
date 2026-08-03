@@ -1,3 +1,10 @@
+<header class="page-header">
+  <div class="page-header-copy">
+    <h1 class="page-title">Dashboard</h1>
+    <p class="page-subtitle">Review project activity, task status, and work that needs attention.</p>
+  </div>
+</header>
+
 @if (loading()) {
   <div class="stat-grid">
     @for (i of [1,2,3,4]; track $index) {
@@ -20,28 +27,28 @@
   <div class="stat-grid">
     <mat-card class="stat-card clickable" (click)="goToProjects()">
       <mat-card-content>
-        <div class="stat-value">{{ data()!.totalProjects }}</div>
+        <div class="stat-value data-value">{{ data()!.totalProjects }}</div>
         <div class="stat-label">Total Projects</div>
       </mat-card-content>
     </mat-card>
 
     <mat-card class="stat-card clickable" (click)="goToTasks()">
       <mat-card-content>
-        <div class="stat-value">{{ data()!.totalTasks }}</div>
+        <div class="stat-value data-value">{{ data()!.totalTasks }}</div>
         <div class="stat-label">Total Tasks</div>
       </mat-card-content>
     </mat-card>
 
     <mat-card class="stat-card clickable" (click)="goToTasks()">
       <mat-card-content>
-        <div class="stat-value">{{ data()!.pendingTasks }}</div>
+        <div class="stat-value data-value">{{ data()!.pendingTasks }}</div>
         <div class="stat-label">Pending Tasks</div>
       </mat-card-content>
     </mat-card>
 
     <mat-card class="stat-card clickable" (click)="goToPastDue()">
       <mat-card-content>
-        <div class="stat-value">{{ data()!.pastDueTasks }}</div>
+        <div class="stat-value data-value">{{ data()!.pastDueTasks }}</div>
         <div class="stat-label">Past Due</div>
       </mat-card-content>
     </mat-card>

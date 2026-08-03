@@ -1,45 +1,58 @@
-<div class="login-container">
-  <mat-card class="login-card">
-    <mat-card-header>
-      <mat-card-title>Sign In</mat-card-title>
-      <mat-card-subtitle>Welcome to Smart Task Management</mat-card-subtitle>
-    </mat-card-header>
+<div class="auth-layout">
+  <aside class="auth-brand" aria-label="Smart Task Management">
+    <a routerLink="/login" class="auth-brand-link">
+      <span class="auth-brand-mark" aria-hidden="true">STM</span>
+      <span class="auth-brand-name">Smart Task Management</span>
+    </a>
+    <div class="auth-brand-copy">
+      <h1>Keep work visible.</h1>
+      <p>Plan projects, assign tasks, and see what needs attention without losing the details.</p>
+    </div>
+  </aside>
 
-    <mat-card-content>
-      <form [formGroup]="form" (ngSubmit)="submit()">
-        <mat-form-field appearance="fill" class="full-width" [hideRequiredMarker]="true">
-          <mat-label>Email</mat-label>
-          <input matInput formControlName="email" name="email" type="email" autocomplete="username" />
-          @if (form.get('email')?.hasError('required') && form.get('email')?.touched) {
-            <mat-error>Email is required</mat-error>
-          }
-          @if (form.get('email')?.hasError('email') && form.get('email')?.touched) {
-            <mat-error>Please enter a valid email</mat-error>
-          }
-        </mat-form-field>
+  <main class="auth-form-panel">
+    <mat-card class="auth-card login-card">
+      <mat-card-header>
+        <mat-card-title>Sign In</mat-card-title>
+        <mat-card-subtitle>Use your account to continue.</mat-card-subtitle>
+      </mat-card-header>
 
-        <mat-form-field appearance="fill" class="full-width" [hideRequiredMarker]="true">
-          <mat-label>Password</mat-label>
-          <input matInput formControlName="password" name="password" type="password" autocomplete="current-password" />
-          @if (form.get('password')?.hasError('required') && form.get('password')?.touched) {
-            <mat-error>Password is required</mat-error>
-          }
-        </mat-form-field>
+      <mat-card-content>
+        <form [formGroup]="form" (ngSubmit)="submit()">
+          <mat-form-field appearance="fill" class="full-width" [hideRequiredMarker]="true">
+            <mat-label>Email</mat-label>
+            <input matInput formControlName="email" name="email" type="email" autocomplete="username" />
+            @if (form.get('email')?.hasError('required') && form.get('email')?.touched) {
+              <mat-error>Email is required</mat-error>
+            }
+            @if (form.get('email')?.hasError('email') && form.get('email')?.touched) {
+              <mat-error>Please enter a valid email</mat-error>
+            }
+          </mat-form-field>
 
-        <button mat-raised-button color="primary" type="submit" class="full-width" [disabled]="form.invalid || loading()">
-          @if (loading()) {
-            <mat-spinner diameter="20"></mat-spinner>
-          } @else {
-            <span>Sign In</span>
-          }
-        </button>
-      </form>
-    </mat-card-content>
+          <mat-form-field appearance="fill" class="full-width" [hideRequiredMarker]="true">
+            <mat-label>Password</mat-label>
+            <input matInput formControlName="password" name="password" type="password" autocomplete="current-password" />
+            @if (form.get('password')?.hasError('required') && form.get('password')?.touched) {
+              <mat-error>Password is required</mat-error>
+            }
+          </mat-form-field>
 
-    <mat-card-actions>
-      <p class="register-link">
-        Don't have an account? <a routerLink="/register">Register</a>
-      </p>
-    </mat-card-actions>
-  </mat-card>
+          <button mat-raised-button color="primary" type="submit" class="full-width auth-submit" [disabled]="form.invalid || loading()">
+            @if (loading()) {
+              <mat-spinner diameter="20"></mat-spinner>
+            } @else {
+              <span>Sign In</span>
+            }
+          </button>
+        </form>
+      </mat-card-content>
+
+      <mat-card-actions>
+        <p class="auth-switch-link register-link">
+          Don't have an account? <a routerLink="/register">Register</a>
+        </p>
+      </mat-card-actions>
+    </mat-card>
+  </main>
 </div>

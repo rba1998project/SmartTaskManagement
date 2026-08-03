@@ -1,7 +1,16 @@
 <!-- Route: /users -->
 <!-- Admin-only user management page with role assignment. -->
 <div class="users-container">
-  <div class="toolbar">
+  <header class="page-header">
+    <div>
+      <p class="page-eyebrow">Administration</p>
+      <h1>User Management</h1>
+      <p>Review access and keep team roles current.</p>
+    </div>
+    <span class="page-count">{{ totalCount() }} users</span>
+  </header>
+
+  <div class="toolbar filter-surface">
     <div class="filters">
       <mat-form-field appearance="fill" subscriptSizing="dynamic">
         <mat-label>Search users</mat-label>
@@ -37,7 +46,7 @@
       <p>No users found.</p>
     </div>
   } @else {
-    <div class="table-wrapper">
+    <div class="table-wrapper desktop-table">
       @if (loading()) {
         <div class="loading-overlay">
           <mat-spinner diameter="40"></mat-spinner>
@@ -85,6 +94,39 @@
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
       </table>
+    </div>
+    <div class="mobile-records">
+      @for (user of users(); track user.id) {
+        <article class="record-card">
+          <div class="record-card__topline">
+            <div>
+              <span class="record-card__eyebrow">Team member</span>
+              <h2>{{ user.fullName || 'Unnamed user' }}</h2>
+            </div>
+            @if (isCurrentUser(user)) {
+              <span class="current-user-badge">You</span>
+            }
+          </div>
+          <p class="record-card__description">{{ user.email }}</p>
+          <mat-form-field appearance="fill" class="mobile-role-select" subscriptSizing="dynamic">
+            <mat-label>Role</mat-label>
+            <mat-select [value]="user.role" (selectionChange)="onRoleChange(user, $event.value)" [disabled]="isCurrentUser(user)">
+              @for (option of roleOptions; track option.value) {
+                <mat-option [value]="option.value">{{ option.label }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+          <div class="record-card__actions">
+            <button mat-flat-button color="primary" (click)="saveRole(user)" [disabled]="saving() === user.id || isCurrentUser(user)">
+              @if (saving() === user.id) {
+                <mat-spinner diameter="20"></mat-spinner>
+              } @else {
+                Save role
+              }
+            </button>
+          </div>
+        </article>
+      }
     </div>
     <mat-paginator
       [length]="totalCount()"

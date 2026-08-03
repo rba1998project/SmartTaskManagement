@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit, DestroyRef } from '@angular/core';
+import { Component, computed, inject, signal, OnInit, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { OperatorFunction } from 'rxjs';
 import { Router, RouterModule } from '@angular/router';
@@ -8,9 +8,12 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatListModule } from '@angular/material/list';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { AuthService } from '../../core/auth/auth.service';
 import { UserRole } from '../../core/models/enums';
 import { NotificationService } from '../../core/services/notification.service';
+import { ThemeService } from '../../core/services/theme.service';
 
 // Main app shell/layout.
 // Wraps the sidenav and toolbar; child routes render inside <router-outlet>.
@@ -18,7 +21,7 @@ import { NotificationService } from '../../core/services/notification.service';
 @Component({
   selector: 'app-shell',
   standalone: true,
-  imports: [RouterModule, MatSidenavModule, MatToolbarModule, MatListModule, MatButtonModule, MatIconModule],
+  imports: [RouterModule, MatSidenavModule, MatToolbarModule, MatListModule, MatButtonModule, MatIconModule, MatMenuModule, MatTooltipModule],
   templateUrl: './shell.component.html',
   styleUrl: './shell.component.css'
 })
@@ -28,9 +31,12 @@ export class ShellComponent implements OnInit {
   private authService = inject(AuthService);
   private notificationService = inject(NotificationService);
   private router = inject(Router);
+  readonly themeService = inject(ThemeService);
 
   readonly isMobile = signal<boolean>(false);
   readonly sidenavOpened = signal<boolean>(true);
+  readonly themeToggleLabel = computed(() => this.themeService.toggleLabel());
+  readonly themeToggleIcon = computed(() => this.themeService.toggleIcon());
   userInitials = '';
 
   ngOnInit(): void {
