@@ -17,6 +17,7 @@ import { UsersService } from '../../core/services/users.service';
 import { NotificationService } from '../../core/services/notification.service';
 import { UserQuery, UserListItem, UpdateUserRoleRequest, UserSortField } from '../../core/models/users';
 import { UserRole } from '../../core/models/enums';
+import { AuthService } from '../../core/auth/auth.service';
 
 // Route: /users
 // Admin-only user management page.
@@ -43,6 +44,7 @@ export class UsersComponent implements OnInit {
   private untilDestroyed: OperatorFunction<any, any> = takeUntilDestroyed(inject(DestroyRef));
   private usersService = inject(UsersService);
   private notificationService = inject(NotificationService);
+  private authService = inject(AuthService);
 
   readonly users = signal<UserListItem[]>([]);
   readonly loading = signal(false);
@@ -173,6 +175,10 @@ export class UsersComponent implements OnInit {
 
   onRoleChange(user: UserListItem, role: string): void {
     user.role = role;
+  }
+
+  isCurrentUser(user: UserListItem): boolean {
+    return user.id === this.authService.currentUser()?.userId;
   }
 
 }

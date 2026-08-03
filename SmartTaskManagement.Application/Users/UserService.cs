@@ -11,11 +11,13 @@ public sealed class UserService
 {
     private readonly IUserRepository _users;
     private readonly IIdentityService _identity;
+    private readonly ICurrentUserService _currentUser;
 
-    public UserService(IUserRepository users, IIdentityService identity)
+    public UserService(IUserRepository users, IIdentityService identity, ICurrentUserService currentUser)
     {
         _users = users;
         _identity = identity;
+        _currentUser = currentUser;
     }
 
     public Task<PagedResult<UserLookupDto>> GetAssigneesAsync(
@@ -28,9 +30,14 @@ public sealed class UserService
         CancellationToken cancellationToken = default) =>
         _users.QueryUsersAsync(request, cancellationToken);
 
-    public Task<Result> UpdateRoleAsync(
+    public async Task<Result> UpdateRoleAsync(
         Guid userId,
         string? roleName,
-        CancellationToken cancellationToken = default) =>
-        _identity.UpdateUserRoleAsync(userId, roleName, cancellationToken);
+        CancellationToken cancellationToken = default)
+    {
+        if (userId == _currentUser.UserId)
+            return Result.Failure(ErrorType.Forbidden, "You cannot change your own role.");
+
+        return await _identity.UpdateUserRoleAsync(userId, roleName, cancellationToken);
+    }
 }
