@@ -5,7 +5,7 @@ import { NotificationService } from '../services/notification.service';
 import { throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
-const excludePaths = ['/api/auth/login', '/api/auth/register', '/api/auth/refresh', '/api/ai/status'];
+const excludePaths = ['/api/auth/login', '/api/auth/register', '/api/auth/refresh', '/api/auth/logout', '/api/ai/status'];
 
 function sanitizeErrorMessage(message: string | undefined): string {
   if (!message) return 'An unexpected error occurred.';

@@ -9,7 +9,7 @@ import { AuthResponse } from '../models/auth';
 let isRefreshing = false;
 let refreshTokenSubject = new BehaviorSubject<string | null>(null);
 
-const excludePaths = ['/api/auth/login', '/api/auth/register', '/api/auth/refresh', '/api/ai/status'];
+const excludePaths = ['/api/auth/login', '/api/auth/register', '/api/auth/refresh', '/api/auth/logout', '/api/ai/status'];
 
 // Attaches Bearer tokens to outgoing requests and handles silent refresh on expiry.
 //
