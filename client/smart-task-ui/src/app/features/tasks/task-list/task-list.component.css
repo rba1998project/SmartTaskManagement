@@ -126,6 +126,10 @@
   padding: var(--space-3) var(--space-4);
 }
 
+.change-status-button {
+  white-space: nowrap;
+}
+
 @media (max-width: 768px) {
   .toolbar {
     flex-direction: column;

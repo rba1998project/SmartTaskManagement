@@ -36,3 +36,18 @@ export interface ImproveDescriptionRequest {
 export interface ImproveDescriptionResponse {
   improvedDescription: string;
 }
+
+export interface UpdateTaskStatusRequest {
+  status: TaskItemStatus;
+  comment: string;
+}
+
+export interface TaskStatusChangeResponse {
+  id: string;
+  fromStatus: TaskItemStatus;
+  toStatus: TaskItemStatus;
+  comment: string | null;
+  changedByUserId: string;
+  changedByDisplayName: string;
+  changedAt: string;
+}

@@ -13,5 +13,11 @@ public sealed class UpdateTaskStatusRequestDtoValidator : AbstractValidator<Upda
     {
         RuleFor(x => x.Status)
             .IsInEnum().WithMessage("Status is not a valid value.");
+
+        RuleFor(x => x.Comment)
+            .Must(comment => !string.IsNullOrWhiteSpace(comment))
+            .WithMessage("Comment is required.")
+            .MaximumLength(1000)
+            .WithMessage("Comment must be at most 1000 characters.");
     }
 }

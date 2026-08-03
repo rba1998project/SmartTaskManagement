@@ -9,8 +9,9 @@ namespace SmartTaskManagement.API.Controllers;
 
 /// <summary>
 /// Task endpoints. Creating, editing, assigning and deleting are gated to Admin and Project
-/// Manager; listing, viewing and status changes are open to any authenticated user, with the
-/// per-project ownership and assigned-task visibility rules enforced inside <see cref="TaskService"/>.
+/// Manager; listing and viewing are open to authenticated users, while the dedicated forward-only
+/// status workflow is Team-Member-only. Per-project ownership and assignment rules are enforced
+/// inside <see cref="TaskService"/>.
 /// </summary>
 // The controller stays thin: it delegates to the service and maps the returned Result onto HTTP.
 [ApiController]
@@ -150,6 +151,7 @@ public sealed class TasksController : ControllerBase
     /// <param name="request">New status.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The updated <see cref="TaskResponseDto"/>.</returns>
+    [Authorize(Policy = Permissions.TasksStatusUpdate)]
     [HttpPut("api/tasks/{id:guid}/status")]
     public async Task<IActionResult> ChangeStatus(Guid id, UpdateTaskStatusRequestDto request, CancellationToken cancellationToken)
     {
@@ -158,6 +160,21 @@ public sealed class TasksController : ControllerBase
             return result.ToErrorResponse("Failed to change task status.");
 
         return Ok(ApiResponse.Ok(result.Value!, "Task status updated."));
+    }
+
+    /// <summary>
+    /// Lists immutable status changes for a task. Admins may view any task; Project Managers
+    /// may view tasks in projects they own.
+    /// </summary>
+    [Authorize(Policy = Permissions.TasksStatusHistoryView)]
+    [HttpGet("api/tasks/{id:guid}/status-history")]
+    public async Task<IActionResult> StatusHistory(Guid id, CancellationToken cancellationToken)
+    {
+        var result = await _taskService.GetStatusHistoryAsync(id, cancellationToken);
+        if (!result.Succeeded)
+            return result.ToErrorResponse("Failed to load task status history.");
+
+        return Ok(ApiResponse.Ok(result.Value!));
     }
 
     /// <summary>

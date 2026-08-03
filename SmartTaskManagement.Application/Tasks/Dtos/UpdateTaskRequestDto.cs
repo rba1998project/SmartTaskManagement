@@ -3,8 +3,8 @@ using SmartTaskManagement.Domain.Enums;
 namespace SmartTaskManagement.Application.Tasks.Dtos;
 
 /// <summary>
-/// Input for updating a task's editable details. Status and assignment change through their
-/// own endpoints; the owning project never changes through an update.
+/// Input for updating a task's editable details. Assignment changes through its own endpoint;
+/// Admin and Project Manager status edits are audited by the application service.
 /// </summary>
 public sealed class UpdateTaskRequestDto
 {

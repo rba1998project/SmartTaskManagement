@@ -10,8 +10,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatTableModule } from '@angular/material/table';
 import { TasksService } from '../../../core/services/tasks.service';
-import { TaskResponse } from '../../../core/models/task';
+import { TaskResponse, TaskStatusChangeResponse } from '../../../core/models/task';
 import { AuthService } from '../../../core/auth/auth.service';
 import { UserRole } from '../../../core/models/enums';
 import { TaskItemStatus, TaskItemPriority } from '../../../core/models/enums';
@@ -32,6 +33,7 @@ import { TASK_PRIORITY_LABELS, TASK_PRIORITY_COLORS } from '../../../shared/cons
     MatProgressSpinnerModule,
     MatDividerModule,
     MatChipsModule,
+    MatTableModule,
   ],
   templateUrl: './task-detail.component.html',
   styleUrl: './task-detail.component.css'
@@ -46,10 +48,18 @@ export class TaskDetailComponent implements OnInit {
   readonly task = signal<TaskResponse | null>(null);
   readonly loading = signal(true);
   readonly error = signal<string | null>(null);
+  readonly statusHistory = signal<TaskStatusChangeResponse[]>([]);
+  readonly historyLoading = signal(false);
+  readonly historyError = signal<string | null>(null);
+  readonly historyDisplayedColumns = ['fromStatus', 'toStatus', 'comment', 'changedBy', 'changedAt'];
   taskId = '';
 
   canMutate(): boolean {
     return this.authService.hasAnyRole([UserRole.Admin, UserRole.ProjectManager]);
+  }
+
+  canViewStatusHistory(): boolean {
+    return this.canMutate();
   }
 
   ngOnInit(): void {
@@ -70,6 +80,9 @@ export class TaskDetailComponent implements OnInit {
       next: (result) => {
         if (result.success && result.data) {
           this.task.set(result.data);
+          if (this.canViewStatusHistory()) {
+            this.loadStatusHistory();
+          }
         } else {
           this.error.set(result.message || 'Task not found');
         }
@@ -79,6 +92,26 @@ export class TaskDetailComponent implements OnInit {
         this.error.set(err.message || 'Failed to load task');
         this.loading.set(false);
       }
+    });
+  }
+
+  loadStatusHistory(): void {
+    this.historyLoading.set(true);
+    this.historyError.set(null);
+
+    this.tasksService.listStatusChanges(this.taskId).pipe(this.untilDestroyed).subscribe({
+      next: (result) => {
+        if (result.success && result.data) {
+          this.statusHistory.set(result.data);
+        } else {
+          this.historyError.set(result.message || 'Failed to load status history');
+        }
+        this.historyLoading.set(false);
+      },
+      error: (err: { message?: string }) => {
+        this.historyError.set(err.message || 'Failed to load status history');
+        this.historyLoading.set(false);
+      },
     });
   }
 

@@ -41,6 +41,14 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
         }
     }
 
+    public DbSet<TaskStatusChange> TaskStatusChanges
+    {
+        get
+        {
+            return Set<TaskStatusChange>();
+        }
+    }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);

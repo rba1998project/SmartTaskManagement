@@ -367,3 +367,6 @@ FodyWeavers.xsd
 /AI Files/
 /.claude/
 /.kilo/
+
+# Local contributor instructions
+/AGENTS.md

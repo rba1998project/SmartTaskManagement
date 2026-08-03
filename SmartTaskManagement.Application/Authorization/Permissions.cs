@@ -18,29 +18,44 @@ public static class Permissions
     public const string TasksUpdate = "tasks.update";
     public const string TasksDelete = "tasks.delete";
     public const string TasksAssign = "tasks.assign";
+    public const string TasksStatusUpdate = "tasks.status.update";
+    public const string TasksStatusHistoryView = "tasks.status-history.view";
     public const string UsersManage = "users.manage";
 
-    // All permission keys, for registering one authorization policy per permission.
+    // All permission keys used to register authorization policies.
     public static readonly IReadOnlyList<string> AllPermissions = new[]
     {
         ProjectsCreate, ProjectsUpdate, ProjectsDelete,
         TasksCreate, TasksUpdate, TasksDelete, TasksAssign,
-        UsersManage
+        TasksStatusUpdate, TasksStatusHistoryView, UsersManage
+    };
+
+    // Permissions granted to Admin through role claims. Team-Member-only status updates are
+    // registered as a policy above but deliberately excluded from Admin claims.
+    public static readonly IReadOnlyList<string> AdminPermissions = new[]
+    {
+        ProjectsCreate, ProjectsUpdate, ProjectsDelete,
+        TasksCreate, TasksUpdate, TasksDelete, TasksAssign,
+        TasksStatusHistoryView, UsersManage
     };
 
     /// <summary>
-    /// Default permissions granted to each role at seeding. Admin gets every permission.
-    /// Project Manager gets project/task permissions only. Team Member gets none — it reaches only the open endpoints.
+    /// Default permissions granted to each role at seeding. Admin gets every general permission;
+    /// Project Manager gets project/task permissions plus status-history viewing. Team Member gets
+    /// the status-change permission; service rules still restrict the workflow to assigned tasks.
     /// </summary>
     public static readonly IReadOnlyDictionary<string, IReadOnlyList<string>> DefaultRolePermissions =
         new Dictionary<string, IReadOnlyList<string>>
         {
-            [RoleNames.Admin] = AllPermissions,
+            // Admin receives all general permissions; the status-update policy remains
+            // Team-Member-only through the role claim and service-level workflow checks.
+            [RoleNames.Admin] = AdminPermissions,
             [RoleNames.ProjectManager] = new[]
             {
                 ProjectsCreate, ProjectsUpdate, ProjectsDelete,
-                TasksCreate, TasksUpdate, TasksDelete, TasksAssign
+                TasksCreate, TasksUpdate, TasksDelete, TasksAssign,
+                TasksStatusHistoryView
             },
-            [RoleNames.TeamMember] = Array.Empty<string>()
+            [RoleNames.TeamMember] = new[] { TasksStatusUpdate }
         };
 }

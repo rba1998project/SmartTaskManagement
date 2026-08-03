@@ -161,17 +161,18 @@ those claims are carried in the JWT, and protected endpoints require a matching 
 ownership is enforced in the service layer, not in the token:
 - **Admin:** full access to every project, task, and user management.
 - **Project Manager:** can view, create, update, and delete only their own projects and the tasks within them.
-- **Team Member:** can view only projects/tasks assigned to them, and change status on tasks assigned to them.
+- **Team Member:** can view only projects/tasks assigned to them, and advance assigned task status through the Team Member status workflow.
 
 | Role | Feature permissions | Notes |
 |------|--------------------|-------|
-| Admin | all | Full access to every project, task, and user management. |
+| Admin | `AdminPermissions` | Full access to every general permission and project, task, and user management. Team-Member-only status changes remain service-restricted. |
 | Project Manager | projects.*, tasks.* | Can view, create, update, and delete only their own projects and the tasks within them. Cannot manage users. |
 | Team Member | none | Can view only projects/tasks assigned to them, and change status on tasks assigned to them. |
 
 Permissions in use: `projects.create`, `projects.update`, `projects.delete`, `tasks.create`,
-`tasks.update`, `tasks.delete`, `tasks.assign`, `users.manage`. Listing, viewing, and task status changes are
-open to any authenticated user (with visibility/ownership rules applied in the services).
+`tasks.update`, `tasks.delete`, `tasks.assign`, `tasks.status.change`, `tasks.status-history.view`, `users.manage`. Listing and viewing are available to authenticated
+users with visibility/ownership rules applied in the services. The dedicated forward-only status workflow is
+restricted to assigned Team Members; Admin and Project Manager status edits remain part of task editing.
 
 ## API Overview
 
@@ -238,7 +239,8 @@ Refresh tokens are persisted as SHA-256 hashes, rotated on every use, and revoca
 | `PUT /api/tasks/{id}` | `tasks.update` | Update task details. |
 | `DELETE /api/tasks/{id}` | `tasks.delete` | Soft-delete a task. |
 | `PUT /api/tasks/{id}/assignment` | `tasks.assign` | Assign the task to a user. |
-| `PUT /api/tasks/{id}/status` | authenticated | Change status. Team Member can change only on tasks assigned to them; Project Manager can change status on tasks in their own projects or assigned to them. |
+| `PUT /api/tasks/{id}/status` | `tasks.status.change` | Team Member-only status workflow; advance an assigned task from `ToDo` → `InProgress` or `InProgress` → `Completed`; requires a 1–1000 character comment. |
+| `GET /api/tasks/{id}/status-history` | Admin / Project Manager | View immutable status history. Project Managers may view tasks in projects they own. |
 | `POST /api/tasks/improve-description` | authenticated | Improve a task description using the AI provider. |
 
 **Task status:** `ToDo`, `InProgress`, `Completed`, `Cancelled`.
@@ -345,6 +347,7 @@ Applied migrations:
 | `AddProjects` | `Projects` table. |
 | `AddTasks` | `Tasks` table with `Project → Task` cascade delete. |
 | `AddSoftDelete` | `Projects.IsDeleted`, `Projects.DeletedAt`, `Projects.DeletedByUserId`, same for `Tasks`. |
+| `AddTaskStatusChanges` | Immutable `TaskStatusChanges` audit records for status transitions. |
 
 ## Frontend Architecture
 
@@ -376,7 +379,8 @@ The Angular frontend lives in `client/smart-task-ui/` and follows these conventi
   configured, the button remains visible but disabled, with a tooltip indicating that the
   feature is unavailable. When enabled, the button actively improves task descriptions.
 - **Dashboard charts:** the dashboard renders two interactive pie charts. Clicking a slice filters the task list by that status or priority.
-- **Login UX:** the email and password fields rely on the browser's native autocomplete.
+  - **Login UX:** the email and password fields rely on the browser's native autocomplete.
+  - **Status workflow:** Team Members use a Change Status dialog with read-only project/task fields, a forward-only status dropdown, and a required comment. Admins and Project Managers see status history on task details.
 - **User Management:** Admin-only page for viewing all users and assigning roles. Uses a Material table with per-row role selectors.
 
 ## Known Limitations

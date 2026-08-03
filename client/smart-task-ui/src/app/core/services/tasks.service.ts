@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { ApiService } from './api.service';
-import { TaskResponse, TaskQueryRequest } from '../models/task';
+import { TaskResponse, TaskQueryRequest, TaskStatusChangeResponse, UpdateTaskStatusRequest } from '../models/task';
 import { PagedResult } from '../models/enums';
 
 @Injectable({ providedIn: 'root' })
@@ -37,8 +37,12 @@ export class TasksService {
     return this.api.delete<TaskResponse>(`/api/tasks/${id}`);
   }
 
-  updateStatus(id: string, status: number) {
-    return this.api.put<TaskResponse>(`/api/tasks/${id}/status`, { status });
+  updateStatus(id: string, request: UpdateTaskStatusRequest) {
+    return this.api.put<TaskResponse>(`/api/tasks/${id}/status`, request);
+  }
+
+  listStatusChanges(id: string) {
+    return this.api.get<TaskStatusChangeResponse[]>(`/api/tasks/${id}/status-history`);
   }
 
   assign(id: string, userId?: string) {

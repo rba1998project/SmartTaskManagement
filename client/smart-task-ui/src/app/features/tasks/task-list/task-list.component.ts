@@ -13,6 +13,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatOptionModule } from '@angular/material/core';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatChipsModule } from '@angular/material/chips';
 import { RouterModule } from '@angular/router';
 import { Router } from '@angular/router';
@@ -26,6 +27,7 @@ import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialo
 import { TaskItemStatus, TaskItemPriority } from '../../../core/models/enums';
 import { TASK_STATUS_LABELS, TASK_STATUS_COLORS } from '../../../shared/constants/task-status.constants';
 import { TASK_PRIORITY_LABELS, TASK_PRIORITY_COLORS } from '../../../shared/constants/task-priority.constants';
+import { ChangeStatusDialogComponent } from '../change-status-dialog/change-status-dialog.component';
 
 // Route: /tasks
 // Loads paginated, sortable, and filterable task list.
@@ -44,6 +46,7 @@ import { TASK_PRIORITY_LABELS, TASK_PRIORITY_COLORS } from '../../../shared/cons
     MatProgressSpinnerModule,
     MatSelectModule,
     MatOptionModule,
+    MatTooltipModule,
     MatChipsModule,
     RouterModule,
   ],
@@ -102,12 +105,34 @@ export class TaskListComponent implements OnInit {
     return task.assignedToUserId === this.authService.currentUser()?.userId;
   }
 
-  updateTaskStatus(taskId: string, status: TaskItemStatus): void {
-    this.tasksService.updateStatus(taskId, status).pipe(this.untilDestroyed).subscribe({
-      next: () => this.load(),
-      error: (err: { message?: string }) => {
-        this.error.set(err.message || 'Failed to update status');
-      }
+  isTeamMember(): boolean {
+    return this.authService.hasRole(UserRole.TeamMember);
+  }
+
+  nextStatus(status: TaskItemStatus): TaskItemStatus | null {
+    return status === TaskItemStatus.ToDo
+      ? TaskItemStatus.InProgress
+      : status === TaskItemStatus.InProgress
+        ? TaskItemStatus.Completed
+        : null;
+  }
+
+  openChangeStatus(task: TaskResponse): void {
+    const dialogRef = this.dialog.open(ChangeStatusDialogComponent, {
+      data: { task },
+      width: '480px',
+      maxWidth: 'calc(100vw - 32px)',
+    });
+
+    dialogRef.afterClosed().pipe(this.untilDestroyed).subscribe((request) => {
+      if (!request) return;
+
+      this.tasksService.updateStatus(task.id, request).pipe(this.untilDestroyed).subscribe({
+        next: () => this.load(),
+        error: (err: { message?: string }) => {
+          this.error.set(err.message || 'Failed to update status');
+        },
+      });
     });
   }
 

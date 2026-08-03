@@ -9,12 +9,12 @@ using SmartTaskManagement.Domain.Enums;
 namespace SmartTaskManagement.Application.Tasks;
 
 /// <summary>
-/// Task use cases: create, update, delete, assign, change status, details, list. Controllers
+/// Task use cases: create, update, delete, assign, change status, status history, details, list. Controllers
 /// stay thin by delegating here. Access rules live in this layer (not the API):
 /// <list type="bullet">
 ///   <item><description>Admin: full access to any task.</description></item>
 ///   <item><description>Project Manager: manage/assign/change-status only for tasks in projects they own.</description></item>
-///   <item><description>Team Member: view tasks assigned to them, and change status only on those tasks. Cannot create, edit details, assign, or delete.</description></item>
+///   <item><description>Team Member: view tasks assigned to them, and advance status only on those tasks. Cannot create, edit details, assign, or delete.</description></item>
 /// </list>
 /// Role-gating of who may reach a mutating endpoint at all is enforced at the API with
 /// [Authorize(Roles = ...)]; the ownership/assignment checks here are the second gate.
@@ -70,12 +70,21 @@ public sealed class TaskService
         if (project is null || !CanManageProjectTasks(project))
             return Result<TaskResponseDto>.Failure(ErrorType.Forbidden, "You do not have permission to modify this task.");
 
-        task.UpdateDetails(request.Title, request.Description, request.Priority, request.DueDate, DateTime.UtcNow);
-        if (request.Status.HasValue)
+        var previousStatus = task.Status;
+        var updatedAt = DateTime.UtcNow;
+        task.UpdateDetails(request.Title, request.Description, request.Priority, request.DueDate, updatedAt);
+
+        TaskStatusChange? statusChange = null;
+        if (request.Status.HasValue && request.Status.Value != previousStatus)
         {
-            task.ChangeStatus(request.Status.Value, DateTime.UtcNow);
+            task.ChangeStatus(request.Status.Value, updatedAt);
+            statusChange = await CreateStatusChangeAsync(task, previousStatus, request.Status.Value, null, cancellationToken);
         }
-        await _tasks.UpdateAsync(task, cancellationToken);
+
+        if (statusChange is null)
+            await _tasks.UpdateAsync(task, cancellationToken);
+        else
+            await _tasks.UpdateWithStatusChangeAsync(task, statusChange, cancellationToken);
 
         return Result<TaskResponseDto>.Success(Map(task, project.Name, null));
     }
@@ -125,6 +134,13 @@ public sealed class TaskService
 
     public async Task<Result<TaskResponseDto>> ChangeStatusAsync(Guid id, UpdateTaskStatusRequestDto request, CancellationToken cancellationToken = default)
     {
+        if (!_currentUser.IsInRole(RoleNames.TeamMember)
+            || _currentUser.IsInRole(RoleNames.Admin)
+            || _currentUser.IsInRole(RoleNames.ProjectManager))
+        {
+            return Result<TaskResponseDto>.Failure(ErrorType.Forbidden, "Only Team Members may use the status workflow.");
+        }
+
         var task = await _tasks.GetByIdAsync(id, cancellationToken);
         if (task is null)
             return Result<TaskResponseDto>.Failure(ErrorType.NotFound, "Task not found.");
@@ -133,15 +149,52 @@ public sealed class TaskService
         if (project is null)
             return Result<TaskResponseDto>.Failure(ErrorType.NotFound, "Task not found.");
 
-        // A Team Member may change status only on tasks assigned to them; Admin/PM (owner) always may.
-        if (!CanManageProjectTasks(project) && !IsAssignedToCurrentUser(task))
+        if (!IsAssignedToCurrentUser(task))
             return Result<TaskResponseDto>.Failure(ErrorType.Forbidden, "You do not have permission to change this task's status.");
 
-        task.ChangeStatus(request.Status, DateTime.UtcNow);
-        await _tasks.UpdateAsync(task, cancellationToken);
+        var nextStatus = GetNextTeamMemberStatus(task.Status);
+        if (nextStatus is null || request.Status != nextStatus.Value)
+        {
+            return Result<TaskResponseDto>.Failure(
+                ErrorType.Validation,
+                $"Team Members may only advance a task from {task.Status} to its next status.");
+        }
+
+        if (_currentUser.UserId is not { })
+            return Result<TaskResponseDto>.Failure(ErrorType.Forbidden, "Not authenticated.");
+
+        var previousStatus = task.Status;
+        var updatedAt = DateTime.UtcNow;
+        task.ChangeStatus(request.Status, updatedAt);
+        var statusChange = await CreateStatusChangeAsync(task, previousStatus, request.Status, request.Comment, cancellationToken);
+        await _tasks.UpdateWithStatusChangeAsync(task, statusChange, cancellationToken);
 
         var assigneeName = task.AssignedToUserId is not null ? (await _identity.FindByIdAsync(task.AssignedToUserId.Value, cancellationToken))?.FullName : null;
         return Result<TaskResponseDto>.Success(Map(task, project.Name, assigneeName));
+    }
+
+    public async Task<Result<IReadOnlyList<TaskStatusChangeResponseDto>>> GetStatusHistoryAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        var task = await _tasks.GetByIdAsync(id, cancellationToken);
+        if (task is null)
+            return Result<IReadOnlyList<TaskStatusChangeResponseDto>>.Failure(ErrorType.NotFound, "Task not found.");
+
+        var project = await _projects.GetByIdAsync(task.ProjectId, cancellationToken);
+        if (project is null || !CanManageProjectTasks(project))
+            return Result<IReadOnlyList<TaskStatusChangeResponseDto>>.Failure(ErrorType.Forbidden, "You do not have permission to view this task's status history.");
+
+        var changes = await _tasks.ListStatusChangesAsync(id, cancellationToken);
+        return Result<IReadOnlyList<TaskStatusChangeResponseDto>>.Success(
+            changes.Select(change => new TaskStatusChangeResponseDto
+            {
+                Id = change.Id,
+                FromStatus = change.FromStatus,
+                ToStatus = change.ToStatus,
+                Comment = change.Comment,
+                ChangedByUserId = change.ChangedByUserId,
+                ChangedByDisplayName = change.ChangedByDisplayName,
+                ChangedAt = change.ChangedAt,
+            }).ToArray());
     }
 
     public async Task<Result<TaskResponseDto>> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
@@ -242,6 +295,36 @@ public sealed class TaskService
 
         return userId.HasValue
             && task.AssignedToUserId == userId.Value;
+    }
+
+    private static TaskItemStatus? GetNextTeamMemberStatus(TaskItemStatus status) => status switch
+    {
+        TaskItemStatus.ToDo => TaskItemStatus.InProgress,
+        TaskItemStatus.InProgress => TaskItemStatus.Completed,
+        _ => null,
+    };
+
+    private async Task<TaskStatusChange> CreateStatusChangeAsync(
+        TaskItem task,
+        TaskItemStatus previousStatus,
+        TaskItemStatus newStatus,
+        string? comment,
+        CancellationToken cancellationToken)
+    {
+        if (_currentUser.UserId is not { } userId)
+            throw new InvalidOperationException("An authenticated user is required for a status change.");
+
+        var user = await _identity.FindByIdAsync(userId, cancellationToken);
+        var displayName = user?.FullName ?? user?.Email ?? userId.ToString();
+
+        return new TaskStatusChange(
+            task.Id,
+            previousStatus,
+            newStatus,
+            comment,
+            userId,
+            displayName,
+            task.UpdatedAt);
     }
 
     private static TaskResponseDto Map(TaskItem task, string projectName, string? assignedToUserName = null) => new()

@@ -23,6 +23,10 @@ public sealed class UpdateTaskRequestDtoValidator : AbstractValidator<UpdateTask
         RuleFor(x => x.Priority)
             .IsInEnum().WithMessage("Priority is not a valid value.");
 
+        RuleFor(x => x.Status)
+            .IsInEnum().WithMessage("Status is not a valid value.")
+            .When(x => x.Status.HasValue);
+
         RuleFor(x => x.DueDate)
             .GreaterThan(DateTime.UtcNow).WithMessage("Due date must be in the future.")
             .When(x => x.DueDate.HasValue);

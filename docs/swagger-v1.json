@@ -629,7 +629,7 @@
                                                              "tags":  [
                                                                           "Tasks"
                                                                       ],
-                                                             "summary":  "Changes a task\u0027s status. A Team Member may only change status on tasks assigned to them.",
+                                                             "summary":  "Advances an assigned task status for a Team Member and records a required comment.",
                                                              "parameters":  [
                                                                                 {
                                                                                     "name":  "id",
@@ -643,7 +643,7 @@
                                                                                 }
                                                                             ],
                                                              "requestBody":  {
-                                                                                 "description":  "New status.",
+                                                                                 "description":  "Next status and required audit comment.",
                                                                                  "content":  {
                                                                                                  "application/json":  {
                                                                                                                           "schema":  {
@@ -669,6 +669,41 @@
                                                                            }
                                                          }
                                              },
+                  "/api/tasks/{id}/status-history":  {
+                                                          "get":  {
+                                                                      "tags":  [
+                                                                                   "Tasks"
+                                                                               ],
+                                                                      "summary":  "Lists immutable status history for a task.",
+                                                                      "parameters":  [
+                                                                                         {
+                                                                                             "name":  "id",
+                                                                                             "in":  "path",
+                                                                                             "description":  "Task identifier.",
+                                                                                             "required":  true,
+                                                                                             "schema":  {
+                                                                                                            "type":  "string",
+                                                                                                            "format":  "uuid"
+                                                                                                        }
+                                                                                         }
+                                                                                     ],
+                                                                      "responses":  {
+                                                                                        "200":  {
+                                                                                                    "description":  "OK",
+                                                                                                    "content":  {
+                                                                                                                "application/json":  {
+                                                                                                                                            "schema":  {
+                                                                                                                                                           "type":  "array",
+                                                                                                                                                           "items":  {
+                                                                                                                                                                       "$ref":  "#/components/schemas/TaskStatusChangeResponseDto"
+                                                                                                                                                                   }
+                                                                                                                                                       }
+                                                                                                                                        }
+                                                                                                            }
+                                                                                                }
+                                                                                    }
+                                                                  }
+                                                      },
                   "/api/tasks/improve-description":  {
                                                          "post":  {
                                                                       "tags":  [
@@ -973,13 +1008,51 @@
                                                                                    },
                                                                     "additionalProperties":  false
                                                                 },
+                                       "TaskStatusChangeResponseDto":  {
+                                                                          "type":  "object",
+                                                                          "properties":  {
+                                                                                             "id":  {
+                                                                                                        "type":  "string",
+                                                                                                        "format":  "uuid"
+                                                                                                    },
+                                                                                             "fromStatus":  {
+                                                                                                                  "$ref":  "#/components/schemas/TaskItemStatus"
+                                                                                                              },
+                                                                                             "toStatus":  {
+                                                                                                                "$ref":  "#/components/schemas/TaskItemStatus"
+                                                                                                            },
+                                                                                             "comment":  {
+                                                                                                           "type":  "string",
+                                                                                                           "nullable":  true
+                                                                                                       },
+                                                                                             "changedByUserId":  {
+                                                                                                                        "type":  "string",
+                                                                                                                        "format":  "uuid"
+                                                                                                                    },
+                                                                                             "changedByDisplayName":  {
+                                                                                                                          "type":  "string"
+                                                                                                                      },
+                                                                                             "changedAt":  {
+                                                                                                             "type":  "string",
+                                                                                                             "format":  "date-time"
+                                                                                                         }
+                                                                                         },
+                                                                          "additionalProperties":  false
+                                                                      },
                                        "UpdateTaskStatusRequestDto":  {
                                                                           "type":  "object",
                                                                           "properties":  {
-                                                                                             "status":  {
-                                                                                                            "$ref":  "#/components/schemas/TaskItemStatus"
-                                                                                                        }
+                                                                                            "status":  {
+                                                                                                           "$ref":  "#/components/schemas/TaskItemStatus"
+                                                                                                        },
+                                                                                             "comment":  {
+                                                                                                           "type":  "string",
+                                                                                                           "maxLength": 1000
+                                                                                                       }
                                                                                          },
+                                                                          "required":  [
+                                                                                           "comment"
+                                                                                       ],
                                                                           "additionalProperties":  false
                                                                       },
                                        "UpdateUserRoleRequest":  {

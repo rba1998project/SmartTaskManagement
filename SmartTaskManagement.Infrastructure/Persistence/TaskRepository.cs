@@ -25,6 +25,16 @@ public sealed class TaskRepository : ITaskRepository
     public Task<TaskItem?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default) =>
         _dbContext.Tasks.FirstOrDefaultAsync(t => t.Id == id, cancellationToken);
 
+    public async Task<IReadOnlyList<TaskStatusChange>> ListStatusChangesAsync(Guid taskId, CancellationToken cancellationToken = default)
+    {
+        return await _dbContext.TaskStatusChanges
+            .AsNoTracking()
+            .Where(change => change.TaskId == taskId)
+            .OrderByDescending(change => change.ChangedAt)
+            .ThenByDescending(change => change.Id)
+            .ToListAsync(cancellationToken);
+    }
+
     public async Task<IReadOnlyList<TaskItem>> ListByProjectAsync(Guid projectId, Guid? assignedToUserId = null, CancellationToken cancellationToken = default)
     {
         var query = _dbContext.Tasks
@@ -165,6 +175,13 @@ public sealed class TaskRepository : ITaskRepository
     public async Task UpdateAsync(TaskItem task, CancellationToken cancellationToken = default)
     {
         _dbContext.Tasks.Update(task);
+        await _dbContext.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task UpdateWithStatusChangeAsync(TaskItem task, TaskStatusChange statusChange, CancellationToken cancellationToken = default)
+    {
+        _dbContext.Tasks.Update(task);
+        _dbContext.TaskStatusChanges.Add(statusChange);
         await _dbContext.SaveChangesAsync(cancellationToken);
     }
 

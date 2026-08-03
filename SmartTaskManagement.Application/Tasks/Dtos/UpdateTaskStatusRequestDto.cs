@@ -9,4 +9,5 @@ namespace SmartTaskManagement.Application.Tasks.Dtos;
 public sealed class UpdateTaskStatusRequestDto
 {
     public TaskItemStatus Status { get; init; }
+    public string Comment { get; init; } = string.Empty;
 }

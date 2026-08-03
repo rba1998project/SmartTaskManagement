@@ -59,8 +59,46 @@
   margin-bottom: var(--space-5);
 }
 
+.history-card,
+.project-card {
+  margin-bottom: var(--space-5);
+}
+
 .detail-card mat-card-content {
   padding: var(--space-5);
+}
+
+.history-card mat-card-content,
+.project-card mat-card-content {
+  padding: var(--space-5);
+}
+
+.history-table-wrapper {
+  overflow-x: auto;
+}
+
+.history-table {
+  width: 100%;
+}
+
+.history-table td[mat-cell] {
+  white-space: normal;
+  min-width: 110px;
+}
+
+.history-loading,
+.history-error,
+.empty-history {
+  padding: var(--space-4) 0;
+}
+
+.history-loading {
+  display: flex;
+  justify-content: center;
+}
+
+.history-error p {
+  color: var(--app-text-error);
 }
 
 .detail-row {

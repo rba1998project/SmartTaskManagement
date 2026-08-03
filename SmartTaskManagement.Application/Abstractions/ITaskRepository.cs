@@ -15,6 +15,9 @@ public interface ITaskRepository
     /// <summary>Returns the task by id, or <c>null</c> if none exists.</summary>
     Task<TaskItem?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
 
+    /// <summary>Returns immutable status history for a task, newest first.</summary>
+    Task<IReadOnlyList<TaskStatusChange>> ListStatusChangesAsync(Guid taskId, CancellationToken cancellationToken = default);
+
     /// <summary>
     /// Returns the tasks in a project (read-only). When <paramref name="assignedToUserId"/> is
     /// supplied the results are filtered database-side to that assignee — used to give a Team
@@ -68,4 +71,7 @@ public interface ITaskRepository
 
     /// <summary>Persists changes to an existing tracked task.</summary>
     Task UpdateAsync(TaskItem task, CancellationToken cancellationToken = default);
+
+    /// <summary>Persists a task status mutation and its audit record in one save operation.</summary>
+    Task UpdateWithStatusChangeAsync(TaskItem task, TaskStatusChange statusChange, CancellationToken cancellationToken = default);
 }
