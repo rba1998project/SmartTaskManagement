@@ -156,6 +156,7 @@ export class UsersComponent implements OnInit {
   saveRole(user: UserListItem): void {
     if (this.saving()) return;
     this.saving.set(user.id);
+    const previousRole = user.role;
     const request: UpdateUserRoleRequest = { roleName: user.role };
     this.usersService.updateRole(user.id, request).pipe(this.untilDestroyed).subscribe({
       next: (result) => {
@@ -163,10 +164,12 @@ export class UsersComponent implements OnInit {
         if (result.success) {
           this.notificationService.showSuccess(`Role updated for ${user.email}`);
         } else {
+          user.role = previousRole;
           this.notificationService.showError(result.message || 'Failed to update role');
         }
       },
       error: (err: { message?: string }) => {
+        user.role = previousRole;
         this.notificationService.showError(err.message || 'Failed to update role');
         this.saving.set(null);
       }
