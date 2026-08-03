@@ -28,8 +28,8 @@
   cursor: not-allowed;
 }
 
-.char-counter {
-  color: rgba(0, 0, 0, 0.38);
+.secondary-text {
+  color: var(--app-text-secondary);
 }
 
 @media (max-width: 600px) {

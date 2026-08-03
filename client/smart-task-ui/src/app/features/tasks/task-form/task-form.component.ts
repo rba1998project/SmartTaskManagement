@@ -71,7 +71,7 @@ export class TaskFormComponent implements OnInit {
     priority: [TaskItemPriority.Low, Validators.required],
     dueDate: [null as string | null],
     projectId: ['', Validators.required],
-    assignedToUserId: ['', Validators.required],
+    assignedToUserId: [''],
   });
 
   readonly projectSearch = new FormControl<string | ProjectResponse>('');

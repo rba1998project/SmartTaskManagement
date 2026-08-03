@@ -46,6 +46,13 @@ a {
   --text-letter-spacing: 0.025em;
 }
 
+/* Text color scale (Material Design opacity spec) */
+:root {
+  --app-text-primary: rgba(0, 0, 0, 0.87);
+  --app-text-secondary: rgba(0, 0, 0, 0.38);
+  --app-text-error: rgba(244, 67, 54, 1);
+}
+
 h1 {
   font-size: var(--text-h1);
   font-weight: var(--text-weight-regular);
