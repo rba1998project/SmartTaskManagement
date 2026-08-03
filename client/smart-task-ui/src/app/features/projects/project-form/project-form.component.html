@@ -9,7 +9,8 @@
       <form [formGroup]="form" (ngSubmit)="submit()">
         <mat-form-field appearance="fill" class="full-width">
           <mat-label>Name</mat-label>
-          <input matInput formControlName="name" />
+          <input matInput formControlName="name" maxlength="200" />
+          <mat-hint align="end" class="char-counter">{{ form.get('name')?.value | textCounter: 200 }}</mat-hint>
           @if (form.get('name')?.hasError('required') && form.get('name')?.touched) {
             <mat-error>Name is required</mat-error>
           }
@@ -20,7 +21,8 @@
 
         <mat-form-field appearance="fill" class="full-width">
           <mat-label>Description</mat-label>
-          <textarea matInput formControlName="description" rows="4"></textarea>
+          <textarea matInput formControlName="description" rows="4" maxlength="2000"></textarea>
+          <mat-hint align="end" class="char-counter">{{ form.get('description')?.value | textCounter: 2000 }}</mat-hint>
           @if (form.get('description')?.hasError('maxlength') && form.get('description')?.touched) {
             <mat-error>Description must be at most 2000 characters</mat-error>
           }

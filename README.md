@@ -14,6 +14,7 @@ Smart Task Management System is a full-stack task and project management applica
 - Dashboard Reporting & Statistics
 - AI-Assisted Task Description Improvement
 - Soft Delete
+- Real-time word & character count on form fields (project name/description, task title/description, change-status comment) via a reusable `TextCounterPipe`, displayed inline below each input in a dimmed style.
 
 ## Technology Stack
 

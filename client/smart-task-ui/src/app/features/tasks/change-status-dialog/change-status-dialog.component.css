@@ -14,6 +14,10 @@
   color: rgba(0, 0, 0, 0.58);
 }
 
+.char-counter {
+  color: rgba(0, 0, 0, 0.38);
+}
+
 @media (max-width: 600px) {
   .status-form {
     min-width: 0;

@@ -28,6 +28,10 @@
   cursor: not-allowed;
 }
 
+.char-counter {
+  color: rgba(0, 0, 0, 0.38);
+}
+
 @media (max-width: 600px) {
   .form-row {
     grid-template-columns: 1fr;

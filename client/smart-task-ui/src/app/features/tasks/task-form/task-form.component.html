@@ -9,7 +9,8 @@
       <form [formGroup]="form" (ngSubmit)="submit()">
         <mat-form-field appearance="fill" class="full-width">
           <mat-label>Title</mat-label>
-          <input matInput formControlName="title" [readonly]="isTeamMember() && isEdit" />
+          <input matInput formControlName="title" maxlength="200" [readonly]="isTeamMember() && isEdit" />
+          <mat-hint align="end" class="char-counter">{{ form.get('title')?.value | textCounter: 200 }}</mat-hint>
           @if (form.get('title')?.hasError('required') && form.get('title')?.touched) {
             <mat-error>Title is required</mat-error>
           }
@@ -20,7 +21,8 @@
 
         <mat-form-field appearance="fill" class="full-width">
           <mat-label>Description</mat-label>
-          <textarea matInput formControlName="description" rows="4" [readonly]="isTeamMember() && isEdit"></textarea>
+          <textarea matInput formControlName="description" rows="4" maxlength="2000" [readonly]="isTeamMember() && isEdit"></textarea>
+          <mat-hint align="end" class="char-counter">{{ form.get('description')?.value | textCounter: 2000 }}</mat-hint>
           <app-ai-enhance-button [description]="form.get('description')?.value" (enhanced)="form.get('description')?.setValue($event)"></app-ai-enhance-button>
           @if (form.get('description')?.hasError('maxlength') && form.get('description')?.touched) {
             <mat-error>Description must be at most 2000 characters</mat-error>

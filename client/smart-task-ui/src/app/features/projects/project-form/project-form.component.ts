@@ -12,6 +12,7 @@ import { Router, RouterModule } from '@angular/router';
 import { ActivatedRoute } from '@angular/router';
 import { ProjectsService } from '../../../core/services/projects.service';
 import { NotificationService } from '../../../core/services/notification.service';
+import { TextCounterPipe } from '../../../shared/pipes/text-counter.pipe';
 
 // Route: /projects/create or /projects/:id/edit
 // Parses the route id in ngOnInit; loads existing project for edit mode.
@@ -28,6 +29,7 @@ import { NotificationService } from '../../../core/services/notification.service
     MatButtonModule,
     MatCardModule,
     MatProgressSpinnerModule,
+    TextCounterPipe,
   ],
   templateUrl: './project-form.component.html',
   styleUrl: './project-form.component.css'

@@ -9,6 +9,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { TaskResponse, UpdateTaskStatusRequest } from '../../../core/models/task';
 import { TaskItemStatus } from '../../../core/models/enums';
 import { TASK_STATUS_LABELS } from '../../../shared/constants/task-status.constants';
+import { TextCounterPipe } from '../../../shared/pipes/text-counter.pipe';
 
 export interface ChangeStatusDialogData {
   task: TaskResponse;
@@ -25,6 +26,7 @@ export interface ChangeStatusDialogData {
     MatInputModule,
     MatOptionModule,
     MatSelectModule,
+    TextCounterPipe,
   ],
   templateUrl: './change-status-dialog.component.html',
   styleUrl: './change-status-dialog.component.css',

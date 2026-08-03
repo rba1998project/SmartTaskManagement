@@ -30,7 +30,7 @@
     <mat-form-field appearance="fill">
       <mat-label>Comment</mat-label>
       <textarea matInput formControlName="comment" rows="5" maxlength="1000" placeholder="Explain this status change"></textarea>
-      <mat-hint align="end">{{ form.controls.comment.value.length }}/1000</mat-hint>
+      <mat-hint align="end" class="char-counter">{{ form.controls.comment.value | textCounter: 1000 }}</mat-hint>
       @if (form.controls.comment.hasError('required') && form.controls.comment.touched) {
         <mat-error>Comment is required.</mat-error>
       } @else if (form.controls.comment.hasError('maxlength')) {

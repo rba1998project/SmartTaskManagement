@@ -28,6 +28,7 @@ import { TaskItemStatus, TaskItemPriority } from '../../../core/models/enums';
 import { TASK_STATUS_LABELS } from '../../../shared/constants/task-status.constants';
 import { TASK_PRIORITY_LABELS } from '../../../shared/constants/task-priority.constants';
 import { AiEnhanceButtonComponent } from '../../../shared/components/ai-enhance-button/ai-enhance-button.component';
+import { TextCounterPipe } from '../../../shared/pipes/text-counter.pipe';
 
 @Component({
   selector: 'app-task-form',
@@ -47,6 +48,7 @@ import { AiEnhanceButtonComponent } from '../../../shared/components/ai-enhance-
     MatProgressSpinnerModule,
     MatAutocompleteModule,
     AiEnhanceButtonComponent,
+    TextCounterPipe,
   ],
   templateUrl: './task-form.component.html',
   styleUrl: './task-form.component.css'
