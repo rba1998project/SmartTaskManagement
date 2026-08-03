@@ -93,4 +93,19 @@ public sealed class AuthController : ControllerBase
         await _authService.LogoutAsync(request, cancellationToken);
         return Ok(ApiResponse.Ok<object?>(null, "Logout successful."));
     }
+
+    /// <summary>
+    /// Changes the password for the authenticated user only. The user id is read from
+    /// the validated access token and cannot be supplied by the caller.
+    /// </summary>
+    [Authorize]
+    [HttpPost("change-password")]
+    public async Task<IActionResult> ChangePassword(ChangePasswordRequestDto request, CancellationToken cancellationToken)
+    {
+        var result = await _authService.ChangePasswordAsync(request, cancellationToken);
+        if (!result.Succeeded)
+            return result.ToErrorResponse("Password change failed.");
+
+        return Ok(ApiResponse.Ok<object?>(null, "Password changed successfully."));
+    }
 }

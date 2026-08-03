@@ -26,4 +26,9 @@ public interface IRefreshTokenService
     /// tokens are treated as a no-op so logout never leaks token validity.
     /// </summary>
     Task RevokeAsync(string rawToken, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Revokes every refresh token issued for the specified user.
+    /// </summary>
+    Task RevokeAllAsync(Guid userId, CancellationToken cancellationToken = default);
 }

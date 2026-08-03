@@ -56,6 +56,18 @@ export class AuthService {
     );
   }
 
+  changePassword(request: { currentPassword: string; newPassword: string }): Observable<void> {
+    return this.api.post<null>('/api/auth/change-password', request).pipe(
+      map((response: ApiResponse<null>) => {
+        if (!response.success) {
+          throw new Error(response.message || 'Password change failed.');
+        }
+        return undefined;
+      }),
+      catchError(err => throwError(() => err))
+    );
+  }
+
   refreshToken(): Observable<AuthResponse> {
     const refreshToken = this.tokenStorage.getRefreshToken();
     if (!refreshToken) {
@@ -86,6 +98,10 @@ export class AuthService {
         error: () => {}
       });
     }
+    this.clearSession();
+  }
+
+  clearSession(): void {
     this.tokenStorage.clear();
     this._currentUser.set(null);
   }

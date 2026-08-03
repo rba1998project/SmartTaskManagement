@@ -15,15 +15,18 @@ public sealed class AuthService
     private readonly IIdentityService _identityService;
     private readonly IJwtTokenGenerator _jwtTokenGenerator;
     private readonly IRefreshTokenService _refreshTokenService;
+    private readonly ICurrentUserService _currentUser;
 
     public AuthService(
         IIdentityService identityService,
         IJwtTokenGenerator jwtTokenGenerator,
-        IRefreshTokenService refreshTokenService)
+        IRefreshTokenService refreshTokenService,
+        ICurrentUserService currentUser)
     {
         _identityService = identityService;
         _jwtTokenGenerator = jwtTokenGenerator;
         _refreshTokenService = refreshTokenService;
+        _currentUser = currentUser;
     }
 
     /// <summary>
@@ -60,6 +63,29 @@ public sealed class AuthService
         var refreshToken = await _refreshTokenService.IssueAsync(user.Id, cancellationToken);
 
         return Result<AuthResponseDto>.Success(BuildAuthResponse(user, roles, accessToken, refreshToken));
+    }
+
+    /// <summary>
+    /// Changes only the authenticated user's password and revokes all of that user's
+    /// refresh tokens so existing long-lived sessions cannot be renewed.
+    /// </summary>
+    public async Task<Result> ChangePasswordAsync(ChangePasswordRequestDto request, CancellationToken cancellationToken = default)
+    {
+        if (!_currentUser.IsAuthenticated || !_currentUser.UserId.HasValue)
+            return Result.Failure(ErrorType.Unauthorized, "Not authenticated.");
+
+        var userId = _currentUser.UserId.Value;
+        var changed = await _identityService.ChangePasswordAsync(
+            userId,
+            request.CurrentPassword,
+            request.NewPassword,
+            cancellationToken);
+
+        if (!changed.Succeeded)
+            return changed;
+
+        await _refreshTokenService.RevokeAllAsync(userId, cancellationToken);
+        return Result.Success();
     }
 
     /// <summary>

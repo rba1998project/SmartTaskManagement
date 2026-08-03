@@ -23,6 +23,11 @@ public interface IIdentityService
     Task<AuthUser?> ValidateCredentialsAsync(string email, string password, CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Changes the password for the specified user after validating the current password.
+    /// </summary>
+    Task<Result> ChangePasswordAsync(Guid userId, string currentPassword, string newPassword, CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Returns the user by id, or <c>null</c> if not found.
     /// </summary>
     Task<AuthUser?> FindByIdAsync(Guid userId, CancellationToken cancellationToken = default);

@@ -77,6 +77,22 @@ public sealed class RefreshTokenService : IRefreshTokenService
         await _dbContext.SaveChangesAsync(cancellationToken);
     }
 
+    public async Task RevokeAllAsync(Guid userId, CancellationToken cancellationToken = default)
+    {
+        var tokens = await _dbContext.RefreshTokens
+            .Where(token => token.UserId == userId && token.RevokedAt == null)
+            .ToListAsync(cancellationToken);
+
+        if (tokens.Count == 0)
+            return;
+
+        var now = DateTime.UtcNow;
+        foreach (var token in tokens)
+            token.Revoke(now);
+
+        await _dbContext.SaveChangesAsync(cancellationToken);
+    }
+
     private static string GenerateRawToken()
     {
         var bytes = RandomNumberGenerator.GetBytes(RawTokenBytes);

@@ -41,6 +41,9 @@
           @if (!form.get('password')?.hasError('required') && form.get('password')?.touched && form.get('password')?.hasError('lowercase')) {
             <mat-error>Include a lowercase letter</mat-error>
           }
+          @if (!form.get('password')?.hasError('required') && form.get('password')?.touched && form.get('password')?.hasError('digit')) {
+            <mat-error>Include a digit</mat-error>
+          }
           @if (!form.get('password')?.hasError('required') && form.get('password')?.touched && form.get('password')?.hasError('special')) {
             <mat-error>Include a special character</mat-error>
           }

@@ -230,10 +230,6 @@ export class DashboardComponent {
     });
   }
 
-  getStatusValue(record: Record<number, number> | undefined, status: number): number {
-    return record?.[status] ?? 0;
-  }
-
   taskStatusLabel(status: number): string {
     return TASK_STATUS_LABELS[status as TaskItemStatus] ?? String(status);
   }

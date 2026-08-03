@@ -5,6 +5,7 @@ import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 // - Maximum length 128
 // - At least one uppercase letter
 // - At least one lowercase letter
+// - At least one digit
 // - At least one non-alphanumeric character
 export function passwordValidator(): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
@@ -30,6 +31,10 @@ export function passwordValidator(): ValidatorFn {
 
     if (!/[a-z]/.test(value)) {
       errors['lowercase'] = true;
+    }
+
+    if (!/[0-9]/.test(value)) {
+      errors['digit'] = true;
     }
 
     if (!/[^a-zA-Z0-9]/.test(value)) {

@@ -11,6 +11,7 @@ Smart Task Management System is a full-stack task and project management applica
 - Task Management
 - Local-time timestamp display: UTC timestamps are stored by the backend and rendered in each user's browser timezone in the Angular frontend; calendar due dates remain date-only.
 - User Management
+- Self-service password changes with current-password verification and refresh-session revocation
 - Search, Filtering, Sorting & Pagination
 - Dashboard Reporting & Statistics
 - AI-Assisted Task Description Improvement
@@ -70,11 +71,11 @@ SmartTaskManagement/
        ├─ app.routes.ts
        ├─ app.ts
        ├─ app.html
-       ├─ core/                           # auth, guards, interceptors, services, models
-       ├─ layouts/shell/                  # sidenav, toolbar, shell
-       ├─ features/                       # dashboard, projects, tasks, auth, account, users
-       ├─ error/                          # 403, 404 page components
-       └─ shared/                         # components, constants
+   ├─ core/                           # auth, guards, interceptors, services, models, validators
+    ├─ layouts/shell/                  # sidenav, toolbar, shell
+    ├─ features/                       # dashboard, projects, tasks, auth, account, users
+    ├─ error/                          # 403, 404 page components
+    └─ shared/                         # components, constants, pipes
 ```
 
 **Dependency direction:** `API → Application → Domain` and `Infrastructure → Application/Domain`.
@@ -188,6 +189,7 @@ All responses use the `ApiResponse` / `ApiResponse<T>` envelope. Send the JWT as
 | `POST /api/auth/login` | anonymous | Verify credentials; return access token + refresh token. |
 | `POST /api/auth/refresh` | anonymous | Rotate the refresh token; return a new token pair. |
 | `POST /api/auth/logout` | authenticated | Revoke the supplied refresh token so it can no longer be exchanged. |
+| `POST /api/auth/change-password` | authenticated | Change only the authenticated user's password after verifying the current password; revoke all of that user's refresh tokens. |
 
 Refresh tokens are persisted as SHA-256 hashes, rotated on every use, and revocable on logout.
 

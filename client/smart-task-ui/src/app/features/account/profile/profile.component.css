@@ -45,33 +45,26 @@
   color: var(--app-text-primary);
 }
 
-.disabled-section {
-  opacity: 0.6;
+.change-password-link {
+  color: #5e35b1;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-color: rgba(94, 53, 177, 0.35);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+  transition: color 150ms ease, text-decoration-color 150ms ease;
 }
 
-.disabled-tooltip {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-2) var(--space-3);
-  border-radius: 4px;
-  background: var(--app-bg-surface);
-  color: var(--app-text-disabled);
-  font-size: var(--text-body);
-  cursor: not-allowed;
-  user-select: none;
-  opacity: 0.65;
+.change-password-link:hover {
+  color: #4527a0;
+  text-decoration-color: currentColor;
 }
 
-.profile-header .disabled-tooltip {
-  margin-top: 0;
-}
-
-.disabled-tooltip .nav-icon-sm {
-  font-size: 16px;
-  width: 16px;
-  text-align: center;
-  line-height: 1;
+.change-password-link:focus-visible {
+  outline: 2px solid rgba(103, 58, 183, 0.5);
+  outline-offset: 3px;
+  border-radius: 2px;
 }
 
 .role-chips {

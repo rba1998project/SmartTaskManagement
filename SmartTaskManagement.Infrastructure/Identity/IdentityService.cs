@@ -55,6 +55,22 @@ public sealed class IdentityService : IIdentityService
         return ToAuthUser(user);
     }
 
+    public async Task<Result> ChangePasswordAsync(Guid userId, string currentPassword, string newPassword, CancellationToken cancellationToken = default)
+    {
+        var user = await _userManager.FindByIdAsync(userId.ToString());
+        if (user is null)
+            return Result.Failure("User not found.");
+
+        var changed = await _userManager.ChangePasswordAsync(user, currentPassword, newPassword);
+        if (changed.Succeeded)
+            return Result.Success();
+
+        if (changed.Errors.Any(error => string.Equals(error.Code, "PasswordMismatch", StringComparison.Ordinal)))
+            return Result.Failure("Wrong password.");
+
+        return Result.Failure(changed.Errors.Select(error => error.Description));
+    }
+
     public async Task<AuthUser?> FindByIdAsync(Guid userId, CancellationToken cancellationToken = default)
     {
         var user = await _userManager.FindByIdAsync(userId.ToString());
