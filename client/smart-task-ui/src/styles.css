@@ -164,11 +164,12 @@ select:focus-visible {
   }
 }
 
-/* Chrome/Safari autofill background fix */
+/* Let autofilled inputs inherit the Material field background in every state. */
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus {
-  -webkit-box-shadow: 0 0 0 1000px white inset !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
   -webkit-text-fill-color: inherit !important;
   caret-color: inherit !important;
 }
