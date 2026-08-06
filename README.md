@@ -265,6 +265,23 @@ All responses use the `ApiResponse` / `ApiResponse<T>` envelope. Send the JWT as
 
 Refresh tokens are persisted as SHA-256 hashes, rotated on every use, and revocable on logout.
 
+#### Change password
+
+Authenticated users can change their own password from **My Account** (`/account`) using the
+link-like **Change Password** action. The target user is always taken from the authenticated
+access token rather than from caller-supplied user data:
+
+```json
+{
+  "currentPassword": "Current-password1!",
+  "newPassword": "New-password2!"
+}
+```
+
+The new password must be 8–128 characters and include uppercase, lowercase, numeric, and
+special characters. After a successful change, all refresh tokens for that user are revoked,
+the Angular client clears its local session, and the user is redirected to sign in again.
+
 ### Projects — `api/projects`
 | Endpoint | Permission | Description |
 |----------|-----------|-------------|
@@ -469,7 +486,7 @@ The Angular frontend lives in `client/smart-task-ui/` and follows these conventi
 
 - Automated unit and integration tests are not included.
 - The current service design is tightly coupled in some areas, making isolated unit testing more challenging.
-- Email verification and password reset functionality are not implemented.
+- Email verification and password reset functionality are not implemented; self-service password change is supported from `/account`.
 - Only one role can be assigned to a user at a time through the user management interface.
 
 ## Troubleshooting
