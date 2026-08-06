@@ -368,5 +368,8 @@ FodyWeavers.xsd
 /.claude/
 /.kilo/
 
+# Screenshots generated during development
+/ScreenShots/
+
 # Local contributor instructions
 /AGENTS.md

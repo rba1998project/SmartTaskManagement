@@ -15,8 +15,60 @@ Smart Task Management System is a full-stack task and project management applica
 - Search, Filtering, Sorting & Pagination
 - Dashboard Reporting & Statistics
 - AI-Assisted Task Description Improvement
+- Dual-theme support: switch between **Field-Ledger** (default, dark-green auth brand) and **Classic** (deep-purple Material palette) via a toolbar toggle; preference persists in `localStorage`.
 - Soft Delete
 - Real-time word & character count on form fields (project name/description, task title/description, change-status comment) via a reusable `TextCounterPipe`, displayed inline below each input in a dimmed style.
+
+## App Preview
+
+The application brings its main workflows into one responsive workspace:
+
+- **Role-aware workspaces:** Admins manage the full system, Project Managers manage their own projects, and Team Members focus on assigned work.
+- **Project and task tracking:** Search, filter, sort, paginate, assign work, set priorities and due dates, and monitor progress from the dashboard.
+- **Audited status workflow:** Assigned Team Members move tasks forward with a required comment, while authorized users can review immutable status history.
+- **AI-assisted task writing:** Improve task descriptions directly in the task form, with reusable live word and character counters.
+- **Dual themes:** Switch between the default **Field-Ledger** theme and the **Classic** Angular Material theme; the saved preference is restored on the next visit.
+
+### Sign in
+
+![Field-Ledger sign-in screen](docs/screenshots/login-field-ledger.png)
+
+### Dashboard and dual-theme support
+
+The dashboard summarizes projects, tasks, overdue work, status, and priority. The same workspace can be viewed in either theme.
+
+<table>
+  <tr>
+    <th>Field-Ledger (default)</th>
+    <th>Classic</th>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/dashboard-field-ledger.png" alt="Dashboard in the Field-Ledger theme"></td>
+    <td><img src="docs/screenshots/dashboard-classic.png" alt="Dashboard in the Classic theme"></td>
+  </tr>
+</table>
+
+### Task management and status workflow
+
+Task lists combine search, status and priority filters, assignments, due dates, pagination, and role-specific actions.
+
+![Task management in the Field-Ledger theme](docs/screenshots/tasks-field-ledger.png)
+
+Assigned Team Members use a forward-only status dialog with a required audit comment; terminal tasks cannot be advanced again.
+
+![Team Member task status update dialog](docs/screenshots/team-member-status-workflow.png)
+
+### AI-assisted task form
+
+The task form includes live text counters and an AI action for improving the description when an AI provider is configured.
+
+![Task form with AI description action and live text counters](docs/screenshots/task-ai-assistance.png)
+
+### User and role management
+
+Admins can search users, filter by role, and update role assignments from a dedicated administration screen.
+
+![Admin user and role management](docs/screenshots/user-management-classic.png)
 
 ## Technology Stack
 
@@ -30,7 +82,9 @@ Smart Task Management System is a full-stack task and project management applica
 | Validation | FluentValidation |
 | Logging | Serilog (console + rolling file) |
 | API docs | Swashbuckle / Swagger (Development only) |
-| Frontend | Angular 21+, Angular Material, standalone components, signal-based state |
+| Frontend | Angular 21+, Angular Material 21, standalone components, signals, signal-based state |
+
+**New frontend dependencies:** `@fontsource-variable/manrope` (variable font for UI), `@fontsource/ibm-plex-mono` (monospace for data/code), `material-symbols` (Material Symbols icon font replacing Font Awesome), `ng2-charts` + `chart.js` + `chartjs-plugin-datalabels` (dashboard pie charts).
 
 ## Folder Structure
 
@@ -65,17 +119,35 @@ SmartTaskManagement/
 │  ├─ Filters/ValidationActionFilter.cs # model validation → consistent error envelope
 │  ├─ Middleware/ExceptionHandlingMiddleware.cs
 │  └─ Program.cs                        # composition root
-└─ client/smart-task-ui/                # Angular 21+ frontend
-    └─ src/app/
-       ├─ app.config.ts
-       ├─ app.routes.ts
-       ├─ app.ts
-       ├─ app.html
-   ├─ core/                           # auth, guards, interceptors, services, models, validators
-    ├─ layouts/shell/                  # sidenav, toolbar, shell
-    ├─ features/                       # dashboard, projects, tasks, auth, account, users
-    ├─ error/                          # 403, 404 page components
-    └─ shared/                         # components, constants, pipes
+├─ client/smart-task-ui/                # Angular 21+ frontend
+│  ├─ public/                           # static assets (favicon, theme-init.js, auth-workstream.webp)
+│  │  ├─ theme-init.js                   # sets initial theme from localStorage before Angular loads (FOUC prevention)
+│  │  └─ auth-workstream.webp            # hero background image for the auth page brand panel
+│  └─ src/
+│     ├─ index.html                      # loads theme-init.js script; no external font/icon CDN
+│     ├─ styles.css                      # global styles; defines CSS variables for both themes (field-ledger + classic)
+│     │                                  # and Material theming overrides
+│     │  ├─ app/
+│     │  │  ├─ app.config.ts                # registers ThemeService app-initializer for theme init
+│     │  │  ├─ app.routes.ts
+│     │  │  ├─ app.ts
+│     │  │  ├─ app.html
+│     │  ├─ core/                        # auth, guards, interceptors, services, models
+│     │  │  ├─ interceptors/             # auth.interceptor.ts, error.interceptor.ts
+│     │  │  ├─ auth/                     # auth.service.ts, token-storage.service.ts
+│     │  │  ├─ services/                 # theme.service.ts, ai.service.ts, api.service.ts, notification.service.ts
+│     │  │  ├─ models/                   # AuthResponse, ApiResponse, enums
+│     │  │  ├─ guards/                   # authGuard, roleGuard, unsavedChangesGuard
+│     │  │  └── validators/
+│     │  ├─ layouts/shell/              # sidenav, toolbar (with theme toggle), shell
+│     │  ├─ features/                   # dashboard, projects, tasks, auth, account, users
+│     │  │  └─ auth/
+│     │  │     ├─ auth-shared.css       # shared auth page styles (grid layout, brand panel, theme-aware)
+│     │  │     ├─ login/
+│     │  │     └─ register/
+│     │  ├─ error/                      # 403, 404 page components
+│     │  └─ shared/                     # components (ai-enhance-button), constants, pipes
+│     └─ styles.css                      # global styles; defines CSS variables for both themes (field-ledger + classic)
 ```
 
 **Dependency direction:** `API → Application → Domain` and `Infrastructure → Application/Domain`.
@@ -380,11 +452,16 @@ The Angular frontend lives in `client/smart-task-ui/` and follows these conventi
   create/edit routes to Admin and Project Manager; `unsavedChangesGuard` confirms before
   leaving dirty forms.
 - **Interceptors:** `authInterceptor` attaches JWT and handles refresh; `errorInterceptor` sanitizes error messages and maps HTTP status codes to user-friendly toasts.
+- **Theme system:** `ThemeService` provides dual-theme support — a default **Field-Ledger** theme (dark green auth brand, Manrope/IBM Plex Mono fonts) and a **Classic** theme (deep-purple Material palette). Themes are toggled via a toolbar button in the shell; preference persists in `localStorage`. A `theme-init.js` script runs before Angular boots to prevent a flash of unstyled content. CSS variables in `styles.css` define theme-specific palettes for both themes.
+- **Icons:** Material Symbols replace Font Awesome across all components.
+- **Fonts:** Manrope Variable (UI text) and IBM Plex Mono (data/timestamp values) replace Source Sans 3.
+- **Page layouts:** List pages (Dashboard, Projects, Tasks) use a consistent `page-header` pattern with a title and subtitle. List pages render a desktop `mat-table` and a mobile card-based layout (`record-card` articles) for screens below 768px.
+- **Auth pages:** Login and Register share `auth-shared.css` with a responsive grid layout — a dark-green brand panel with a hero image (`auth-workstream.webp`) on wide screens, and a centered form card. Both themes are supported.
 - **AI integration:** the task form includes an AI enhance button. When the AI backend is not
   configured, the button remains visible but disabled, with a tooltip indicating that the
   feature is unavailable. When enabled, the button actively improves task descriptions.
 - **Dashboard charts:** the dashboard renders two interactive pie charts. Clicking a slice filters the task list by that status or priority.
-  - **Login UX:** the email and password fields rely on the browser's native autocomplete.
+  - **Login UX:** the auth pages use a responsive grid layout with a brand panel (dark green background with `auth-workstream.webp` hero image) and a centered form card. The email and password fields rely on the browser's native autocomplete.
   - **Status workflow:** Team Members use a Change Status dialog with read-only project/task fields, a forward-only status dropdown, and a required comment. Admins and Project Managers see status history on task details.
 - **User Management:** Admin-only page for viewing all users and assigning roles. Uses a Material table with per-row role selectors.
 
@@ -412,8 +489,9 @@ npm run build
 If you see an error like `connect ETIMEDOUT` for Google Fonts during build, retry the build
 once or twice; it is usually a transient network issue.
 
-If `ng build` warns that the bundle exceeds the budget, that is expected after adding
-`ng2-charts` + `chart.js`. Production builds still succeed; the warning does not block the
+If you see an error related to fonts during build, run `npm install` to ensure the new
+`@fontsource-variable/manrope`, `@fontsource/ibm-plex-mono`, and `material-symbols`
+packages are installed. Production builds still succeed; the warning does not block the
 app.
 
 ## Commands
